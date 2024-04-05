@@ -25,3 +25,6 @@ Thumbs.db
 
 # Configuration file
 config.json
+
+# Database file
+mydatabase.db
