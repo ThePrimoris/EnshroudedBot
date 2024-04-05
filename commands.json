@@ -1,0 +1,124 @@
+[
+  {
+      "name": "info",
+      "description": "Displays information about a user",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user to display information about",
+              "required": true
+          }
+      ]
+  },
+  {
+      "name": "mute",
+      "description": "Mutes a user for a specified duration",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user to mute",
+              "required": true
+          },
+          {
+              "type": 3,
+              "name": "time",
+              "description": "The duration of the mute (#d for days, #m for minutes)",
+              "required": true
+          },
+          {
+              "type": 3,
+              "name": "reason",
+              "description": "The reason for the mute",
+              "required": false
+          }
+      ]
+  },
+  {
+      "name": "unmute",
+      "description": "Unmutes a previously muted user",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user to unmute",
+              "required": true
+          }
+      ]
+  },
+  {
+      "name": "infraction",
+      "description": "Records an infraction for a user.",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user to record the infraction for.",
+              "required": true
+          },
+          {
+              "type": 3,
+              "name": "reason",
+              "description": "The reason for the infraction.",
+              "required": true
+          }
+      ]
+  },
+  {
+      "name": "kick",
+      "description": "Kick a user from the server.",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user to be kicked.",
+              "required": true
+          },
+          {
+              "type": 3,
+              "name": "reason",
+              "description": "The reason for the kick (optional).",
+              "required": false
+          }
+      ]
+  },
+  {
+      "name": "purge",
+      "description": "Deletes a specified number of recent messages from a user.",
+      "options": [
+          {
+              "type": 6,
+              "name": "user",
+              "description": "The user whose messages to delete",
+              "required": true
+          },
+          {
+              "type": 4,
+              "name": "amount",
+              "description": "Number of messages to delete",
+              "required": true,
+              "min_value": 1,
+              "max_value": 100
+          }
+      ]
+  },
+  {
+    "name": "note",
+    "description": "Records a note for a user.",
+    "options": [
+        {
+            "type": 6,
+            "name": "user",
+            "description": "The user to record the note for",
+            "required": true
+        },
+        {
+            "type": 3,
+            "name": "note",
+            "description": "The content of the note",
+            "required": true
+        }
+    ]
+  }
+]
