@@ -57,7 +57,8 @@ client.on('interactionCreate', async interaction => {
                 let responseText = infractions.length > 0 ? '**Infractions:**\n' : 'No infractions found for this user.';
                 infractions.forEach((infraction, index) => {
                     const date = infraction.date ? new Date(infraction.date).toDateString() : 'Unknown date';
-                    responseText += `Infraction #${index + 1}:\n- Reason: ${infraction.reason}\n- Date: ${date}\n\n`;
+                    const issuerName = infraction.issuerName;
+                    responseText += `Infraction #${index + 1}:\n- Reason: ${infraction.reason}\n- Date: ${date}\n- By: ${issuerName}\n\n`;
                 });
 
                 await interaction.reply({ content: responseText, ephemeral: true });
@@ -77,8 +78,9 @@ client.on('interactionCreate', async interaction => {
                 let responseText = notes.length > 0 ? '**Notes:**\n' : 'No notes found for this user.';
                 notes.forEach((note, index) => {
                     const date = note.date ? new Date(note.date).toDateString() : 'Unknown date';
-                    responseText += `Note #${index + 1}:\n- Content: ${note.note}\n- Date: ${date}\n\n`;
-                });
+                    const createdBy = note.createdBy; // Assuming createdBy is a property of the note object
+                    responseText += `Note #${index + 1}:\n- Content: ${note.note}\n- Date: ${date}\n- Created By: ${createdBy}\n\n`;
+                });                
 
                 await interaction.reply({ content: responseText, ephemeral: true });
             } catch (error) {

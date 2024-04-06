@@ -1,21 +1,21 @@
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { UserInfraction } = require('../../database'); // Adjust path as necessary
+const { UserNote } = require('../../database'); // Ensure this path correctly points to where your UserNote model is defined
 
 module.exports = {
     data: {
-        name: 'infraction',
-        description: 'Records an infraction for a user.',
+        name: 'note',
+        description: 'Records a note for a user.',
         options: [
             {
                 name: 'user',
                 type: 'USER',
-                description: 'The user to record the infraction for.',
+                description: 'The user to record the note for.',
                 required: true,
             },
             {
-                name: 'reason',
+                name: 'note',
                 type: 'STRING',
-                description: 'The reason for the infraction.',
+                description: 'The content of the note.',
                 required: true,
             },
         ],
@@ -25,22 +25,23 @@ module.exports = {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
-        const user = interaction.options.getUser('user');
-        const reason = interaction.options.getString('reason');
-        const issuerName = interaction.user.username;
+        const user = interaction.options.getUser('user'); // Getting the user for whom the note is about
+        const noteContent = interaction.options.getString('note'); // The content of the note
+        const createdBy = interaction.user.username; // Only use the username of the user issuing the command
 
+        // Attempt to record the note in the database
         try {
-            // Create a new infraction record in the database
-            await UserInfraction.create({
-                userId: user.id,
-                reason: reason,
-                issuerName: issuerName,
+            await UserNote.create({
+                userId: user.id, // The ID of the user the note is about
+                note: noteContent, // The actual note content
+                createdBy: createdBy, // Only the username of the user who created the note
             });
 
-            await interaction.reply({ content: `Infraction recorded for ${user.username} for reason: ${reason}`, ephemeral: false }); // If you want the reply to be public, set ephemeral to false
+            // Reply to confirm the note has been recorded
+            await interaction.reply({ content: `Note recorded for ${user.username}.`, ephemeral: false }); // Public confirmation
         } catch (error) {
-            console.error('Failed to record infraction:', error);
-            await interaction.reply({ content: 'Failed to record infraction. Please try again later.', ephemeral: true });
+            console.error('Failed to record note:', error);
+            await interaction.reply({ content: 'Failed to record note. Please try again later.', ephemeral: true });
         }
     },
 };

@@ -28,7 +28,7 @@ module.exports = {
 
         const user = interaction.options.getUser('user'); // Getting the user for whom the note is about
         const noteContent = interaction.options.getString('note'); // The content of the note
-        const createdBy = interaction.user.id; // Automatically capture the ID of the user issuing the command
+        const createdBy = interaction.user.username; // Automatically capture the ID of the user issuing the command
 
         // Attempt to record the note in the database
         try {
