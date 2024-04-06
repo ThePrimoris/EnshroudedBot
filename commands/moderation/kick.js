@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: {
@@ -21,7 +21,7 @@ module.exports = {
     },
     async execute(interaction) {
         // Check for KickMembers permission before proceeding with the /kick command
-        if (!interaction.member.permissions.has('KICK_MEMBERS')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 

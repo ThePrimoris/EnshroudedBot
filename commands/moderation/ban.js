@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: {
@@ -15,25 +15,26 @@ module.exports = {
                 name: 'reason',
                 type: 'STRING',
                 description: 'The reason for the ban.',
-                required: true, // Updated to make reason required
+                required: true,
             },
         ],
     },
     async execute(interaction) {
-        // Check for BanMembers permission before proceeding with the /ban command
-        if (!interaction.member.permissions.has('BAN_MEMBERS')) {
-            return interaction.reply({ content: "You don't have permission to use this command." });
+        // Check if the user has permissions to ban members
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+            return interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
         }
 
         const user = interaction.options.getUser('user');
-        const reason = interaction.options.getString('reason'); // No longer using a default reason
+        const reason = interaction.options.getString('reason');
 
         try {
+            // Ban the user
             await interaction.guild.members.ban(user.id, { reason });
-            await interaction.reply({ content: `${user.username} has been banned for the following reason: ${reason}` }); // Removed ephemeral: true to make it visible to everyone
+            await interaction.reply({ content: `${user.username} has been banned for the following reason: ${reason}` });
         } catch (error) {
             console.error(error);
-            return interaction.reply({ content: "Failed to ban the user. They might have a higher role than me or I lack the permission to ban them." });
+            return interaction.reply({ content: "Failed to ban the user. They might have a higher role than me or I lack the permission to ban them.", ephemeral: true });
         }
     },
 };

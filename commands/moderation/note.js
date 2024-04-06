@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require('discord.js');
-const { UserNote } = require('../../database'); // Make sure this path correctly points to where your UserNote model is defined
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { UserNote } = require('../../database'); // Ensure this path correctly points to where your UserNote model is defined
 
 module.exports = {
     data: {
@@ -22,7 +22,7 @@ module.exports = {
     },
     async execute(interaction) {
         // Permission check to ensure the user has the ability to manage messages
-        if (!interaction.member.permissions.has('MANAGE_MESSAGES')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 

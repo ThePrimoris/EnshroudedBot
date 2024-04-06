@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { UserInfraction } = require('../../database'); // Adjust path as necessary
 
 module.exports = {
@@ -21,22 +21,23 @@ module.exports = {
         ],
     },
     async execute(interaction) {
-        if (!interaction.member.permissions.has('MANAGE_ROLES')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason');
-        const issuerName = interaction.user.username; // Using username as an example
+        const issuerName = interaction.user.username;
 
         try {
+            // Create a new infraction record in the database
             await UserInfraction.create({
                 userId: user.id,
                 reason: reason,
                 issuerName: issuerName,
             });
 
-            await interaction.reply(`Infraction recorded for ${user.username} for reason: ${reason}`);
+            await interaction.reply({ content: `Infraction recorded for ${user.username} for reason: ${reason}`, ephemeral: false }); // If you want the reply to be public, set ephemeral to false
         } catch (error) {
             console.error('Failed to record infraction:', error);
             await interaction.reply({ content: 'Failed to record infraction. Please try again later.', ephemeral: true });

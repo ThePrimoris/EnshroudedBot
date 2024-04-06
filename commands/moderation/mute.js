@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: {
@@ -27,7 +27,7 @@ module.exports = {
     },
     async execute(interaction) {
         // Check for ManageRoles permission before proceeding with the /mute command
-        if (!interaction.member.permissions.has('MANAGE_ROLES')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
@@ -36,11 +36,8 @@ module.exports = {
         const reason = interaction.options.getString('reason') || 'No reason provided';
         const member = await interaction.guild.members.fetch(user.id);
 
-        let duration = 0;
-        const match = time.match(/^(\d+)([dm])$/);
-        if (match) {
-            duration = parseInt(match[1], 10) * (match[2] === 'd' ? 86400000 : 60000);
-        } else {
+        let duration = parseDuration(time);
+        if (!duration) {
             return interaction.reply({ content: "Invalid time format. Use #d for days or #m for minutes.", ephemeral: true });
         }
 
@@ -49,7 +46,7 @@ module.exports = {
             return interaction.reply({ content: "Mute role not found. Please create a 'Muted' role.", ephemeral: true });
         }
 
-        await member.roles.add(muteRole, reason);
+        await member.roles.add(muteRole, { reason: reason });
 
         await user.send(`You have been muted in ${interaction.guild.name} for ${time}. Reason: ${reason}`).catch(console.error);
         await interaction.reply({ content: `${user.username} has been muted for ${time}.`, ephemeral: true });
@@ -60,3 +57,18 @@ module.exports = {
         }, duration);
     },
 };
+
+function parseDuration(time) {
+    const match = time.match(/^(\d+)([dhm])$/);
+    if (match) {
+        const duration = parseInt(match[1], 10);
+        const unit = match[2];
+        switch (unit) {
+            case 'd': return duration * 86400000; // days in milliseconds
+            case 'h': return duration * 3600000; // hours in milliseconds
+            case 'm': return duration * 60000; // minutes in milliseconds
+            default: return 0;
+        }
+    }
+    return null;
+}

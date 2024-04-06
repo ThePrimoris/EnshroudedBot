@@ -1,14 +1,14 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('purge')
         .setDescription('Deletes a specified number of recent messages from a user.')
-        .addUserOption(option => 
+        .addUserOption(option =>
             option.setName('user')
                 .setDescription('The user whose messages to delete')
                 .setRequired(true))
-        .addIntegerOption(option => 
+        .addIntegerOption(option =>
             option.setName('amount')
                 .setDescription('Number of messages to delete')
                 .setRequired(true)
@@ -16,7 +16,7 @@ module.exports = {
                 .setMaxValue(100)), // Discord API allows a max of 100 messages to be targeted in a bulk delete operation
     async execute(interaction) {
         // Permission Check
-        if (!interaction.member.permissions.has('MANAGE_MESSAGES')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
@@ -33,7 +33,7 @@ module.exports = {
 
         // Bulk Delete
         interaction.channel.bulkDelete(userMessages, true).then(deleted => {
-            interaction.reply({ content: `Successfully deleted ${deleted.size} messages from ${targetUser.username}.`, ephemeral: false });
+            interaction.reply({ content: `Successfully deleted ${deleted.size} messages from ${targetUser.username}.`, ephemeral: true });
         }).catch(error => {
             console.error(error);
             interaction.reply({ content: 'There was an error trying to delete messages in this channel.', ephemeral: true });

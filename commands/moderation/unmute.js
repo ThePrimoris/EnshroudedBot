@@ -1,3 +1,5 @@
+const { PermissionsBitField } = require('discord.js');
+
 module.exports = {
     data: {
         name: 'unmute',
@@ -13,7 +15,7 @@ module.exports = {
     },
     async execute(interaction) {
         // Check for ManageRoles permission before proceeding with the /unmute command
-        if (!interaction.member.permissions.has('MANAGE_ROLES')) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
