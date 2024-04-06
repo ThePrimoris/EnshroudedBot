@@ -56,6 +56,24 @@
         ]
     },
     {
+        "name": "slowmode",
+        "description": "Set slowmode in a channel.",
+        "options": [
+            {
+                "name": "channel",
+                "description": "The channel where you want to set slowmode.",
+                "type": 7,
+                "required": true
+            },
+            {
+                "name": "duration",
+                "description": "The duration for the slowmode.",
+                "type": 3,
+                "required": true
+            }
+        ]
+    },
+    {
         "name": "kick",
         "description": "Kick a user from the server.",
         "options": [
