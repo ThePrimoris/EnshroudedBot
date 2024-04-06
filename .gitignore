@@ -27,6 +27,4 @@ Thumbs.db
 config.json
 
 # Database file
-mydatabase.db
 *.db
-mydatabase.db
