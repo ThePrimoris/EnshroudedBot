@@ -108,6 +108,12 @@
                 "required": true,
                 "min_value": 1,
                 "max_value": 100
+            },
+            {
+                "type": 7,
+                "name": "channel",
+                "description": "The name of the channel to delete messages from",
+                "required": true
             }
         ]
     },

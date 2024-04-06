@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
 const { UserInfraction, UserNote, UserLevel, addXP } = require('./database/index'); // Adjust this path as necessary
 
 const client = new Client({
@@ -16,7 +16,6 @@ const client = new Client({
 client.commands = new Collection();
 const classes = ['survivor', 'beastmaster', 'ranger', 'assassin', 'battlemage', 'healer', 'wizard', 'trickster', 'athlete', 'barbarian', 'warrior', 'tank'];
 
-// Dynamically load commands from the 'commands' folder
 const commandFolders = ['general', 'moderation'];
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
@@ -54,14 +53,20 @@ client.on('interactionCreate', async interaction => {
                     where: { userId: userId },
                 });
 
-                let responseText = infractions.length > 0 ? '**Infractions:**\n' : 'No infractions found for this user.';
-                infractions.forEach((infraction, index) => {
-                    const date = infraction.date ? new Date(infraction.date).toDateString() : 'Unknown date';
-                    const issuerName = infraction.issuerName;
-                    responseText += `Infraction #${index + 1}:\n- Reason: ${infraction.reason}\n- Date: ${date}\n- By: ${issuerName}\n\n`;
-                });
+                const embed = new EmbedBuilder()
+                    .setTitle('User Infractions')
+                    .setColor(0xff0000); // Red color for infractions
 
-                await interaction.reply({ content: responseText, ephemeral: true });
+                if (infractions.length > 0) {
+                    infractions.forEach((infraction, index) => {
+                        const date = infraction.date ? new Date(infraction.date).toLocaleDateString() : 'Unknown date';
+                        embed.addFields({ name: `Infraction #${index + 1}`, value: `Reason: ${infraction.reason}\nDate: ${date}\nIssued by: ${infraction.issuerName}`, inline: false });
+                    });
+                } else {
+                    embed.setDescription('No infractions found for this user.');
+                }
+
+                await interaction.reply({ embeds: [embed], ephemeral: true });
             } catch (error) {
                 console.error(`Error fetching infractions for user ID: ${userId}`, error);
                 await interaction.reply({ content: 'Failed to fetch infractions. Please try again later.', ephemeral: true });
@@ -75,14 +80,20 @@ client.on('interactionCreate', async interaction => {
                     where: { userId: userId },
                 });
 
-                let responseText = notes.length > 0 ? '**Notes:**\n' : 'No notes found for this user.';
-                notes.forEach((note, index) => {
-                    const date = note.date ? new Date(note.date).toDateString() : 'Unknown date';
-                    const createdBy = note.createdBy; // Assuming createdBy is a property of the note object
-                    responseText += `Note #${index + 1}:\n- Content: ${note.note}\n- Date: ${date}\n- Created By: ${createdBy}\n\n`;
-                });                
+                const embed = new EmbedBuilder()
+                    .setTitle('User Notes')
+                    .setColor(0x00ff00); // Green color for notes
 
-                await interaction.reply({ content: responseText, ephemeral: true });
+                if (notes.length > 0) {
+                    notes.forEach((note, index) => {
+                        const date = note.date ? new Date(note.date).toLocaleDateString() : 'Unknown date';
+                        embed.addFields({ name: `Note #${index + 1}`, value: `Content: ${note.note}\nDate: ${date}\nCreated by: ${note.createdBy}`, inline: false });
+                    });
+                } else {
+                    embed.setDescription('No notes found for this user.');
+                }
+
+                await interaction.reply({ embeds: [embed], ephemeral: true });
             } catch (error) {
                 console.error(`Error fetching notes for user ID: ${userId}`, error);
                 await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
@@ -115,12 +126,9 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// Message event handling for XP
 client.on('messageCreate', async message => {
-    // Ignore messages from bots
     if (message.author.bot) return;
 
-    // Add XP for the user who sent the message
     const xpToAdd = 10; // Adjust as needed
     addXP(message.author.id, xpToAdd)
         .then(() => {

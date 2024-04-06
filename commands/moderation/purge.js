@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField, ChannelType } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('purge')
-        .setDescription('Deletes a specified number of recent messages from a user.')
-        .addUserOption(option =>
+        .setDescription('Deletes a specified number of recent messages from a user in a specified channel.')
+        .addUserOption(option => 
             option.setName('user')
                 .setDescription('The user whose messages to delete')
                 .setRequired(true))
@@ -13,7 +13,12 @@ module.exports = {
                 .setDescription('Number of messages to delete')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(100)), // Discord API allows a max of 100 messages to be targeted in a bulk delete operation
+                .setMaxValue(100))
+        .addChannelOption(option =>
+            option.setName('channel')
+                .setDescription('The channel to delete messages from')
+                .setRequired(true)
+                .addChannelTypes(ChannelType.GuildText)),
     async execute(interaction) {
         // Permission Check
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
@@ -22,21 +27,28 @@ module.exports = {
 
         const targetUser = interaction.options.getUser('user');
         const amount = interaction.options.getInteger('amount');
+        const channel = interaction.options.getChannel('channel');
 
-        // Fetch Messages
-        const messages = await interaction.channel.messages.fetch({ limit: 100 });
-        const userMessages = messages.filter(m => m.author.id === targetUser.id).first(amount);
-
-        if (userMessages.length === 0) {
-            return interaction.reply({ content: `No messages found from ${targetUser.username} that can be deleted.`, ephemeral: true });
+        // Ensure the selected channel is a text channel where messages can be deleted
+        if (channel.type !== ChannelType.GuildText) {
+            return interaction.reply({ content: `The selected channel is not a text channel.`, ephemeral: true });
         }
 
-        // Bulk Delete
-        interaction.channel.bulkDelete(userMessages, true).then(deleted => {
-            interaction.reply({ content: `Successfully deleted ${deleted.size} messages from ${targetUser.username}.`, ephemeral: true });
-        }).catch(error => {
+        // Fetch Messages in the specified channel
+        try {
+            const fetchedMessages = await channel.messages.fetch({ limit: 100 });
+            const userMessages = fetchedMessages.filter(m => m.author.id === targetUser.id).first(amount);
+
+            if (userMessages.length === 0) {
+                return interaction.reply({ content: `No messages found from ${targetUser.username} that can be deleted in the selected channel.`, ephemeral: true });
+            }
+
+            // Bulk Delete in the specified channel
+            await channel.bulkDelete(userMessages, true);
+            return interaction.reply({ content: `Successfully deleted ${userMessages.length} messages from ${targetUser.username}.`, ephemeral: true });
+        } catch (error) {
             console.error(error);
-            interaction.reply({ content: 'There was an error trying to delete messages in this channel.', ephemeral: true });
-        });
+            return interaction.reply({ content: 'There was an error trying to delete messages in this channel.', ephemeral: true });
+        }
     },
 };
