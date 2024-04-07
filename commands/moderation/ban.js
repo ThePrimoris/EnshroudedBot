@@ -19,6 +19,7 @@ module.exports = {
             },
         ],
     },
+    category: 'moderation',
     async execute(interaction) {
         // Check if the user has permissions to ban members
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {

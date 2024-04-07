@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('Displays the XP leaderboard.'),
+    category: 'general',
     async execute(interaction) {
         const userData = await UserLevel.findAll({
             order: [['xp', 'DESC']],

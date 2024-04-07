@@ -1,57 +1,67 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
-const commandsList = require('../../commands.json');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Lists all available commands.')
-        .addStringOption(option =>
-            option.setName('category')
-                .setDescription('The category of commands to display')
-                .setRequired(false)
-                .addChoices(
-                    { name: 'General', value: 'general' },
-                    { name: 'Moderation', value: 'moderation' }
-                ))
-        .addIntegerOption(option =>
-            option.setName('page')
-                .setDescription('The page number of commands to display')
-                .setRequired(false)),
+        .setDescription('Lists all available commands.'),
+    category: 'general',
     async execute(interaction) {
-        const category = interaction.options.getString('category') || 'general';
+        // Initialize a structure to hold commands by category
+        const categories = {};
+
+        // Organize commands by their categories
+        interaction.client.commands.forEach(command => {
+            const category = command.category || 'Uncategorized';
+            if (!categories[category]) {
+                categories[category] = [];
+            }
+            categories[category].push(command);
+        });
+
+        // Combine all categories and commands into a single array for pagination
+        const allCommands = [];
+        Object.keys(categories).forEach(category => {
+            allCommands.push(`**${category.charAt(0).toUpperCase() + category.slice(1)} Commands**`);
+            categories[category].forEach(cmd => {
+                const commandUsage = cmd.data.options.map(option => `\`${option.name}\``).join(' '); // Mapping command options to usage format
+                allCommands.push(`/${cmd.data.name} - ${cmd.data.description} - ${commandUsage}`);
+            });
+        });
+
+        // Pagination setup
         let page = interaction.options.getInteger('page') || 1;
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(allCommands.length / itemsPerPage);
+        page = Math.max(1, Math.min(page, totalPages)); // Ensure the page is within bounds
 
-        const filteredCommands = commandsList.filter(cmd => cmd.category === category);
-        const totalPages = Math.ceil(filteredCommands.length / 10);
-        
-        page = Math.max(1, Math.min(page, totalPages));
+        // Calculate the slice of commands to display
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const commandsToShow = allCommands.slice(startIndex, endIndex);
 
-        const startIndex = (page - 1) * 10;
-        const endIndex = startIndex + 10;
-        const commandsToShow = filteredCommands.slice(startIndex, endIndex);
+        // Create the embed
+        const embed = new EmbedBuilder()
+            .setColor('#0099ff')
+            .setTitle('Commands List')
+            .setDescription(commandsToShow.join('\n\n')) // Ensure there's space between commands for readability
+            .setFooter({ text: `Page ${page} of ${totalPages}` });
 
-        const commandsEmbed = {
-            color: parseInt("0099ff", 16),
-            title: `${category.charAt(0).toUpperCase() + category.slice(1)} Commands`,
-            description: `Page ${page} of ${totalPages}`,
-            fields: commandsToShow.map(cmd => ({ name: `/${cmd.name}`, value: cmd.description })),
-        };
-
-        const actionRow = new ActionRowBuilder()
+        // Pagination buttons
+        const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('previous_page')
+                    .setCustomId(`help_previous_${page}`)
                     .setLabel('Previous')
-                    .setStyle(1)
+                    .setStyle(ButtonStyle.Primary)
                     .setDisabled(page <= 1),
                 new ButtonBuilder()
-                    .setCustomId('next_page')
+                    .setCustomId(`help_next_${page}`)
                     .setLabel('Next')
-                    .setStyle(1)
+                    .setStyle(ButtonStyle.Primary)
                     .setDisabled(page >= totalPages)
             );
 
-        await interaction.reply({ embeds: [commandsEmbed], components: [actionRow], ephemeral: true });
+        // Reply with the embed and buttons
+        await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
     },
 };

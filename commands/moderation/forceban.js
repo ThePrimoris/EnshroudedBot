@@ -12,6 +12,7 @@ module.exports = {
             option.setName('reason')
                 .setDescription('The reason for the ban.')
                 .setRequired(false)), // Making reason optional here
+    category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
             return interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });

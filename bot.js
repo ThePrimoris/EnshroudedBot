@@ -15,11 +15,11 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-const classes = ['survivor', 'beastmaster', 'ranger', 'assassin', 'battlemage', 'healer', 'wizard', 'trickster', 'athlete', 'barbarian', 'warrior', 'tank'];
-
 const commandFolders = ['general', 'moderation'];
+
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
+
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
         client.commands.set(command.data.name, command);
@@ -46,7 +46,6 @@ client.on('interactionCreate', async interaction => {
             }
         }
     } else if (interaction.isButton()) {
-        // Button interaction handling for Infractions
         if (interaction.customId.startsWith('view_infractions')) {
             const userId = interaction.customId.split('_')[2];
             try {
@@ -56,7 +55,7 @@ client.on('interactionCreate', async interaction => {
 
                 const embed = new EmbedBuilder()
                     .setTitle('User Infractions')
-                    .setColor(0xff0000); // Red color for infractions
+                    .setColor(0xff0000);
 
                 if (infractions.length > 0) {
                     infractions.forEach((infraction, index) => {
@@ -72,9 +71,7 @@ client.on('interactionCreate', async interaction => {
                 console.error(`Error fetching infractions for user ID: ${userId}`, error);
                 await interaction.reply({ content: 'Failed to fetch infractions. Please try again later.', ephemeral: true });
             }
-        }
-        // Button interaction handling for Notes
-        else if (interaction.customId.startsWith('view_notes')) {
+        } else if (interaction.customId.startsWith('view_notes')) {
             const userId = interaction.customId.split('_')[2];
             try {
                 const notes = await UserNote.findAll({
@@ -99,9 +96,7 @@ client.on('interactionCreate', async interaction => {
                 console.error(`Error fetching notes for user ID: ${userId}`, error);
                 await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
             }
-        }
-        // Handling class role assignments
-        else if (interaction.customId.startsWith('class_role_')) {
+        } else if (interaction.customId.startsWith('class_role_')) {
             const roleName = interaction.customId.replace('class_role_', '').replaceAll('_', ' ');
             const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName);
 
@@ -111,7 +106,6 @@ client.on('interactionCreate', async interaction => {
             }
 
             try {
-                // Remove other class roles first
                 const memberRoles = interaction.member.roles.cache;
                 const classRoleIds = interaction.guild.roles.cache.filter(r => classes.includes(r.name.toLowerCase())).map(r => r.id);
                 const rolesToRemove = memberRoles.filter(r => classRoleIds.includes(r.id));

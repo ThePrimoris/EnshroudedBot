@@ -19,6 +19,7 @@ module.exports = {
             },
         ],
     },
+    category: 'moderation',
     async execute(interaction) {
         // Check for KickMembers permission before proceeding with the /kick command
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {

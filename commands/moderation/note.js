@@ -20,6 +20,7 @@ module.exports = {
             },
         ],
     },
+    category: 'moderation',
     async execute(interaction) {
         // Permission check to ensure the user has the ability to manage messages
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

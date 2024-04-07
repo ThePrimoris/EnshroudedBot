@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('xp')
         .setDescription('Check your XP and level!'),
-
+    category: 'general',
     async execute(interaction) {
         try {
             const userId = interaction.user.id;

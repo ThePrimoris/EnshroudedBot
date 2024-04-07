@@ -8,6 +8,7 @@ module.exports = {
             option.setName('users')
                 .setDescription('The users to be unmuted, mentioned as @user1 @user2 etc.')
                 .setRequired(true)),
+    category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });

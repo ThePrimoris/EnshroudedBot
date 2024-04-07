@@ -7,7 +7,7 @@ module.exports = {
         if (message.author.bot) return;
 
         // Add XP for the user who sent the message
-        const xpToAdd = 10; // Adjust as needed
+        const xpToAdd = 10;
         addXP(message.author.id, xpToAdd)
             .then(() => {
                 console.log(`Added ${xpToAdd} XP to user ${message.author.id}`);

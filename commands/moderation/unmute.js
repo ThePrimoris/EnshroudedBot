@@ -13,6 +13,7 @@ module.exports = {
             },
         ],
     },
+    category: 'moderation',
     async execute(interaction) {
         // Check for ManageMessages permission before proceeding with the /unmute command
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

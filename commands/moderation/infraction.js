@@ -20,6 +20,7 @@ module.exports = {
             },
         ],
     },
+    category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });

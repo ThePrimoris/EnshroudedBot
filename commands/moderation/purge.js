@@ -19,6 +19,7 @@ module.exports = {
                 .setDescription('The channel to delete messages from')
                 .setRequired(true)
                 .addChannelTypes(ChannelType.GuildText)),
+    category: 'moderation',
     async execute(interaction) {
         // Permission Check
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
