@@ -1,5 +1,5 @@
 const { EmbedBuilder, PermissionsBitField } = require('discord.js');
-const { UserInfraction } = require('../../database'); // Adjust path as necessary
+const { UserInfraction } = require('../../database');
 
 module.exports = {
     data: {

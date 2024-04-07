@@ -3,11 +3,12 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, EmbedBuilder } = require('discord.js');
-const { UserInfraction, UserNote, UserLevel, addXP } = require('./database/index'); // Adjust this path as necessary
+const { UserInfraction, UserNote, UserLevel, addXP } = require('./database/index');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
     ]
@@ -82,7 +83,7 @@ client.on('interactionCreate', async interaction => {
 
                 const embed = new EmbedBuilder()
                     .setTitle('User Notes')
-                    .setColor(0x00ff00); // Green color for notes
+                    .setColor(0x00ff00);
 
                 if (notes.length > 0) {
                     notes.forEach((note, index) => {
@@ -129,7 +130,7 @@ client.on('interactionCreate', async interaction => {
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
 
-    const xpToAdd = 10; // Adjust as needed
+    const xpToAdd = 10;
     addXP(message.author.id, xpToAdd)
         .then(() => {
             console.log(`Added ${xpToAdd} XP to user ${message.author.id}`);
