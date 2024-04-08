@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const commands = [];
-const commandFolders = ['fun', 'general', 'moderation'];
+const commandFolders = ['general', 'moderation'];
 
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
