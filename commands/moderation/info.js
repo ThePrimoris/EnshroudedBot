@@ -1,17 +1,14 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
 const { UserInfraction, UserNote } = require('../../database'); // Adjust the path as necessary
 
 module.exports = {
-    data: {
-        name: 'info',
-        description: 'Provides information about a user.',
-        options: [{
-            name: 'user',
-            type: 'USER',
-            description: 'The user you want to get information about',
-            required: true,
-        }],
-    },
+    data: new SlashCommandBuilder()
+        .setName('info')
+        .setDescription('Provides information about a user.')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user you want to get information about')
+                .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
         // Check if the interacting user has the ManageMessages permission

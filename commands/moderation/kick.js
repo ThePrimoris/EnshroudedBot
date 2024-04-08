@@ -1,24 +1,17 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
-    data: {
-        name: 'kick',
-        description: 'Kick a user from the server.',
-        options: [
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user to be kicked.',
-                required: true,
-            },
-            {
-                name: 'reason',
-                type: 'STRING',
-                description: 'The reason for the kick (optional).',
-                required: false,
-            },
-        ],
-    },
+    data: new SlashCommandBuilder()
+        .setName('kick')
+        .setDescription('Kick a user from the server.')
+        .addUserOption(option => 
+            option.setName('user')
+                .setDescription('The user to be kicked.')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('reason')
+                .setDescription('The reason for the kick (optional).')
+                .setRequired(false)),
     category: 'moderation',
     async execute(interaction) {
         // Check for KickMembers permission before proceeding with the /kick command

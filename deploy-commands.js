@@ -2,12 +2,23 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token } = require('./config.json');
 const fs = require('fs');
+const path = require('path');
 
 const commands = [];
-const commandFiles = fs.readFileSync('commands.json');
-JSON.parse(commandFiles).forEach(c => {
-  commands.push(c);
-});
+const commandFolders = ['fun', 'general', 'moderation'];
+
+for (const folder of commandFolders) {
+    const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${folder}/${file}`);
+        // Check if the command.data is an instance of SlashCommandBuilder
+        if (command.data && command.data.toJSON) {
+            commands.push(command.data.toJSON());
+        } else {
+            console.error(`The command at './commands/${folder}/${file}' does not properly export a SlashCommandBuilder instance.`);
+        }
+    }
+}
 
 const rest = new REST({ version: '9' }).setToken(token);
 

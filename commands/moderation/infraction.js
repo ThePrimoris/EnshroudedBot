@@ -1,25 +1,18 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const { UserInfraction } = require('../../database');
 
 module.exports = {
-    data: {
-        name: 'infraction',
-        description: 'Records an infraction for a user.',
-        options: [
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user to record the infraction for.',
-                required: true,
-            },
-            {
-                name: 'reason',
-                type: 'STRING',
-                description: 'The reason for the infraction.',
-                required: true,
-            },
-        ],
-    },
+    data: new SlashCommandBuilder()
+        .setName('infraction')
+        .setDescription('Records an infraction for a user.')
+        .addUserOption(option => 
+            option.setName('user')
+                .setDescription('The user to record the infraction for.')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('reason')
+                .setDescription('The reason for the infraction.')
+                .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

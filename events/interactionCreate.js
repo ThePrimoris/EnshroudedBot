@@ -1,8 +1,9 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
 
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
+        // Command handling
         if (interaction.isCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (!command) {
@@ -16,43 +17,32 @@ module.exports = {
                 console.error(`Error executing command: ${error}`);
                 await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true }).catch(console.error);
             }
-        } else if (interaction.isButton()) {
-            const [prefix, action, category, currentPage] = interaction.customId.split('_');
+        } 
+        // Select menu interaction handling
+        else if (interaction.isSelectMenu()) {
+            if (interaction.customId === 'selectCommand') {
+                const selectedCommandName = interaction.values[0];
+                const command = client.commands.get(selectedCommandName);
 
-            if (prefix !== 'help') return;
+                if (!command) {
+                    await interaction.reply({ content: `Sorry, I couldn't find a command named "${selectedCommandName}".`, ephemeral: true });
+                    return;
+                }
 
-            let page = parseInt(currentPage, 10);
-            page = action === 'next' ? page + 1 : page - 1;
+                const embed = new EmbedBuilder()
+                    .setColor('#0099ff')
+                    .setTitle(`Command: /${command.name}`)
+                    .setDescription(command.description)
+                    .addFields(
+                        command.options.map(option => ({
+                            name: option.name,
+                            value: option.description,
+                            inline: true
+                        }))
+                    );
 
-            // Assuming commands are categorized in your client.commands Collection
-            const commandsList = Array.from(client.commands.values());
-            const filteredCommands = commandsList.filter(cmd => cmd.data.category === category);
-            const totalPages = Math.ceil(filteredCommands.length / 10);
-            const startIndex = (page - 1) * 10;
-            const endIndex = startIndex + 10;
-            const commandsToShow = filteredCommands.slice(startIndex, endIndex);
-
-            const embed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle(`${category.charAt(0).toUpperCase() + category.slice(1)} Commands`)
-                .setDescription(`Page ${page} of ${totalPages}`)
-                .addFields(commandsToShow.map(cmd => ({ name: `/${cmd.data.name}`, value: cmd.data.description })));
-
-            const buttons = new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`help_previous_${category}_${page}`)
-                        .setLabel('Previous')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page <= 1),
-                    new ButtonBuilder()
-                        .setCustomId(`help_next_${category}_${page}`)
-                        .setLabel('Next')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page >= totalPages)
-                );
-
-            await interaction.update({ embeds: [embed], components: [buttons] }).catch(console.error);
+                await interaction.update({ embeds: [embed], components: [] }).catch(console.error);
+            }
         }
     },
 };

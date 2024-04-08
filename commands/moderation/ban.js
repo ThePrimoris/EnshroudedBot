@@ -1,24 +1,17 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
-    data: {
-        name: 'ban',
-        description: 'Ban a user from the server.',
-        options: [
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user to be banned.',
-                required: true,
-            },
-            {
-                name: 'reason',
-                type: 'STRING',
-                description: 'The reason for the ban.',
-                required: true,
-            },
-        ],
-    },
+    data: new SlashCommandBuilder()
+        .setName('ban')
+        .setDescription('Ban a user from the server.')
+        .addUserOption(option => 
+            option.setName('user')
+                .setDescription('The user to be banned.')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('reason')
+                .setDescription('The reason for the ban.')
+                .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
         // Check if the user has permissions to ban members

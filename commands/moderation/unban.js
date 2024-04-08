@@ -1,25 +1,18 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
-    data: {
-        name: 'unban',
-        description: 'Unban a user from the server.',
-        options: [
-            {
-                name: 'user_id',
-                type: 'STRING',
-                description: 'The ID of the user to unban.',
-                required: true,
-            },
-            {
-                name: 'reason',
-                type: 'STRING',
-                description: 'The reason for the unban.',
-                required: true, // Updated to make reason required
-            },
-        ],
-    },
-    category: 'moderation',
+    data: new SlashCommandBuilder()
+    .setName('unban')
+    .setDescription('Unban a user from the server.')
+    .addStringOption(option => 
+        option.setName('user_id')
+            .setDescription('The ID of the user to unban.')
+            .setRequired(true))
+    .addStringOption(option => 
+        option.setName('reason')
+            .setDescription('The reason for the unban.')
+            .setRequired(true)),
+category: 'moderation',
     async execute(interaction) {
         // Check for BanMembers permission before proceeding with the /unban command
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {

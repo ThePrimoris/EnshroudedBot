@@ -1,18 +1,13 @@
-const { PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
-    data: {
-        name: 'unmute',
-        description: 'Unmute a previously muted user.',
-        options: [
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user to be unmuted.',
-                required: true,
-            },
-        ],
-    },
+    data: new SlashCommandBuilder()
+        .setName('unmute')
+        .setDescription('Unmute a previously muted user.')
+        .addStringOption(option => 
+            option.setName('user')
+                .setDescription('The ID of the user to unban.')
+                .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
         // Check for ManageMessages permission before proceeding with the /unmute command

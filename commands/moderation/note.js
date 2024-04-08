@@ -1,25 +1,18 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 const { UserNote } = require('../../database'); // Ensure this path correctly points to where your UserNote model is defined
 
 module.exports = {
-    data: {
-        name: 'note',
-        description: 'Records a note for a user.',
-        options: [
-            {
-                name: 'user',
-                type: 'USER',
-                description: 'The user to record the note for.',
-                required: true,
-            },
-            {
-                name: 'note',
-                type: 'STRING',
-                description: 'The content of the note.',
-                required: true,
-            },
-        ],
-    },
+    data: new SlashCommandBuilder()
+        .setName('note')
+        .setDescription('Records a note for a user.')
+        .addUserOption(option => 
+            option.setName('user')
+                .setDescription('The user to record the note for.')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('note')
+                .setDescription('The content of the note.')
+                .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
         // Permission check to ensure the user has the ability to manage messages
