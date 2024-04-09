@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 const classes = ['survivor', 'beastmaster', 'ranger', 'assassin', 'battlemage', 'healer', 'wizard', 'trickster', 'athlete', 'barbarian', 'warrior', 'tank'];
 
@@ -160,29 +160,56 @@ module.exports = {
                 }
             }
         } else if (interaction.isStringSelectMenu()) {
-            // String select menu interaction logic
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate(); // Ensure immediate acknowledgement of the interaction
-
+        
                 const selectedCommandName = interaction.values[0];
                 const command = client.commands.get(selectedCommandName);
                 if (!command) {
                     await interaction.followUp({ content: `Sorry, I couldn't find a command named "${selectedCommandName}".`, ephemeral: true });
                     return;
                 }
-
+        
+                // Check if the user has the required permissions for this command
+                if (command.requiredPermissions) {
+                    const missingPermissions = command.requiredPermissions.filter(perm => 
+                        !interaction.member.permissions.has(PermissionsBitField.Flags[perm])
+                    );
+        
+                    if (missingPermissions.length > 0) {
+                        // Inform the user they lack necessary permissions
+                        await interaction.followUp({ 
+                            content: `You don't have permission to use this command. Missing: ${missingPermissions.join(', ')}`, 
+                            ephemeral: true 
+                        });
+                        return;
+                    }
+                }
+        
                 try {
+                    // Start with the command name
+                    let usage = `/${command.data.name}`;
+        
+                    // Iterate over command options to build the usage instructions
+                    command.data.options?.forEach(option => {
+                        if (option.required) {
+                            usage += ` <${option.name}>`; // Angle brackets for required options
+                        } else {
+                            usage += ` [${option.name}]`; // Square brackets for optional options
+                        }
+                    });
+        
                     const embed = new EmbedBuilder()
                         .setColor('#0099ff')
                         .setTitle(`Command: /${command.data.name}`)
-                        .setDescription(command.data.description);
-                    // If your command includes options or additional details, add them to the embed here
-
+                        .setDescription(command.data.description)
+                        .addFields({ name: 'Usage', value: usage }); // Display usage in the embed
+        
                     await interaction.editReply({ embeds: [embed], components: [] });
                 } catch (error) {
                     console.error(`Error handling select menu interaction: ${error}`);
                 }
             }
-        }
+        }        
     },
 };

@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('class_role')
         .setDescription('Send a message with buttons to select your class and receive the corresponding role.'),
+        requiredPermissions: ['Administrator'],
     category: 'moderation',
     async execute(interaction) {
         // Check if the user has the ADMINISTRATOR permission

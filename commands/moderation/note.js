@@ -13,6 +13,7 @@ module.exports = {
             option.setName('note')
                 .setDescription('The content of the note.')
                 .setRequired(true)),
+    requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

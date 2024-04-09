@@ -12,7 +12,8 @@ module.exports = {
         option.setName('reason')
             .setDescription('The reason for the unban.')
             .setRequired(true)),
-category: 'moderation',
+    requiredPermissions: ['BanMembers'],
+    category: 'moderation',
     async execute(interaction) {
         // Check for BanMembers permission before proceeding with the /unban command
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {

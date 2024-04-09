@@ -10,6 +10,7 @@ module.exports = {
             option.setName('user')
                 .setDescription('The user you want to get information about')
                 .setRequired(true)),
+    requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

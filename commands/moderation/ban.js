@@ -12,6 +12,7 @@ module.exports = {
             option.setName('reason')
                 .setDescription('The reason for the ban.')
                 .setRequired(true)),
+    requiredPermissions: ['BanMembers'],
     category: 'moderation',
     async execute(interaction) {
         // Check if the user has permissions to ban members

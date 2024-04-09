@@ -13,6 +13,7 @@ module.exports = {
             option.setName('reason')
                 .setDescription('The reason for the warning.')
                 .setRequired(true)),
+    requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {

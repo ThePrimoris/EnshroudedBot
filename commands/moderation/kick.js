@@ -12,6 +12,7 @@ module.exports = {
             option.setName('reason')
                 .setDescription('The reason for the kick (optional).')
                 .setRequired(false)),
+    requiredPermissions: ['KickMembers'],
     category: 'moderation',
     async execute(interaction) {
         // Check for KickMembers permission before proceeding with the /kick command

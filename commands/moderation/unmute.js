@@ -8,6 +8,7 @@ module.exports = {
             option.setName('user')
                 .setDescription('The ID of the user to unban.')
                 .setRequired(true)),
+    requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
         // Check for ManageMessages permission before proceeding with the /unmute command

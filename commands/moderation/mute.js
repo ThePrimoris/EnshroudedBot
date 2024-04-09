@@ -17,6 +17,7 @@ module.exports = {
             option.setName('reason')
                 .setDescription('The reason for the mute')
                 .setRequired(false)), // Corrected usage
+    requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
