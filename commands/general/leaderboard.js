@@ -19,45 +19,36 @@ module.exports = {
             const endIndex = startIndex + 10;
             const pageUsers = userData.slice(startIndex, endIndex);
 
-            const leaderboardRows = await generateLeaderboardRows(pageUsers, startIndex);
+            const leaderboardRows = pageUsers.map((user, index) => {
+                const rank = startIndex + index + 1;
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                const rankText = `${medal}${rank}`.padEnd(5, ' ');
+                const trimmedName = (user.username.length > 18 ? user.username.substring(0, 15) + '...' : user.username).padEnd(18, ' ');
+                const level = `Lv. ${user.level}`;
+                const xp = `${user.xp} XP`;
 
-            const embed = new EmbedBuilder()
+                return `\`${rankText}\` | ${trimmedName} | ${level} | ${xp}`;
+            }).join('\n');
+
+            return new EmbedBuilder()
                 .setTitle(`${interaction.guild.name} Leaderboard`)
                 .setDescription(leaderboardRows)
                 .setFooter({ text: `Page ${page} of ${totalPages}` })
                 .setThumbnail(interaction.guild.iconURL());
-
-            return embed;
         };
 
-        const generateLeaderboardRows = async (pageUsers, startIndex) => {
-            return Promise.all(pageUsers.map(async (user, index) => {
-                const rank = startIndex + index + 1;
-                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-                const rankText = `${medal}${rank}`.padEnd(5, ' ');
-                
-                const member = await interaction.guild.members.fetch(user.user_id).catch(() => 'Unknown User');
-                const name = member !== 'Unknown User' ? member.user.username : 'Unknown User';
-                const trimmedName = name.length > 18 ? name.substring(0, 15) + '...' : name;
-                const level = `Lv. ${user.level}`;
-                const xp = `${user.xp} XP`;
-
-                return `\`${rankText}\` | ${trimmedName.padEnd(18, ' ')} | ${level} | ${xp}`;
-            })).then(rows => rows.join('\n'));
-        };
-
-        const updateComponents = (currentPage, totalPages) => new ActionRowBuilder()
+        const updateComponents = (page, totalPages) => new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('previous_page')
                     .setLabel('Previous')
                     .setStyle(ButtonStyle.Primary)
-                    .setDisabled(currentPage === 1),
+                    .setDisabled(page === 1),
                 new ButtonBuilder()
                     .setCustomId('next_page')
                     .setLabel('Next')
                     .setStyle(ButtonStyle.Primary)
-                    .setDisabled(currentPage === totalPages)
+                    .setDisabled(page === totalPages)
             );
 
         await interaction.reply({
