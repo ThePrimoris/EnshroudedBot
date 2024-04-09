@@ -17,11 +17,14 @@ module.exports = {
                 const xpForNextLevel = 10 * ((userLevel.level + 1) ** 2); 
                 const xpRequiredForNextLevel = xpForNextLevel - userLevel.xp;
 
+                // Prepare the class info for the embed
+                const classInfo = userLevel.class ? `**Class**: ${userLevel.class}` : "**Class**: Not Assigned. You can select one in class-roles.";
+
                 const embed = new EmbedBuilder()
                     .setColor(0x3498DB) // Set the color of the embed
                     .setTitle(interaction.user.username) // User's name as the title
                     .setThumbnail(interaction.user.displayAvatarURL()) // User's avatar
-                    .setDescription(`**Current Level**: ${userLevel.level}\n**XP Required for Next Level**: ${xpRequiredForNextLevel}\n**Total XP**: ${userLevel.xp}`)
+                    .setDescription(`**Current Level**: ${userLevel.level}\n**XP Required for Next Level**: ${xpRequiredForNextLevel}\n**Total XP**: ${userLevel.xp}\n${classInfo}`)
                     .setFooter({ text: 'Keep being active to level up!', iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 

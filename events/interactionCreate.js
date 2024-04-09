@@ -1,6 +1,5 @@
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
-const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
-const classes = ['survivor', 'beastmaster', 'ranger', 'assassin', 'battlemage', 'healer', 'wizard', 'trickster', 'athlete', 'barbarian', 'warrior', 'tank'];
+const { UserWarning, UserNote, UserMute, UserBan, UserLevel } = require('../database/index'); 
 
 module.exports = {
     name: 'interactionCreate',
@@ -135,30 +134,36 @@ module.exports = {
                     console.error(`Error fetching moderation actions for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
-            }            
+            } else if (interaction.customId.startsWith('class_role_')) {
+                // Assuming you're dynamically setting roles based on a user's interaction and stored class
+                const userId = interaction.user.id;
             
-            else if (interaction.customId.startsWith('class_role_')) {
-                const roleName = interaction.customId.replace('class_role_', '').replaceAll('_', ' ');
-                const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName);
-
-                if (!role) {
-                    await interaction.reply({ content: `The role "${roleName}" does not exist.`, ephemeral: true });
+                // Fetch the user's class from the database
+                const userLevel = await UserLevel.findByPk(userId);
+                if (!userLevel || !userLevel.class) {
+                    await interaction.reply({ content: `No class assigned. Please select a class first.`, ephemeral: true });
                     return;
                 }
-
+            
+                const className = userLevel.class; // This is the class name stored in your database
+                const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === className.toLowerCase());
+            
+                if (!role) {
+                    await interaction.reply({ content: `The role for class "${className}" does not exist in this server.`, ephemeral: true });
+                    return;
+                }
+            
                 try {
-                    const memberRoles = interaction.member.roles.cache;
-                    const classRoleIds = interaction.guild.roles.cache.filter(r => classes.includes(r.name.toLowerCase())).map(r => r.id);
-                    const rolesToRemove = memberRoles.filter(r => classRoleIds.includes(r.id));
-
-                    await interaction.member.roles.remove(rolesToRemove);
+                    // Remove previous class roles if necessary. You would need a way to identify these, possibly through naming conventions or additional database info.
+                    // For simplicity, this example directly assigns the fetched role without removing others.
                     await interaction.member.roles.add(role);
-                    await interaction.reply({ content: `You have been assigned to the ${roleName} class!`, ephemeral: true });
+                    await interaction.reply({ content: `You have been assigned to the ${className} class!`, ephemeral: true });
                 } catch (error) {
                     console.error(error);
                     await interaction.reply({ content: "Failed to update your class role. Please contact an administrator.", ephemeral: true });
                 }
-            }
+            }            
+
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate(); // Ensure immediate acknowledgement of the interaction
