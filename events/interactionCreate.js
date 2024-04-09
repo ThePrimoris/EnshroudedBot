@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { UserInfraction, UserNote } = require('../database/index'); // Update the import paths as necessary.
+const { UserWarning, UserNote } = require('../database/index'); // Update the import paths as necessary.
 const classes = ['survivor', 'beastmaster', 'ranger', 'assassin', 'battlemage', 'healer', 'wizard', 'trickster', 'athlete', 'barbarian', 'warrior', 'tank'];
 
 module.exports = {
@@ -21,30 +21,30 @@ module.exports = {
             }
         } else if (interaction.isButton()) {
             // Button interaction logic
-            if (interaction.customId.startsWith('view_infractions')) {
+            if (interaction.customId.startsWith('view_warnings')) {
                 const userId = interaction.customId.split('_')[2];
                 try {
-                    const infractions = await UserInfraction.findAll({
+                    const warnings = await UserWarning.findAll({
                         where: { userId: userId },
                     });
 
                     const embed = new EmbedBuilder()
-                        .setTitle('User Infractions')
+                        .setTitle('User Warnings')
                         .setColor(0xff0000);
 
-                    if (infractions.length > 0) {
-                        infractions.forEach((infraction, index) => {
-                            const date = infraction.date ? new Date(infraction.date).toLocaleDateString() : 'Unknown date';
-                            embed.addFields({ name: `Infraction #${index + 1}`, value: `Reason: ${infraction.reason}\nDate: ${date}\nIssued by: ${infraction.issuerName}`, inline: false });
+                    if (warnings.length > 0) {
+                        warnings.forEach((warnings, index) => {
+                            const date = warnings.date ? new Date(warnings.date).toLocaleDateString() : 'Unknown date';
+                            embed.addFields({ name: `Warning #${index + 1}`, value: `Reason: ${warning.reason}\nDate: ${date}\nIssued by: ${warnings.issuerName}`, inline: false });
                         });
                     } else {
-                        embed.setDescription('No infractions found for this user.');
+                        embed.setDescription('No warnings found for this user.');
                     }
 
                     await interaction.reply({ embeds: [embed], ephemeral: true });
                 } catch (error) {
-                    console.error(`Error fetching infractions for user ID: ${userId}`, error);
-                    await interaction.reply({ content: 'Failed to fetch infractions. Please try again later.', ephemeral: true });
+                    console.error(`Error fetching warnings for user ID: ${userId}`, error);
+                    await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
                 }
             } else if (interaction.customId.startsWith('view_notes')) {
                 const userId = interaction.customId.split('_')[2];

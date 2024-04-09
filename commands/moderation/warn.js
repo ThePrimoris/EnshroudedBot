@@ -1,17 +1,17 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
-const { UserInfraction } = require('../../database');
+const { UserWarning } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('infraction')
-        .setDescription('Records an infraction for a user.')
+        .setName('warn')
+        .setDescription('Records a warning for a user.')
         .addUserOption(option => 
             option.setName('user')
-                .setDescription('The user to record the infraction for.')
+                .setDescription('The user to record the warning for.')
                 .setRequired(true))
         .addStringOption(option => 
             option.setName('reason')
-                .setDescription('The reason for the infraction.')
+                .setDescription('The reason for the warning.')
                 .setRequired(true)),
     category: 'moderation',
     async execute(interaction) {
@@ -25,7 +25,7 @@ module.exports = {
 
         try {
             // Create a new infraction record in the database
-            await UserInfraction.create({
+            await UserWarning.create({
                 userId: user.id,
                 reason: reason,
                 issuerName: issuerName,
@@ -40,10 +40,10 @@ module.exports = {
                 await interaction.followUp({ content: `Note: Could not send a DM to ${user.username}. They might have DMs disabled.`, ephemeral: true });
             }
 
-            await interaction.reply({ content: `Infraction recorded for ${user.username} for reason: ${reason}`, ephemeral: false }); // If you want the reply to be public, set ephemeral to false
+            await interaction.reply({ content: `Warning recorded for ${user.username} for reason: ${reason}`, ephemeral: false }); // If you want the reply to be public, set ephemeral to false
         } catch (error) {
-            console.error('Failed to record infraction:', error);
-            await interaction.reply({ content: 'Failed to record infraction. Please try again later.', ephemeral: true });
+            console.error('Failed to record warning:', error);
+            await interaction.reply({ content: 'Failed to record warning. Please try again later.', ephemeral: true });
         }
     },
 };

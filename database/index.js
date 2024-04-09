@@ -5,9 +5,10 @@ const DataTypes = Sequelize.DataTypes;
 const sequelize = new Sequelize('sqlite:mydatabase.db');
 
 // Import models
-const UserInfraction = require('./models/UserInfraction')(sequelize, DataTypes);
+const UserWarning = require('./models/UserWarning')(sequelize, DataTypes);
 const UserNote = require('./models/UserNote')(sequelize, DataTypes);
-const UserLevel = require('./models/UserLevel')(sequelize, DataTypes); // Make sure this path matches your file structure
+const UserLevel = require('./models/UserLevel')(sequelize, DataTypes);
+const CensoredWord = require('./models/CensoredWord')(sequelize, DataTypes);
 
 // Persistent cooldown set for addXP function
 const cooldown = new Set();
@@ -49,9 +50,10 @@ async function addXP(userId, xpToAdd) {
 }
 
 module.exports = {
-  sequelize, // Exporting sequelize instance
-  UserInfraction,
+  sequelize,
+  UserWarning,
   UserNote,
   UserLevel,
-  addXP, // Export addXP for message handling in bot logic
+  CensoredWord,
+  addXP,
 };

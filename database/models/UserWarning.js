@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const UserInfraction = sequelize.define('UserInfraction', {
+    const UserWarning = sequelize.define('UserWarning', {
       // Model attributes are defined here
       userId: {
         type: DataTypes.STRING,
@@ -23,6 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false, // Turn off Sequelize's automatic timestamping if you don't need it
     });
   
-    return UserInfraction;
+    return UserWarning;
   };
   

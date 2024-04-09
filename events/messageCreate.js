@@ -1,7 +1,4 @@
-const { addXP } = require('../database/index'); // Adjust the path as needed
-
-// Define your censored words or phrases
-const censoredWords = ['fuck', 'shit', ')[']; // Add your words/phrases here
+const { addXP, CensoredWord } = require('../database/index');
 
 module.exports = {
     name: 'messageCreate',
@@ -9,8 +6,9 @@ module.exports = {
         // Ignore messages from bots
         if (message.author.bot) return;
 
-        // Check if the message contains any censored words
-        const foundWord = censoredWords.find(word => message.content.toLowerCase().includes(word.toLowerCase()));
+        // Fetch all censored words from the database
+        const censoredWords = await CensoredWord.findAll();
+        const foundWord = censoredWords.find(w => message.content.toLowerCase().includes(w.word.toLowerCase()));
 
         if (foundWord) {
             // Attempt to delete the original message
@@ -21,7 +19,7 @@ module.exports = {
                     // Formatting the timestamp to HH:MM
                     const timeStamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-                    const censorMessage = `[${timeStamp}] Censored message by ${message.author.username} (${message.author.id}) in ${message.channel.name}, '${foundWord}' is not allowed.\n\n\`${message.content}\``;
+                    const censorMessage = `[${timeStamp}] Censored message by ${message.author.username} (${message.author.id}) in ${message.channel.name}, '${foundWord.word}' is not allowed.\n\n\`${message.content}\``;
                     await logChannel.send({ content: censorMessage });
                 }
             } catch (error) {

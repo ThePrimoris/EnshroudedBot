@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
-const { UserInfraction, UserNote } = require('../../database'); // Adjust the path as necessary
+const { UserWarning, UserNote } = require('../../database'); // Adjust the path as necessary
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,10 +27,10 @@ module.exports = {
             return interaction.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
         }
 
-        let numberOfInfractions, numberOfNotes;
+        let numberOfWarnings, numberOfNotes;
         try {
-            // Attempt to fetch the actual number of infractions and notes for the user
-            numberOfInfractions = await UserInfraction.count({ where: { userId: user.id } });
+            // Attempt to fetch the actual number of warnings and notes for the user
+            numberOfWarnings = await UserWarning.count({ where: { userId: user.id } });
             numberOfNotes = await UserNote.count({ where: { userId: user.id } });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -52,14 +52,14 @@ module.exports = {
                 { name: 'Nickname', value: member.nickname || 'None', inline: true },
                 { name: 'Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
                 { name: 'Account Created', value: user.createdAt.toDateString(), inline: true },
-                { name: 'Infractions', value: numberOfInfractions.toString(), inline: true },
+                { name: 'Warnings', value: numberOfWarnings.toString(), inline: true },
                 { name: 'Notes', value: numberOfNotes.toString(), inline: true }
             )
             .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
-        const infractionsButton = new ButtonBuilder()
-            .setCustomId('view_infractions_' + user.id)
-            .setLabel('View Infractions')
+        const warningsButton = new ButtonBuilder()
+            .setCustomId('view_warnings_' + user.id)
+            .setLabel('View Warnings')
             .setStyle(ButtonStyle.Secondary);
 
         const notesButton = new ButtonBuilder()
@@ -68,7 +68,7 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary);
 
         const actionRow = new ActionRowBuilder()
-            .addComponents(infractionsButton, notesButton);
+            .addComponents(warningsButton, notesButton);
 
         await interaction.reply({ embeds: [embed], components: [actionRow] });
     },
