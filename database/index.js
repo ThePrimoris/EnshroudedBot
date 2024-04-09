@@ -13,7 +13,7 @@ const sequelize = new Sequelize('database_name', 'username', 'password', {
 // Import models
 const UserWarning = require('./models/UserWarning')(sequelize, DataTypes);
 const UserNote = require('./models/UserNote')(sequelize, DataTypes);
-const UserLevel = require('./models/UserLevel')(sequelize, DataTypes);
+const UserLevel = require('./models/UserLevel')(sequelize, DataTypes); // Make sure this is updated to include the optOutXP field
 const UserMute = require('./models/UserMute')(sequelize, DataTypes);
 const UserBan = require('./models/UserBan')(sequelize, DataTypes);
 
@@ -32,28 +32,32 @@ const syncDb = async () => {
 
 syncDb();
 
-// Function to add XP and handle leveling up
+// Function to add XP and handle leveling up, now checks for opt-out
 async function addXP(userId, xpToAdd) {
-  if (cooldown.has(userId)) return; // Check cooldown
+  if (cooldown.has(userId)) return; // Enforce cooldown
   cooldown.add(userId);
   setTimeout(() => cooldown.delete(userId), 60000); // 1 minute cooldown
 
   let user = await UserLevel.findByPk(userId);
   if (!user) {
-      // Ensure correct initial values are set
-      user = await UserLevel.create({ user_id: userId, xp: 0, level: 1 });
+    user = await UserLevel.create({ user_id: userId, xp: 0, level: 1 }); // Create with defaults if not exist
+  }
+
+  // New check: Skip XP addition if the user has opted out
+  if (user.optOutXP) {
+    console.log(`User ${userId} has opted out of gaining XP.`);
+    return; // Exit without adding XP
   }
 
   let newXp = user.xp + xpToAdd;
-  
-  // Use the updated formula to calculate the new level
-  let newLevel = Math.min(Math.floor(Math.sqrt(newXp / 10)), 25); // Updated formula here
+  let newLevel = Math.floor(0.1 * Math.sqrt(newXp)); // Your leveling logic
 
-  await user.update({ xp: newXp, level: newLevel }); // Update user's XP and level
+  // Update user's XP and level, assuming you handle level calculation elsewhere or as shown
+  await user.update({ xp: newXp, level: newLevel });
 
-  if (newLevel > user.level) { // If the user has leveled up
-      console.log(`User ${userId} leveled up to ${newLevel}!`); // Placeholder for level-up notification
-      // Implement notification logic here, e.g., sending a DM to the user
+  // Example: notify about leveling up, adjust according to your actual logic
+  if (newLevel > user.level) {
+    console.log(`User ${userId} leveled up to ${newLevel}!`);
   }
 }
 

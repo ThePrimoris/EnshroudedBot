@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: '',
             allowNull: true,
         },
+        optOutXP: { // New field to indicate whether a user has opted out of gaining XP
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false,
+        },
     }, {
         timestamps: false,
     });
