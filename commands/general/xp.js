@@ -1,7 +1,3 @@
-const { Client, Collection } = require('discord.js');
-const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
-
-// Import necessary modules
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js'); // Import EmbedBuilder
 const { UserLevel } = require('../../database/index.js');
@@ -33,16 +29,6 @@ module.exports = {
                     .setTimestamp();
 
                 await interaction.reply({ embeds: [embed], ephemeral: true });
-
-                // Check if the user has leveled up
-                const previousLevel = userLevel.level;
-                const xpToAdd = 0; // You might want to adjust this if you add XP in this function
-                const newLevel = Math.floor(Math.sqrt((userLevel.xp + xpToAdd) / 10));
-
-                if (newLevel > previousLevel) {
-                    const channel = interaction.channel;
-                    client.emit('levelUp', interaction.user, newLevel, channel);
-                }
             } else {
                 await interaction.reply({
                     content: "Couldn't retrieve your XP and level. Please try again later.",
@@ -58,5 +44,3 @@ module.exports = {
         }
     },
 };
-
-module.exports.client = client; // Export client for use in other files
