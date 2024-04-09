@@ -26,8 +26,8 @@ module.exports = {
                 console.error('Failed to censor message:', error);
             }
         } else {
-            // Proceed with adding XP if the message is not censored
-            const xpToAdd = 10;
+            // Generate a random amount of XP to add, between 1 and 10
+            const xpToAdd = Math.floor(Math.random() * 10) + 1;
             addXP(message.author.id, xpToAdd)
                 .then(() => {
                     console.log(`Added ${xpToAdd} XP to user ${message.author.id}`);

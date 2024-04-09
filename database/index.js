@@ -29,26 +29,27 @@ syncDb();
 
 // Function to add XP and handle leveling up
 async function addXP(userId, xpToAdd) {
-    if (cooldown.has(userId)) return; // Check cooldown
-    cooldown.add(userId);
-    setTimeout(() => cooldown.delete(userId), 60000); // 1 minute cooldown
+  if (cooldown.has(userId)) return; // Check cooldown
+  cooldown.add(userId);
+  setTimeout(() => cooldown.delete(userId), 60000); // 1 minute cooldown
 
-    let user = await UserLevel.findByPk(userId);
-    if (!user) {
-        user = await UserLevel.create({ user_id: userId, xp: 0, level: 1 }); // Ensure correct initial values are set
-    }
+  let user = await UserLevel.findByPk(userId);
+  if (!user) {
+      // Ensure correct initial values are set
+      user = await UserLevel.create({ user_id: userId, xp: 0, level: 1 });
+  }
 
-    let newXp = user.xp + xpToAdd;
-    
-    // Cap the level at 25
-    let newLevel = Math.min(Math.floor(Math.sqrt(newXp / 5)), 25);
+  let newXp = user.xp + xpToAdd;
+  
+  // Use the updated formula to calculate the new level
+  let newLevel = Math.min(Math.floor(Math.sqrt(newXp / 10)), 25); // Updated formula here
 
-    await user.update({ xp: newXp, level: newLevel }); // Update user's XP and level
+  await user.update({ xp: newXp, level: newLevel }); // Update user's XP and level
 
-    if (newLevel > user.level) { // If the user has leveled up
-        console.log(`User ${userId} leveled up to ${newLevel}!`); // Placeholder for level-up notification
-        // Implement notification logic here, e.g., sending a DM to the user
-    }
+  if (newLevel > user.level) { // If the user has leveled up
+      console.log(`User ${userId} leveled up to ${newLevel}!`); // Placeholder for level-up notification
+      // Implement notification logic here, e.g., sending a DM to the user
+  }
 }
 
 module.exports = {

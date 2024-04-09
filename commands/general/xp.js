@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { EmbedBuilder } = require('discord.js'); // Import EmbedBuilder
 const { UserLevel } = require('../../database/index.js');
-
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,15 +10,22 @@ module.exports = {
     async execute(interaction) {
         try {
             const userId = interaction.user.id;
-
-            // Retrieve user's XP and level from the database
             const userLevel = await UserLevel.findByPk(userId);
 
             if (userLevel) {
-                await interaction.reply({
-                    content: `You have ${userLevel.xp} XP and are at level ${userLevel.level}.`,
-                    ephemeral: true
-                });
+                // Calculate XP required for the next level using the formula: 10 * (level + 1)^2
+                const xpForNextLevel = 10 * ((userLevel.level + 1) ** 2); 
+                const xpRequiredForNextLevel = xpForNextLevel - userLevel.xp;
+
+                const embed = new EmbedBuilder()
+                    .setColor(0x3498DB) // Set the color of the embed
+                    .setTitle(interaction.user.username) // User's name as the title
+                    .setThumbnail(interaction.user.displayAvatarURL()) // User's avatar
+                    .setDescription(`**Current Level**: ${userLevel.level}\n**XP Required for Next Level**: ${xpRequiredForNextLevel}\n**Total XP**: ${userLevel.xp}`)
+                    .setFooter({ text: 'Keep being active to level up!', iconURL: interaction.guild.iconURL() })
+                    .setTimestamp();
+
+                await interaction.reply({ embeds: [embed], ephemeral: true });
             } else {
                 await interaction.reply({
                     content: "Couldn't retrieve your XP and level. Please try again later.",
@@ -32,5 +39,5 @@ module.exports = {
                 ephemeral: true
             });
         }
-    }
+    },
 };
