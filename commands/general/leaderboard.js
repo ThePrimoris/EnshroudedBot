@@ -38,16 +38,15 @@ module.exports = {
                 
                 const member = await interaction.guild.members.fetch(user.user_id).catch(() => 'Unknown User');
                 const name = member !== 'Unknown User' ? member.user.username : 'Unknown User';
-                // Adjusted formatting for name to ensure it doesn't exceed a certain length
-                const trimmedName = (name.length > 18 ? name.substring(0, 15) + '...' : name).padEnd(18, ' ');
+                const trimmedName = name.length > 18 ? name.substring(0, 15) + '...' : name;
                 const level = `Lv. ${user.level}`;
                 const xp = `${user.xp} XP`;
 
-                return `\`${rankText}\` | ${trimmedName} | ${level} | ${xp}`;
+                return `\`${rankText}\` | ${trimmedName.padEnd(18, ' ')} | ${level} | ${xp}`;
             })).then(rows => rows.join('\n'));
         };
 
-        const row = new ActionRowBuilder()
+        const updateComponents = (currentPage, totalPages) => new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('previous_page')
@@ -61,7 +60,11 @@ module.exports = {
                     .setDisabled(currentPage === totalPages)
             );
 
-        await interaction.reply({ embeds: [await generateEmbed(currentPage)], components: [row], ephemeral: true });
+        await interaction.reply({
+            embeds: [await generateEmbed(currentPage)],
+            components: [updateComponents(currentPage, totalPages)],
+            ephemeral: true
+        });
 
         const filter = (i) => i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
@@ -73,7 +76,10 @@ module.exports = {
                 currentPage++;
             }
 
-            await i.update({ embeds: [await generateEmbed(currentPage)], components: [row] });
+            await i.update({
+                embeds: [await generateEmbed(currentPage)],
+                components: [updateComponents(currentPage, totalPages)]
+            });
         });
     },
 };
