@@ -1,21 +1,21 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { UserBan } = require('../../database'); // Ensure this path is correct
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ban')
         .setDescription('Ban a user from the server.')
-        .addUserOption(option => 
+        .addUserOption(option =>
             option.setName('user')
                 .setDescription('The user to be banned.')
                 .setRequired(true))
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('reason')
                 .setDescription('The reason for the ban.')
                 .setRequired(true)),
     requiredPermissions: ['BanMembers'],
     category: 'moderation',
     async execute(interaction) {
-        // Check if the user has permissions to ban members
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
             return interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
         }
@@ -26,6 +26,16 @@ module.exports = {
         try {
             // Ban the user
             await interaction.guild.members.ban(user.id, { reason });
+
+            // Log the ban action
+            await UserBan.create({
+                userId: user.id,
+                issuerId: interaction.user.id,
+                issuerName: interaction.user.username,
+                reason: reason,
+                date: new Date()
+            });
+
             await interaction.reply({ content: `${user.username} has been banned for the following reason: ${reason}` });
         } catch (error) {
             console.error(error);

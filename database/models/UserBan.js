@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             comment: "The ID of the user who issued the ban",
         },
+        issuerName: { // Adding issuerName for consistency with UserMute
+            type: DataTypes.STRING,
+            allowNull: false,
+            comment: "The username of the user who issued the ban",
+        },
         reason: {
             type: DataTypes.TEXT,
             allowNull: true, // Reason might be optional

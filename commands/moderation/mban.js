@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { UserBan } = require('../../database'); // Ensure this path is correct
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,7 +17,8 @@ module.exports = {
     category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-            return interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
+            await interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
+            return;
         }
 
         const userIdsString = interaction.options.getString('userids');
@@ -24,19 +26,39 @@ module.exports = {
         const userIds = userIdsString.split(' ').filter(id => !isNaN(id) && id);
 
         if (userIds.length === 0) {
-            return interaction.reply({ content: "No valid user IDs provided.", ephemeral: true });
+            await interaction.reply({ content: "No valid user IDs provided.", ephemeral: true });
+            return;
         }
 
-        for (const userId of userIds) {
-            try {
-                await interaction.guild.members.ban(userId, { reason });
-                // Optional: Log each ban to the console or a log file
-            } catch (error) {
-                console.error(`Failed to ban user with ID ${userId}:`, error);
-                // Continue to the next ID without stopping the loop
-            }
-        }
+        // Defer the reply if expecting a delay in processing
+        await interaction.deferReply({ ephemeral: false });
 
-        await interaction.reply({ content: `Banning process completed for provided IDs.`, ephemeral: false });
+        // Perform the bans asynchronously and collect results
+        const banPromises = userIds.map(userId => banUser(interaction, userId, reason));
+        const results = await Promise.allSettled(banPromises);
+
+        // Process results to generate response message
+        const successfulBans = results.filter(result => result.status === 'fulfilled').length;
+        const failedBans = results.length - successfulBans;
+
+        await interaction.followUp({ content: `Ban attempt completed. Successful bans: ${successfulBans}. Failed: ${failedBans}.`, ephemeral: false });
     },
 };
+
+async function banUser(interaction, userId, reason) {
+    try {
+        await interaction.guild.members.ban(userId, { reason });
+        await UserBan.create({
+            userId: userId,
+            issuerId: interaction.user.id,
+            issuerName: interaction.user.username,
+            reason: reason,
+            date: new Date()
+        });
+        console.log(`Successfully banned ${userId}.`);
+    } catch (error) {
+        console.error(`Failed to ban user with ID ${userId}:`, error);
+        // This error is caught by Promise.allSettled, so just throw it
+        throw error;
+    }
+}
