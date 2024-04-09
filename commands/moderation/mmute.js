@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { UserMute } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -48,12 +49,30 @@ module.exports = {
                 await member.roles.add(muteRole, reason);
                 await member.user.send(`You have been muted in ${interaction.guild.name} for ${durationString}. Reason: ${reason}`).catch(console.error);
 
+                // Log the mute action here for each user
+                await UserMute.create({
+                    userId: user.id,
+                    issuerId: interaction.user.id, // Store the ID of the user who issued the mute
+                    issuerName: interaction.user.username, // Store the username of the user who issued the mute
+                    reason: reason,
+                    duration: durationString,
+                    timestamp: new Date()
+                });
+
                 setTimeout(async () => {
                     try {
                         const freshMember = await interaction.guild.members.fetch(userId);
                         if (freshMember.roles.cache.has(muteRole.id)) {
                             await freshMember.roles.remove(muteRole, 'Mute duration expired');
                             await member.user.send(`You have been unmuted in ${interaction.guild.name}.`).catch(console.error);
+                            // Consider logging the unmute action as well, similar to the mute logging
+                            await UserMute.create({
+                                userId: userId,
+                                issuerId: interaction.user.id,
+                                reason: 'Mute duration expired',
+                                duration: '0',
+                                timestamp: new Date()
+                            });
                             interaction.followUp({ content: `${member.user.username} has been unmuted.`, ephemeral: false });
                         }
                     } catch (error) {

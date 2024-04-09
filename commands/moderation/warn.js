@@ -21,13 +21,15 @@ module.exports = {
 
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason');
-        const issuerName = interaction.user.username;
+        const issuerId = interaction.user.id; // Get the issuer's ID
+        const issuerName = interaction.user.username; // Get the issuer's username
 
         try {
             // Create a new infraction record in the database
             await UserWarning.create({
                 userId: user.id,
                 reason: reason,
+                issuerId: issuerId,
                 issuerName: issuerName,
             });
 

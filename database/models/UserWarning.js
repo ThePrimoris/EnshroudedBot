@@ -1,28 +1,33 @@
 module.exports = (sequelize, DataTypes) => {
-    const UserWarning = sequelize.define('UserWarning', {
-      // Model attributes are defined here
+  const UserWarning = sequelize.define('UserWarning', {
       userId: {
-        type: DataTypes.STRING,
-        allowNull: false,
+          type: DataTypes.STRING,
+          allowNull: false,
+          comment: "The ID of the user the warning is associated with",
       },
-      reason: {
-        type: DataTypes.TEXT,
-        allowNull: true, // Consider your own requirements
-      },
-      date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+      issuerId: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          comment: "The ID of the user who issued the warning",
       },
       issuerName: {
-        type: DataTypes.STRING,
-        allowNull: true, // or false, based on your requirements
+          type: DataTypes.STRING,
+          allowNull: false,
+          comment: "The username of the user who issued the warning",
       },
-      // You can add more fields here as needed
-    }, {
-      // Model options go here
-      timestamps: false, // Turn off Sequelize's automatic timestamping if you don't need it
-    });
-  
-    return UserWarning;
-  };
-  
+      reason: {
+          type: DataTypes.TEXT,
+          allowNull: true, // Reason might be optional
+          comment: "The reason for the warning",
+      },
+      date: {
+          type: DataTypes.DATE,
+          defaultValue: DataTypes.NOW,
+          comment: "The date and time when the warning was issued",
+      },
+  }, {
+      timestamps: false,
+  });
+
+  return UserWarning;
+};
