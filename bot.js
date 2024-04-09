@@ -14,7 +14,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
-client.events = new Collection(); // New line to hold event handlers
+client.events = new Collection();
 const commandFolders = ['general', 'moderation'];
 
 for (const folder of commandFolders) {
