@@ -27,35 +27,40 @@ module.exports = {
         }
 
         // Fetch counts for warnings and notes
-        let numberOfWarnings, numberOfNotes;
+        let numberOfWarnings, numberOfNotes, numberOfMutes, numberOfBans;
         try {
             numberOfWarnings = await UserWarning.count({ where: { userId: user.id } });
             numberOfNotes = await UserNote.count({ where: { userId: user.id } });
+            numberOfMutes = await UserMute.count({ where: { userId: user.id } });
+            numberOfBans = await UserBan.count({ where: { userId: user.id } });
         } catch (error) {
             console.error('Error fetching moderation data:', error);
             return interaction.reply({ content: 'Failed to fetch moderation data. Please try again later.', ephemeral: true });
         }
 
         const embed = new EmbedBuilder()
-            .setTitle(`${user.username}'s Information`)
-            .setDescription(`Details about ${user.username}`)
-            .setColor(0x3498db)
-            .setThumbnail(user.displayAvatarURL())
-            .addFields(
-                // User details
-                { name: 'Name', value: user.username, inline: true },
-                { name: 'ID', value: user.id, inline: true },
-                { name: 'Bot Account', value: user.bot ? 'Yes' : 'No', inline: true },
-                { name: 'Animated Avatar', value: user.avatar && user.avatar.startsWith('a_') ? 'Yes' : 'No', inline: true },
-                { name: 'Avatar URL', value: `[Click Here](${user.displayAvatarURL()})`, inline: true },
-                { name: 'Profile Link', value: `[Profile Link](https://discord.com/users/${user.id})`, inline: true },
-                { name: 'Nickname', value: member.nickname || 'None', inline: true },
-                { name: 'Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
-                { name: 'Account Created', value: user.createdAt.toDateString(), inline: true },
-                { name: 'Warnings', value: numberOfWarnings.toString(), inline: true },
-                { name: 'Notes', value: numberOfNotes.toString(), inline: true },
-            )
-            .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+        .setTitle(`${user.username}'s Information`)
+        .setDescription(`Details about ${user.username}`)
+        .setColor(0x3498db)
+        .setThumbnail(user.displayAvatarURL())
+        .addFields(
+            { name: '👤 Name', value: user.username, inline: true },
+            { name: '🆔 ID', value: user.id, inline: true },
+            { name: '🤖 Bot Account', value: user.bot ? 'Yes' : 'No', inline: true },
+            { name: '🎭 Animated Avatar', value: user.avatar && user.avatar.startsWith('a_') ? 'Yes' : 'No', inline: true },
+            { name: '🔗 Avatar URL', value: `[Click Here](${user.displayAvatarURL()})`, inline: true },
+            { name: '🔖 Profile Link', value: `[Profile Link](https://discord.com/users/${user.id})`, inline: true }
+        )
+        .addFields(
+            { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
+            { name: '📅 Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
+            { name: '🗓️ Account Created', value: user.createdAt.toDateString(), inline: true },
+            { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: true }
+        )
+        .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+    
+    // If the moderation summary makes the embed too wide, consider breaking it into multiple fields or adjusting the content slightly.
+    
 
         // Buttons for individual actions
         const warningsButton = new ButtonBuilder()
