@@ -18,24 +18,33 @@ module.exports = {
             const startIndex = (page - 1) * 10;
             const endIndex = startIndex + 10;
             const pageUsers = userData.slice(startIndex, endIndex);
-
-            const leaderboardRows = pageUsers.map((user, index) => {
+        
+            // Fetch user information from Discord for each user_id in pageUsers
+            const leaderboardRowsPromises = pageUsers.map(async (user, index) => {
                 const rank = startIndex + index + 1;
                 const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
                 const rankText = `${medal}${rank}`.padEnd(5, ' ');
-                const trimmedName = (user.username.length > 18 ? user.username.substring(0, 15) + '...' : user.username).padEnd(18, ' ');
+        
+                // Fetch the user from Discord using their ID
+                const discordUser = await interaction.client.users.fetch(user.user_id).catch(console.error);
+                const userName = discordUser ? discordUser.username : 'Unknown User';
+                const trimmedName = (userName.length > 18 ? userName.substring(0, 15) + '...' : userName).padEnd(18, ' ');
                 const level = `Lv. ${user.level}`;
                 const xp = `${user.xp} XP`;
-
+        
                 return `\`${rankText}\` | ${trimmedName} | ${level} | ${xp}`;
-            }).join('\n');
-
+            });
+        
+            // Resolve all promises from the map
+            const leaderboardRows = await Promise.all(leaderboardRowsPromises).then(rows => rows.join('\n'));
+        
             return new EmbedBuilder()
                 .setTitle(`${interaction.guild.name} Leaderboard`)
                 .setDescription(leaderboardRows)
                 .setFooter({ text: `Page ${page} of ${totalPages}` })
                 .setThumbnail(interaction.guild.iconURL());
         };
+        
 
         const updateComponents = (page, totalPages) => new ActionRowBuilder()
             .addComponents(
