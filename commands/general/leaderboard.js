@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
-const { UserLevel } = require('../../database/index'); // Ensure this path is correct
+const { UserLevel } = require('../../database/index');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,10 +11,6 @@ module.exports = {
             order: [['xp', 'DESC']],
         });
 
-        // Find the invoking user's data
-        const userRankData = userData.findIndex(user => user.user_id === interaction.user.id) + 1;
-        const userXPData = userData.find(user => user.user_id === interaction.user.id);
-
         const totalPages = Math.ceil(userData.length / 10);
         let currentPage = 1;
 
@@ -23,14 +19,13 @@ module.exports = {
             const endIndex = startIndex + 10;
             const pageUsers = userData.slice(startIndex, endIndex);
 
-            const header = '**Rank | Name                         | Level | XP**';
             const leaderboardRows = await generateLeaderboardRows(pageUsers, startIndex);
-            const invokingUserRow = await generateInvokingUserRow(interaction.user.id, userRankData, userXPData);
 
             const embed = new EmbedBuilder()
-                .setTitle('XP Leaderboard')
-                .setDescription(`${header}\n${leaderboardRows}\n${invokingUserRow}`)
-                .setFooter({ text: `Page ${page} of ${totalPages}` });
+                .setTitle(`${interaction.guild.name} Leaderboard`)
+                .setDescription(leaderboardRows)
+                .setFooter({ text: `Page ${page} of ${totalPages}` })
+                .setThumbnail(interaction.guild.iconURL());
 
             return embed;
         };
@@ -38,25 +33,18 @@ module.exports = {
         const generateLeaderboardRows = async (pageUsers, startIndex) => {
             return Promise.all(pageUsers.map(async (user, index) => {
                 const rank = startIndex + index + 1;
-                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank.toString().padEnd(2, ' ');
-                const rankText = medal.padEnd(4, ' ');
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                const rankText = `${medal}${rank}`.padEnd(5, ' ');
                 
                 const member = await interaction.guild.members.fetch(user.user_id).catch(() => 'Unknown User');
                 const name = member !== 'Unknown User' ? member.user.username : 'Unknown User';
-                const trimmedName = name.padEnd(25, ' '); // Allowing more space for names
-                const level = user.level.toString().padStart(5, ' ');
-                const xp = user.xp.toString().padStart(4, ' ');
+                // Adjusted formatting for name to ensure it doesn't exceed a certain length
+                const trimmedName = (name.length > 18 ? name.substring(0, 15) + '...' : name).padEnd(18, ' ');
+                const level = `Lv. ${user.level}`;
+                const xp = `${user.xp} XP`;
 
-                return `\`${rankText}\`| ${trimmedName} | ${level} | ${xp}`;
+                return `\`${rankText}\` | ${trimmedName} | ${level} | ${xp}`;
             })).then(rows => rows.join('\n'));
-        };
-
-        const generateInvokingUserRow = async (userId, userRank, userXPData) => {
-            if (!userXPData) return ''; // User not found in the leaderboard
-            const name = interaction.user.username.padEnd(25, ' ');
-            const level = userXPData.level.toString().padStart(5, ' ');
-            const xp = userXPData.xp.toString().padStart(4, ' ');
-            return `\nYour Rank: \`${userRank}\` | ${name} | ${level} | ${xp}`;
         };
 
         const row = new ActionRowBuilder()
