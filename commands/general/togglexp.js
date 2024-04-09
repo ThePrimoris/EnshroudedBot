@@ -21,6 +21,7 @@ module.exports = {
         await userLevel.save(); // Save the updated model to the database
         
         // Reply to the user with their new status
-        await interaction.reply(`XP gain is now ${userLevel.optOutXP ? "disabled" : "enabled"}.`);
+        await interaction.reply({ content: `XP gain is now ${userLevel.optOutXP ? "disabled" : "enabled"}.`, ephemeral: true });
+
     },
 };
