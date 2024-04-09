@@ -4,6 +4,12 @@ const DataTypes = Sequelize.DataTypes;
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize('sqlite:mydatabase.db');
 
+/* Dedicated database for MySQL
+const sequelize = new Sequelize('database_name', 'username', 'password', {
+  host: 'hostname',
+  dialect: 'mysql',
+}); */
+
 // Import models
 const UserWarning = require('./models/UserWarning')(sequelize, DataTypes);
 const UserNote = require('./models/UserNote')(sequelize, DataTypes);

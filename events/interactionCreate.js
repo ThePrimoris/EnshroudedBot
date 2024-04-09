@@ -135,17 +135,7 @@ module.exports = {
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
             } else if (interaction.customId.startsWith('class_role_')) {
-                // Assuming you're dynamically setting roles based on a user's interaction and stored class
-                const userId = interaction.user.id;
-            
-                // Fetch the user's class from the database
-                const userLevel = await UserLevel.findByPk(userId);
-                if (!userLevel || !userLevel.class) {
-                    await interaction.reply({ content: `No class assigned. Please select a class first.`, ephemeral: true });
-                    return;
-                }
-            
-                const className = userLevel.class; // This is the class name stored in your database
+                const className = interaction.customId.split('class_role_')[1].replaceAll('_', ' ');
                 const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === className.toLowerCase());
             
                 if (!role) {
@@ -154,15 +144,20 @@ module.exports = {
                 }
             
                 try {
-                    // Remove previous class roles if necessary. You would need a way to identify these, possibly through naming conventions or additional database info.
-                    // For simplicity, this example directly assigns the fetched role without removing others.
+                    // Assign the role to the user
                     await interaction.member.roles.add(role);
+            
+                    // Update or create the user's class in the UserLevel database
+                    const userLevel = await UserLevel.findByPk(interaction.user.id) || await UserLevel.create({ user_id: interaction.user.id });
+                    userLevel.class = className; // Assign the new class
+                    await userLevel.save();
+            
                     await interaction.reply({ content: `You have been assigned to the ${className} class!`, ephemeral: true });
                 } catch (error) {
                     console.error(error);
                     await interaction.reply({ content: "Failed to update your class role. Please contact an administrator.", ephemeral: true });
                 }
-            }            
+            }
 
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
