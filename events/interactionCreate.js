@@ -143,25 +143,19 @@ module.exports = {
             
                 try {
                     const leaderboardResponse = await generateLeaderboardPage(newPage, interaction.user.id);
-            
-                    if (interaction.deferred || interaction.replied) {
-                        await interaction.editReply({
-                            embeds: [leaderboardResponse.embed],
-                            components: leaderboardResponse.components
-                        });
-                    } else {
-                        await interaction.update({
-                            embeds: [leaderboardResponse.embed],
-                            components: leaderboardResponse.components
-                        }).catch(error => console.error('Error updating interaction:', error));
-                    }
+                    // Directly use interaction.update() for pagination without checking interaction.deferred or interaction.replied
+                    await interaction.update({
+                        embeds: [leaderboardResponse.embed],
+                        components: leaderboardResponse.components
+                    });
                 } catch (error) {
                     console.error('Failed to update leaderboard:', error);
-                    if (interaction.deferred || interaction.replied) {
-                        await interaction.followUp({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
-                    }
+                    // The catch block is for handling exceptions from generateLeaderboardPage or interaction.update
+                    // Consider handling unexpected errors that don't relate directly to interaction updates.
+                    // interaction.followUp could be used if additional user feedback is necessary post-error.
                 }
             }
+            
             
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
