@@ -13,8 +13,8 @@ module.exports = {
             const userLevel = await UserLevel.findByPk(userId);
 
             if (userLevel) {
-                // Calculate XP required for the next level
-                const xpForNextLevel = 10 * ((userLevel.level + 1) ** 2); 
+                // Calculate XP required for the next level based on the level calculation formula
+                const xpForNextLevel = ((userLevel.level + 1) ** 2) * 100; // Adjusted to align with level calculation
                 const xpRequiredForNextLevel = xpForNextLevel - userLevel.xp;
 
                 const classInfo = userLevel.class ? `**Class**: ${userLevel.class}` : "**Class**: Not Assigned. You can select one in class-roles.";
