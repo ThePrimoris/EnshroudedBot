@@ -69,17 +69,17 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
 
         collector.on('collect', async (i) => {
-
             if (i.customId === 'previous_page' && currentPage > 1) {
                 currentPage--;
             } else if (i.customId === 'next_page' && currentPage < totalPages) {
                 currentPage++;
             }
-
-            await i.editReply({
+        
+            await i.update({
                 embeds: [await generateEmbed(currentPage)],
                 components: [updateComponents(currentPage, totalPages)]
             });
         });
+        
     },
 };
