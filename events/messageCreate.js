@@ -3,6 +3,7 @@ const { UserLevel } = require('../database/index');
 const xpGainCooldown = new Map();
 const userCache = new Map();
 const cooldownTime = 60000; // 60 seconds
+const maxLevel = 25;
 
 // Function to check if a user can gain XP (based on cooldown)
 function canGainXP(user_id) {
@@ -34,15 +35,21 @@ async function updateUserLevelData(user_id, xpGained, user_name) {
     }
 
     // Check for cooldown and if XP gain is enabled for the user
-    if (canGainXP(user_id) && userData.xp_enabled) {
+    if (canGainXP(user_id) && userData.xp_enabled && userData.level < maxLevel) {
         userData.xp += xpGained;
         let nextLevelXp = 100 * (userData.level ** 1.5);
 
-        // Calculate level up
-        while (userData.xp >= nextLevelXp) {
+        // Calculate level up but do not exceed max level
+        while (userData.xp >= nextLevelXp && userData.level < maxLevel) {
             userData.level += 1;
             userData.xp -= nextLevelXp;
             nextLevelXp = 100 * (userData.level ** 1.5);
+        }
+
+        // Ensure level does not exceed max level
+        if (userData.level > maxLevel) {
+            userData.level = maxLevel;
+            userData.xp = 0; // Consider resetting XP or handling it differently if over max level
         }
 
         // Save the updated user data
@@ -51,8 +58,11 @@ async function updateUserLevelData(user_id, xpGained, user_name) {
         // Update the cooldown and cache
         xpGainCooldown.set(user_id, Date.now());
         userCache.set(user_id, userData);
+        userCache.set(user_id, userData);
     } else if (!userData.xp_enabled) {
         console.log(`XP gain is disabled for user ${user_id}.`);
+    } else if (userData.level >= maxLevel) {
+        console.log(`User ${user_id} has reached the maximum level.`);
     } else {
         console.log(`User ${user_id} is on cooldown.`);
     }

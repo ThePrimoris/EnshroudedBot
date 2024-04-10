@@ -10,7 +10,7 @@ module.exports = {
         const userData = await UserLevel.findOne({ where: { user_id } });
 
         if (!userData) {
-            await interaction.reply("It looks like you don't have any XP yet. Start participating to earn some!");
+            await interaction.reply({ content: "It looks like you don't have any XP yet. Start participating to earn some!", ephemeral: true });
             return;
         }
 
@@ -22,11 +22,11 @@ module.exports = {
             .setThumbnail(interaction.user.displayAvatarURL())
             .addFields(
                 { name: 'Level', value: `Current Level: ${userData.level}`, inline: false },
-                { name: 'XP Needed for Next Level', value: `XP required for next level: ${xpForNextLevel}`, inline: false },
-                { name: 'Total XP', value: `Total XP: ${userData.xp}`, inline: false }
+                { name: 'XP Needed for Next Level', value: `XP: ${xpForNextLevel}`, inline: false },
+                { name: 'Total XP', value: `XP: ${userData.xp}`, inline: false }
             )
             .setFooter({ text: 'Keep being active to level up!', iconURL: interaction.client.user.displayAvatarURL() });
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed], ephemeral: true});
     },
 };
