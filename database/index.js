@@ -10,9 +10,6 @@ const UserNote = require('./models/UserNote')(sequelize, DataTypes);
 const UserMute = require('./models/UserMute')(sequelize, DataTypes);
 const UserBan = require('./models/UserBan')(sequelize, DataTypes);
 
-// Persistent cooldown set for addXP function
-const cooldown = new Set();
-
 // Sync database and log success/error
 const syncDb = async () => {
   try {
@@ -31,5 +28,4 @@ module.exports = {
   UserNote,
   UserMute,
   UserBan,
-  addXP,
 };
