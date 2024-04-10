@@ -1,5 +1,5 @@
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
-const { UserWarning, UserNote, UserMute, UserBan, UserLevel } = require('../database/index'); 
+const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
     name: 'interactionCreate',
