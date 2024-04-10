@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('xp')
         .setDescription('Displays your current level and XP.'),
+        category: 'general',
     async execute(interaction) {
         const user_id = interaction.user.id;
         const userData = await UserLevel.findOne({ where: { user_id } });

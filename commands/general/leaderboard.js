@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('leaderboard')
         .setDescription('Displays the server leaderboard.'),
+        category: 'general',
     async execute(interaction) {
         // Function to create the leaderboard embed and components based on the current page
         async function createLeaderboard(page) {

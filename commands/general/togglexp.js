@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('togglexp')
         .setDescription('Toggles your XP gain on or off.'),
+        category: 'general',
     async execute(interaction) {
         const user_id = interaction.user.id;
 
