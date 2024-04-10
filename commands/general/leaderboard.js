@@ -73,13 +73,15 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
 
         collector.on('collect', async i => {
-            const [, direction, pageNum] = i.customId.split('_');
-            const newPage = direction === 'next' ? parseInt(pageNum, 10) + 1 : parseInt(pageNum, 10) - 1;
-            const newResponse = await createLeaderboard(newPage);
+            // Simplified response for debugging
+            const simpleResponse = {
+                content: "This is a simplified response for debugging.",
+                components: [] // Include minimal components necessary for testing
+            };
         
-            // Directly updating the interaction without additional checks
-            await i.update(newResponse).catch(console.error);
+            await i.update(simpleResponse).catch(console.error);
         });
+        
         
     },
 };
