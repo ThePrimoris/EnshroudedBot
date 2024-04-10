@@ -136,6 +136,7 @@ module.exports = {
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
             } else if (customIdParts[0] === 'leaderboard') {
+                // This section handles the leaderboard pagination logic.
                 const action = customIdParts[1]; // 'next' or 'prev'
                 const currentPage = parseInt(customIdParts[2], 10);
                 const newPage = action === 'next' ? currentPage + 1 : currentPage - 1;
@@ -143,7 +144,6 @@ module.exports = {
                 try {
                     const leaderboardResponse = await generateLeaderboardPage(newPage, interaction.user.id);
             
-                    // Check if interaction has been replied or deferred, and use the appropriate method
                     if (interaction.deferred || interaction.replied) {
                         await interaction.editReply({
                             embeds: [leaderboardResponse.embed],
@@ -153,14 +153,11 @@ module.exports = {
                         await interaction.update({
                             embeds: [leaderboardResponse.embed],
                             components: leaderboardResponse.components
-                        });
+                        }).catch(error => console.error('Error updating interaction:', error));
                     }
                 } catch (error) {
                     console.error('Failed to update leaderboard:', error);
-                    // Ensure interaction.reply or interaction.followUp is used based on interaction's state
-                    if (!interaction.deferred && !interaction.replied) {
-                        await interaction.reply({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
-                    } else {
+                    if (interaction.deferred || interaction.replied) {
                         await interaction.followUp({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
                     }
                 }
