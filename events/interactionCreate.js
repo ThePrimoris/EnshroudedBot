@@ -1,5 +1,5 @@
-const { EmbedBuilder, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageEmbed } = require('discord.js');
-const { UserWarning, UserNote, UserMute, UserBan, UserLevel } = require('../database/index'); 
+const { EmbedBuilder, PermissionsBitField, MessageEmbed } = require('discord.js');
+const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
     name: 'interactionCreate',
@@ -184,47 +184,6 @@ module.exports = {
                     console.error(`Error handling select menu interaction: ${error}`);
                 }
             }
-        }
-         // Function to generate the leaderboard page embed and components
-        async function generateLeaderboardPage(page, userId) {
-            // Fetch all users sorted by XP in descending order
-            const users = await UserLevel.findAll({ order: [['xp', 'DESC']] });
-            const pageSize = 10; // Including the invoking user, adjust as necessary
-            const totalEntries = users.length;
-            const totalPages = Math.ceil(totalEntries / pageSize);
-            const startIndex = (page - 1) * pageSize;
-            const endIndex = startIndex + pageSize;
-            
-            // Construct the leaderboard entries, making sure the invoking user is included
-            let leaderboardEntries = users.slice(startIndex, endIndex).map((user, index) => {
-                const rank = startIndex + index + 1;
-                const userTag = interaction.guild.members.cache.get(user.user_id)?.user.tag || 'Unknown User';
-                return `${rank}. ${userTag} - Level ${user.level}, ${user.xp} XP`;
-            }).join('\n');
-
-            // Embed for the leaderboard page
-            const embed = new EmbedBuilder()
-                .setTitle(`Server Leaderboard - Page ${page}`)
-                .setDescription(leaderboardEntries)
-                .setFooter({ text: `Page ${page} of ${totalPages}` });
-
-            // Buttons for pagination
-            const components = [
-                new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`leaderboard_prev_${page}`)
-                        .setLabel('Previous')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page <= 1),
-                    new ButtonBuilder()
-                        .setCustomId(`leaderboard_next_${page}`)
-                        .setLabel('Next')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page >= totalPages)
-                )
-            ];
-
-            return { embed, components };
         }
     },
 };

@@ -9,7 +9,6 @@ const UserWarning = require('./models/UserWarning')(sequelize, DataTypes);
 const UserNote = require('./models/UserNote')(sequelize, DataTypes);
 const UserMute = require('./models/UserMute')(sequelize, DataTypes);
 const UserBan = require('./models/UserBan')(sequelize, DataTypes);
-const UserLevel = require('./models/UserLevel')(sequelize, DataTypes);
 
 
 // Sync database and log success/error
@@ -30,5 +29,4 @@ module.exports = {
   UserNote,
   UserMute,
   UserBan,
-  UserLevel,
 };
