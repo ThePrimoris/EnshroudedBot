@@ -135,26 +135,7 @@ module.exports = {
                     console.error(`Error fetching moderation actions for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
-            } else if (customIdParts[0] === 'leaderboard') {
-                // This section handles the leaderboard pagination logic.
-                const action = customIdParts[1]; // 'next' or 'prev'
-                const currentPage = parseInt(customIdParts[2], 10);
-                const newPage = action === 'next' ? currentPage + 1 : currentPage - 1;
-            
-                try {
-                    const leaderboardResponse = await generateLeaderboardPage(newPage, interaction.user.id);
-                    // Directly use interaction.update() for pagination without checking interaction.deferred or interaction.replied
-                    await interaction.update({
-                        embeds: [leaderboardResponse.embed],
-                        components: leaderboardResponse.components
-                    });
-                } catch (error) {
-                    console.error('Failed to update leaderboard:', error);
-                    // The catch block is for handling exceptions from generateLeaderboardPage or interaction.update
-                    // Consider handling unexpected errors that don't relate directly to interaction updates.
-                    // interaction.followUp could be used if additional user feedback is necessary post-error.
-                }
-            }
+            } 
             
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
