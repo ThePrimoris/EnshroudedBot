@@ -69,7 +69,6 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
 
         collector.on('collect', async (i) => {
-            await i.deferUpdate();
 
             if (i.customId === 'previous_page' && currentPage > 1) {
                 currentPage--;
