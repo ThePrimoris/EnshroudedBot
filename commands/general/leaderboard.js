@@ -70,16 +70,21 @@ module.exports = {
         await interaction.reply(response);
 
         const filter = i => i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
-
         collector.on('collect', async i => {
-            // Simplified response for debugging
-            const simpleResponse = {
-                content: "This is a simplified response for debugging.",
-                components: [] // Include minimal components necessary for testing
-            };
+            // Acknowledge the button interaction immediately, indicating a deferred update
+            // This is necessary for updating ephemeral messages
+            await i.deferUpdate();
         
-            await i.update(simpleResponse).catch(console.error);
+            // Extract the intended new page number from the button's custom ID
+            const [, direction, currentPage] = i.customId.split('_');
+            const newPage = direction === 'next' ? parseInt(currentPage, 10) + 1 : parseInt(currentPage, 10) - 1;
+        
+            // Generate the updated leaderboard for the new page
+            const updatedLeaderboard = await createLeaderboard(newPage);
+        
+            // Edit the original interaction reply with the new leaderboard content
+            // Since the message was originally sent as ephemeral, it remains ephemeral
+            await i.editReply(updatedLeaderboard).catch(console.error);
         });
         
         
