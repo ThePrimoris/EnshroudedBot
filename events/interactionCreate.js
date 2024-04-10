@@ -134,30 +134,7 @@ module.exports = {
                     console.error(`Error fetching moderation actions for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
-            } else if (interaction.customId.startsWith('class_role_')) {
-                const className = interaction.customId.split('class_role_')[1].replaceAll('_', ' ');
-                const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === className.toLowerCase());
-            
-                if (!role) {
-                    await interaction.reply({ content: `The role for class "${className}" does not exist in this server.`, ephemeral: true });
-                    return;
-                }
-            
-                try {
-                    // Assign the role to the user
-                    await interaction.member.roles.add(role);
-            
-                    // Update or create the user's class in the UserLevel database
-                    const userLevel = await UserLevel.findByPk(interaction.user.id) || await UserLevel.create({ user_id: interaction.user.id });
-                    userLevel.class = className; // Assign the new class
-                    await userLevel.save();
-            
-                    await interaction.reply({ content: `You have been assigned to the ${className} class!`, ephemeral: true });
-                } catch (error) {
-                    console.error(error);
-                    await interaction.reply({ content: "Failed to update your class role. Please contact an administrator.", ephemeral: true });
-                }
-            }
+            } 
 
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
