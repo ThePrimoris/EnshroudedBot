@@ -156,7 +156,6 @@ module.exports = {
                 }
             }
             
-            
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate();

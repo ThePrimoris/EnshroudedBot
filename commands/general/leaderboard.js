@@ -47,21 +47,6 @@ module.exports = {
                 .setDescription(leaderboardEntries.join('\n'))
                 .setFooter({ text: `Your Rank: #${userIndex + 1}` });
 
-            const components = [
-                new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`leaderboard_prev_${page}`)
-                        .setLabel('Previous')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page <= 1),
-                    new ButtonBuilder()
-                        .setCustomId(`leaderboard_next_${page}`)
-                        .setLabel('Next')
-                        .setStyle(ButtonStyle.Primary)
-                        .setDisabled(page >= totalPages)
-                )
-            ];
-
             return { embeds: [embed], components, ephemeral: true };
         }
 
