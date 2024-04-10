@@ -1,4 +1,4 @@
-const { PermissionsBitField, EmbedBuilder } = require('discord.js');
+const { PermissionsBitField, ActionRowBuilder, ButtonBuilder, MessageEmbed } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
@@ -19,15 +19,16 @@ module.exports = {
                 }
             }
         } else if (interaction.isButton()) {
-            // Button interaction logic
-            if (interaction.customId.startsWith('view_warnings')) {
-                const userId = interaction.customId.split('_')[2];
+            const customIdParts = interaction.customId.split('_');
+
+            if (customIdParts[0] === 'view_warnings') {
+                const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({
                         where: { userId: userId },
                     });
             
-                    const embed = new EmbedBuilder()
+                    const embed = new MessageEmbed()
                         .setTitle('User Warnings')
                         .setColor(0xff0000);
             
@@ -49,14 +50,14 @@ module.exports = {
                     console.error(`Error fetching warnings for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
                 }
-            } else if (interaction.customId.startsWith('view_notes')) {
-                const userId = interaction.customId.split('_')[2];
+            } else if (customIdParts[0] === 'view_notes') {
+                const userId = customIdParts[2];
                 try {
                     const notes = await UserNote.findAll({
                         where: { userId: userId },
                     });
             
-                    const embed = new EmbedBuilder()
+                    const embed = new MessageEmbed()
                         .setTitle('User Notes')
                         .setColor(0x00ff00);
             
@@ -78,15 +79,15 @@ module.exports = {
                     console.error(`Error fetching notes for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
                 }
-            } else if (interaction.customId.startsWith('view_moderation')) {
-                const userId = interaction.customId.split('_')[2];
+            } else if (customIdParts[0] === 'view_moderation') {
+                const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({ where: { userId: userId } });
                     const notes = await UserNote.findAll({ where: { userId: userId } });
                     const mutes = await UserMute.findAll({ where: { userId: userId } });
                     const bans = await UserBan.findAll({ where: { userId: userId } });
             
-                    const embed = new EmbedBuilder().setTitle('User Moderation Actions').setColor(0x3498db);
+                    const embed = new MessageEmbed().setTitle('User Moderation Actions').setColor(0x3498db);
             
                    // Iterate over warnings and add each to the embed
                     warnings.forEach((warning, index) => {
@@ -134,27 +135,40 @@ module.exports = {
                     console.error(`Error fetching moderation actions for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
-            } 
+            } else if (customIdParts[0] === 'leaderboard') {
+                const action = customIdParts[1]; // 'next' or 'prev'
+                const currentPage = parseInt(customIdParts[2], 10);
+                const newPage = action === 'next' ? currentPage + 1 : currentPage - 1;
 
+                try {
+                    const leaderboardResponse = await generateLeaderboardPage(newPage, interaction.user.id);
+
+                    await interaction.update({
+                        embeds: [leaderboardResponse.embed],
+                        components: leaderboardResponse.components
+                    });
+                } catch (error) {
+                    console.error('Failed to update leaderboard:', error);
+                    await interaction.reply({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
+                }
+            }
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
-                await interaction.deferUpdate(); // Ensure immediate acknowledgement of the interaction
-        
+                await interaction.deferUpdate();
+
                 const selectedCommandName = interaction.values[0];
                 const command = client.commands.get(selectedCommandName);
                 if (!command) {
                     await interaction.followUp({ content: `Sorry, I couldn't find a command named "${selectedCommandName}".`, ephemeral: true });
                     return;
                 }
-        
-                // Check if the user has the required permissions for this command
+
                 if (command.requiredPermissions) {
                     const missingPermissions = command.requiredPermissions.filter(perm => 
                         !interaction.member.permissions.has(PermissionsBitField.Flags[perm])
                     );
-        
+
                     if (missingPermissions.length > 0) {
-                        // Inform the user they lack necessary permissions
                         await interaction.followUp({ 
                             content: `You don't have permission to use this command. Missing: ${missingPermissions.join(', ')}`, 
                             ephemeral: true 
@@ -162,31 +176,70 @@ module.exports = {
                         return;
                     }
                 }
-        
+
                 try {
-                    // Start with the command name
                     let usage = `/${command.data.name}`;
-        
-                    // Iterate over command options to build the usage instructions
+
                     command.data.options?.forEach(option => {
                         if (option.required) {
-                            usage += ` <${option.name}>`; // Angle brackets for required options
+                            usage += ` <${option.name}>`;
                         } else {
-                            usage += ` [${option.name}]`; // Square brackets for optional options
+                            usage += ` [${option.name}]`;
                         }
                     });
-        
-                    const embed = new EmbedBuilder()
+
+                    const embed = new MessageEmbed()
                         .setColor('#0099ff')
                         .setTitle(`Command: /${command.data.name}`)
                         .setDescription(command.data.description)
-                        .addFields({ name: 'Usage', value: usage }); // Display usage in the embed
-        
+                        .addFields({ name: 'Usage', value: usage });
+
                     await interaction.editReply({ embeds: [embed], components: [] });
                 } catch (error) {
                     console.error(`Error handling select menu interaction: ${error}`);
                 }
             }
-        }        
+        }
+         // Function to generate the leaderboard page embed and components
+        async function generateLeaderboardPage(page, userId) {
+            // Fetch all users sorted by XP in descending order
+            const users = await UserLevel.findAll({ order: [['xp', 'DESC']] });
+            const pageSize = 10; // Including the invoking user, adjust as necessary
+            const totalEntries = users.length;
+            const totalPages = Math.ceil(totalEntries / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            
+            // Construct the leaderboard entries, making sure the invoking user is included
+            let leaderboardEntries = users.slice(startIndex, endIndex).map((user, index) => {
+                const rank = startIndex + index + 1;
+                const userTag = interaction.guild.members.cache.get(user.user_id)?.user.tag || 'Unknown User';
+                return `${rank}. ${userTag} - Level ${user.level}, ${user.xp} XP`;
+            }).join('\n');
+
+            // Embed for the leaderboard page
+            const embed = new EmbedBuilder()
+                .setTitle(`Server Leaderboard - Page ${page}`)
+                .setDescription(leaderboardEntries)
+                .setFooter({ text: `Page ${page} of ${totalPages}` });
+
+            // Buttons for pagination
+            const components = [
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`leaderboard_prev_${page}`)
+                        .setLabel('Previous')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(page <= 1),
+                    new ButtonBuilder()
+                        .setCustomId(`leaderboard_next_${page}`)
+                        .setLabel('Next')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(page >= totalPages)
+                )
+            ];
+
+            return { embed, components };
+        }
     },
 };
