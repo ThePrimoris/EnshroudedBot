@@ -76,8 +76,10 @@ module.exports = {
             const [, direction, pageNum] = i.customId.split('_');
             const newPage = direction === 'next' ? parseInt(pageNum, 10) + 1 : parseInt(pageNum, 10) - 1;
             const newResponse = await createLeaderboard(newPage);
-
-            await i.update(newResponse);
+        
+            // Directly updating the interaction without additional checks
+            await i.update(newResponse).catch(console.error);
         });
+        
     },
 };
