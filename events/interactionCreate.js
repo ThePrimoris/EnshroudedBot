@@ -1,4 +1,4 @@
-const { PermissionsBitField, ActionRowBuilder, ButtonBuilder, MessageEmbed } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageEmbed } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan, UserLevel } = require('../database/index'); 
 
 module.exports = {

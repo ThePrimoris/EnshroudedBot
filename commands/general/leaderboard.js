@@ -35,7 +35,7 @@ module.exports = {
             }).join('\n');
             
             const embed = new EmbedBuilder()
-                .setTitle(`Server Leaderboard - Page ${page} of ${totalPages}`)
+                .setTitle(`${interaction.guild.name} Leaderboard - Page ${page} of ${totalPages}`)
                 .setDescription(leaderboardEntries)
                 .setFooter({ text: `Your Rank: #${userIndex + 1}` });
             
