@@ -57,7 +57,7 @@ module.exports = {
         // Display the initial leaderboard page
         const initialPage = 1;
         const response = await createLeaderboard(initialPage);
-        await interaction.reply({ ...response, ephemeral: true });
+        await interaction.reply({ ...response, ephemeral: false });
 
         // Set up a collector to handle button interactions for pagination
         const filter = i => i.user.id === interaction.user.id;
@@ -70,7 +70,7 @@ module.exports = {
             const newPage = direction === 'next' ? parseInt(currentPage, 10) + 1 : parseInt(currentPage, 10) - 1;
             const updatedLeaderboard = await createLeaderboard(newPage);
 
-            await i.editReply({ ...updatedLeaderboard, ephemeral: true }).catch(console.error);
+            await i.editReply({ ...updatedLeaderboard, ephemeral: false }).catch(console.error);
         });
     },
 };
