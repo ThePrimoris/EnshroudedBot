@@ -139,19 +139,33 @@ module.exports = {
                 const action = customIdParts[1]; // 'next' or 'prev'
                 const currentPage = parseInt(customIdParts[2], 10);
                 const newPage = action === 'next' ? currentPage + 1 : currentPage - 1;
-
+            
                 try {
                     const leaderboardResponse = await generateLeaderboardPage(newPage, interaction.user.id);
-
-                    await interaction.update({
-                        embeds: [leaderboardResponse.embed],
-                        components: leaderboardResponse.components
-                    });
+            
+                    // Check if interaction has been replied or deferred, and use the appropriate method
+                    if (interaction.deferred || interaction.replied) {
+                        await interaction.editReply({
+                            embeds: [leaderboardResponse.embed],
+                            components: leaderboardResponse.components
+                        });
+                    } else {
+                        await interaction.update({
+                            embeds: [leaderboardResponse.embed],
+                            components: leaderboardResponse.components
+                        });
+                    }
                 } catch (error) {
                     console.error('Failed to update leaderboard:', error);
-                    await interaction.reply({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
+                    // Ensure interaction.reply or interaction.followUp is used based on interaction's state
+                    if (!interaction.deferred && !interaction.replied) {
+                        await interaction.reply({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
+                    } else {
+                        await interaction.followUp({ content: 'There was an error updating the leaderboard. Please try again later.', ephemeral: true });
+                    }
                 }
             }
+            
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate();
