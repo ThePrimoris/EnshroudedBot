@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { UserLevel } = require('../../database'); // Adjust path as necessary
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { UserLevel } = require('./path/to/your/models'); // Adjust the path as necessary
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,14 +14,16 @@ module.exports = {
             return;
         }
 
-        const xpForNextLevel = 100 * ((userData.level + 1) ** 1.5) - userData.xp;
+        // Ensure XP for the next level is a whole number
+        const xpForNextLevel = Math.round(100 * ((userData.level + 1) ** 1.5) - userData.xp);
+
         const embed = new EmbedBuilder()
-            .setTitle(`${interaction.user.username}'s XP Info`)
+            .setTitle(`${interaction.user.username}`) // User's name as the title
             .setThumbnail(interaction.user.displayAvatarURL())
             .addFields(
-                { name: 'Current Level', value: `${userData.level}`, inline: true },
-                { name: 'XP For Next Level', value: `${xpForNextLevel}`, inline: true },
-                { name: 'Total XP', value: `${userData.xp}`, inline: true }
+                { name: 'Level', value: `Current Level: ${userData.level}`, inline: false },
+                { name: 'XP Needed for Next Level', value: `XP required for next level: ${xpForNextLevel}`, inline: false },
+                { name: 'Total XP', value: `Total XP: ${userData.xp}`, inline: false }
             )
             .setFooter({ text: 'Keep being active to level up!', iconURL: interaction.client.user.displayAvatarURL() });
 

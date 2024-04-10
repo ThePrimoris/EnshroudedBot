@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             comment: "The user's current level based on the accumulated XP",
         },
+        xp_enabled: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allowNull: false,
+        },        
     }, {
         timestamps: false,
     });
