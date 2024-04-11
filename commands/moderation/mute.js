@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
-const { UserMute } = require('../../database');
+const { UserMute } = require('../../database'); // Make sure this path matches your actual file structure
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,10 +16,11 @@ module.exports = {
         .addStringOption(option =>
             option.setName('reason')
                 .setDescription('The reason for the mute')
-                .setRequired(false)), // Corrected usage
+                .setRequired(false)),
     requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
+        // Check for ManageMessages permission
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
@@ -27,6 +28,17 @@ module.exports = {
         const user = interaction.options.getUser('user');
         const durationString = interaction.options.getString('duration');
         const reason = interaction.options.getString('reason') || 'No reason provided';
+
+        // Fetch the guild member object for the target user
+        const targetMember = await interaction.guild.members.fetch(user.id);
+        if (!targetMember) {
+            return interaction.reply({ content: 'Could not find the user in this guild.', ephemeral: true });
+        }
+
+        // Check if the target user has a higher role than the command issuer
+        if (targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
+            return interaction.reply({ content: "You cannot mute a user with equal or higher permissions than yourself.", ephemeral: true });
+        }
 
         const duration = parseDuration(durationString);
         if (!duration) {
@@ -38,18 +50,15 @@ module.exports = {
             return interaction.reply({ content: "Mute role not found. Please create a 'Muted' role.", ephemeral: true });
         }
 
-        const member = await interaction.guild.members.fetch(user.id);
-        
-        await interaction.deferReply();
         try {
-            await member.roles.add(muteRole, reason);
+            await targetMember.roles.add(muteRole, reason);
             await user.send(`You have been muted in ${interaction.guild.name} for ${durationString}. Reason: ${reason}`).catch(console.error);
 
-            // Log the mute action here
+            // Log the mute action
             await UserMute.create({
                 userId: user.id,
-                issuerId: interaction.user.id, // Store the ID of the user who issued the mute
-                issuerName: interaction.user.username, // Store the username of the user who issued the mute
+                issuerId: interaction.user.id,
+                issuerName: interaction.user.username,
                 reason: reason,
                 duration: durationString,
                 timestamp: new Date()
@@ -61,7 +70,6 @@ module.exports = {
                     if (freshMember.roles.cache.has(muteRole.id)) {
                         await freshMember.roles.remove(muteRole, 'Mute duration expired');
                         await user.send(`You have been unmuted in ${interaction.guild.name}.`).catch(console.error);
-                        // Consider logging the unmute action as well, similar to the mute logging
                         await interaction.followUp({ content: `${user.username} has been unmuted.`, ephemeral: false });
                     }
                 } catch (error) {
@@ -71,7 +79,7 @@ module.exports = {
 
             await interaction.followUp({ content: `${user.username} has been muted for ${durationString}. Reason: ${reason}`, ephemeral: false });
         } catch (error) {
-            console.error(error);
+            console.error('Error executing mute command:', error);
             await interaction.followUp({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
         }
     },
