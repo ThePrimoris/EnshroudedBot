@@ -49,7 +49,7 @@ module.exports = {
             { name: '🤖 Bot Account', value: user.bot ? 'Yes' : 'No', inline: true },
             { name: '🎭 Animated Avatar', value: user.avatar && user.avatar.startsWith('a_') ? 'Yes' : 'No', inline: true },
             { name: '🔗 Avatar URL', value: `[Click Here](${user.displayAvatarURL()})`, inline: true },
-            { name: '🔖 Profile Link', value: `[Profile Link](https://discord.com/users/${user.id})`, inline: true }
+            { name: '🔖 Profile Link', value: `<@${user.id}>`, inline: true }
         )
         .addFields(
             { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
