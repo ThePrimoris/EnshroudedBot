@@ -4,9 +4,9 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('unmute')
         .setDescription('Unmute a previously muted user.')
-        .addStringOption(option => 
+        .addUserOption(option => 
             option.setName('user')
-                .setDescription('The ID of the user to unban.')
+                .setDescription('The user to unmute.')
                 .setRequired(true)),
     requiredPermissions: ['ManageMessages'],
     category: 'moderation',
