@@ -58,17 +58,17 @@ module.exports = {
         .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
         const warningsButton = new ButtonBuilder()
-            .setCustomId(`viewWarnings_${user.id}`)
+            .setCustomId(`view_warnings:${user.id}`)
             .setLabel('View Warnings')
             .setStyle(ButtonStyle.Secondary);
 
         const notesButton = new ButtonBuilder()
-            .setCustomId(`viewNotes_${user.id}`)
+            .setCustomId(`view_notes:${user.id}`)
             .setLabel('View Notes')
             .setStyle(ButtonStyle.Secondary);
 
         const viewAllButton = new ButtonBuilder()
-            .setCustomId(`viewModeration_${user.id}`)
+            .setCustomId(`view_moderation:${user.id}`)
             .setLabel('View All Moderation Actions')
             .setStyle(ButtonStyle.Primary);
 

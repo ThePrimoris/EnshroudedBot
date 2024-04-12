@@ -17,10 +17,11 @@ module.exports = {
                     await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true }).catch(console.error);
                 }
             }
+            
         } else if (interaction.isButton()) {
             const customIdParts = interaction.customId.split('_');
 
-            if (customIdParts[0] === 'viewWarnings') {
+            if (customIdParts[0] === 'view_warnings') {
                 const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({
@@ -49,7 +50,7 @@ module.exports = {
                     console.error(`Error fetching warnings for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
                 }
-            } else if (customIdParts[0] === 'viewNotes') {
+            } else if (customIdParts[0] === 'view_notes') {
                 const userId = customIdParts[2];
                 try {
                     const notes = await UserNote.findAll({
@@ -78,7 +79,7 @@ module.exports = {
                     console.error(`Error fetching notes for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
                 }
-            } else if (customIdParts[0] === 'viewModeration') {
+            } else if (customIdParts[0] === 'view_moderation') {
                 const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({ where: { userId: userId } });
