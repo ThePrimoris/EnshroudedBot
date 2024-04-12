@@ -1,4 +1,4 @@
-const {  EmbedBuilder, PermissionsBitField, MessageEmbed } = require('discord.js');
+const {  EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
@@ -30,7 +30,7 @@ module.exports = {
             
                     const embed = new EmbedBuilder()
                         .setTitle('User Warnings')
-                        .setColor(0xff0000);
+                        .setColor('Red');
             
                     if (warnings.length > 0) {
                         warnings.forEach((warning, index) => {
@@ -59,7 +59,7 @@ module.exports = {
             
                     const embed = new EmbedBuilder()
                         .setTitle('User Notes')
-                        .setColor(0x00ff00);
+                        .setColor('Green');
             
                     if (notes.length > 0) {
                         notes.forEach((note, index) => {
@@ -87,7 +87,7 @@ module.exports = {
                     const mutes = await UserMute.findAll({ where: { userId: userId } });
                     const bans = await UserBan.findAll({ where: { userId: userId } });
             
-                    const embed = new EmbedBuilder().setTitle('User Moderation Actions').setColor(0x3498db);
+                    const embed = new EmbedBuilder().setTitle('User Moderation Actions').setColor('Blurple');
             
                    // Iterate over warnings and add each to the embed
                     warnings.forEach((warning, index) => {
