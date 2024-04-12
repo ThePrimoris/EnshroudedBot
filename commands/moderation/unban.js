@@ -25,7 +25,7 @@ module.exports = {
 
         try {
             await interaction.guild.members.unban(userId, { reason });
-            await interaction.reply({ content: `User with ID ${userId} has been unbanned for the following reason: ${reason}` }); // Notification is visible to everyone
+            await interaction.reply({ content: `User with ID: \`${userId}\` has been unbanned by <@${interaction.user.id}> for the following reason: \`${reason}\`.` }); // Notification is visible to everyone
         } catch (error) {
             console.error(error);
             return interaction.reply({ content: "Failed to unban the user. They might not be banned, or I might lack the permission to unban them.", ephemeral: true });
