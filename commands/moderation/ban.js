@@ -22,6 +22,9 @@ module.exports = {
 
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason');
+        const currentTime = new Date();
+        const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
 
         try {
             // Ban the user
