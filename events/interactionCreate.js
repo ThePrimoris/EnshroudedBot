@@ -22,7 +22,7 @@ module.exports = {
             const customIdParts = interaction.customId.split(':');
 
             if (customIdParts[0] === 'view_warnings') {
-                const userId = customIdParts[2];
+                const userId = customIdParts[1];
                 try {
                     const warnings = await UserWarning.findAll({
                         where: { userId: userId },
@@ -51,7 +51,7 @@ module.exports = {
                     await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
                 }
             } else if (customIdParts[0] === 'view_notes') {
-                const userId = customIdParts[2];
+                const userId = customIdParts[1];
                 try {
                     const notes = await UserNote.findAll({
                         where: { userId: userId },
@@ -80,7 +80,7 @@ module.exports = {
                     await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
                 }
             } else if (customIdParts[0] === 'view_moderation') {
-                const userId = customIdParts[2];
+                const userId = customIdParts[1];
                 try {
                     const warnings = await UserWarning.findAll({ where: { userId: userId } });
                     const notes = await UserNote.findAll({ where: { userId: userId } });
