@@ -19,7 +19,7 @@ module.exports = {
             }
             
         } else if (interaction.isButton()) {
-            const customIdParts = interaction.customId.split('_');
+            const customIdParts = interaction.customId.split(':');
 
             if (customIdParts[0] === 'view_warnings') {
                 const userId = customIdParts[2];
