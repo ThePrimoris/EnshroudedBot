@@ -39,7 +39,7 @@ module.exports = {
                 date: new Date()
             });
 
-            await interaction.reply({ content: `[${formattedTime}] 🔨 ${user.tag} (${user.id}) has been banned from the server by ${interaction.user.tag} for: ${reason}.` });
+            await interaction.reply({ content: `[${formattedTime}] ${user.tag} \`(${user.id})\` has been banned from the server by ${interaction.user.tag} for: \`${reason}.\`` });
         } catch (error) {
             console.error(error);
             return interaction.reply({ content: "Failed to ban the user. They might have a higher role than me or I lack the permission to ban them.", ephemeral: true });
