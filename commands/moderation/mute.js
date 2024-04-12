@@ -77,10 +77,10 @@ module.exports = {
                 }
             }, duration);
 
-            await interaction.followUp({ content: `${user.username} has been muted for ${durationString}. Reason: ${reason}`, ephemeral: false });
+            await interaction.reply({ content: `${user.username} has been muted for ${durationString}. Reason: ${reason}`, ephemeral: false });
         } catch (error) {
             console.error('Error executing mute command:', error);
-            await interaction.followUp({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
+            await interaction.reply({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
         }
     },
 };
