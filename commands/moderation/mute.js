@@ -63,7 +63,8 @@ module.exports = {
                 duration: durationString,
                 timestamp: new Date()
             });
-
+            const currentTime = new Date();
+            const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
             setTimeout(async () => {
                 try {
                     const freshMember = await interaction.guild.members.fetch(user.id);
@@ -77,7 +78,7 @@ module.exports = {
                 }
             }, duration);
 
-            await interaction.reply({ content: `${user.username} has been muted for ${durationString}. Reason: ${reason}`, ephemeral: false });
+            await interaction.reply({ content: `\`[${formattedTime}]\` ${user.tag} \`(${user.id})\` has been muted by <@${interaction.user.id}> for \`${durationString}\`. Reason: \`${reason}\`.`, ephemeral: false });
         } catch (error) {
             console.error('Error executing mute command:', error);
             await interaction.reply({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
