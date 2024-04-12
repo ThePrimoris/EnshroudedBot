@@ -23,10 +23,13 @@ module.exports = {
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason');
         const currentTime = new Date();
-        const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
 
         try {
+            // Attempt to message the user before banning
+            await user.send(`You have been banned from ${interaction.guild.name} for the following reason: ${reason}`).catch(error => console.error(`Could not send DM to ${user.tag}:`, error));
+            
             // Ban the user
             await interaction.guild.members.ban(user.id, { reason });
 
