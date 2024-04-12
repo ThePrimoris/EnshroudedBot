@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField, MessageEmbed } = require('discord.js');
+const {  EmbedBuilder, PermissionsBitField, MessageEmbed } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
@@ -28,7 +28,7 @@ module.exports = {
                         where: { userId: userId },
                     });
             
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                         .setTitle('User Warnings')
                         .setColor(0xff0000);
             
@@ -45,7 +45,7 @@ module.exports = {
                         embed.setDescription('No warnings found for this user.');
                     }
             
-                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                    await interaction.reply({ embeds: [embed], ephemeral: false });
                 } catch (error) {
                     console.error(`Error fetching warnings for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
@@ -57,7 +57,7 @@ module.exports = {
                         where: { userId: userId },
                     });
             
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                         .setTitle('User Notes')
                         .setColor(0x00ff00);
             
@@ -74,7 +74,7 @@ module.exports = {
                         embed.setDescription('No notes found for this user.');
                     }
             
-                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                    await interaction.reply({ embeds: [embed], ephemeral: false });
                 } catch (error) {
                     console.error(`Error fetching notes for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
@@ -87,7 +87,7 @@ module.exports = {
                     const mutes = await UserMute.findAll({ where: { userId: userId } });
                     const bans = await UserBan.findAll({ where: { userId: userId } });
             
-                    const embed = new MessageEmbed().setTitle('User Moderation Actions').setColor(0x3498db);
+                    const embed = new EmbedBuilder().setTitle('User Moderation Actions').setColor(0x3498db);
             
                    // Iterate over warnings and add each to the embed
                     warnings.forEach((warning, index) => {
@@ -173,7 +173,7 @@ module.exports = {
                         }
                     });
 
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                         .setColor('#0099ff')
                         .setTitle(`Command: /${command.data.name}`)
                         .setDescription(command.data.description)
