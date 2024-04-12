@@ -21,10 +21,12 @@ module.exports = {
 
         const userId = interaction.options.getString('userid');
         const reason = interaction.options.getString('reason') || 'No reason provided';
+        const currentTime = new Date();
+        const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
         try {
             await interaction.guild.members.ban(userId, { reason });
-            await interaction.reply({ content: `The user with ID ${userId} has been banned for the following reason: ${reason}.` });
+            await interaction.reply({ content: `\`[${formattedTime}]\` The user with ID \`${userId}\` has been banned by <@${interaction.user.id}> for: \`${reason}\`.` });
         } catch (error) {
             console.error(error);
             return interaction.reply({ content: "Failed to ban the user. Please make sure the ID is correct and I have the permission to ban them.", ephemeral: true });
