@@ -30,11 +30,7 @@ module.exports = {
         const reason = interaction.options.getString('reason') || 'No reason provided';
 
         // Fetch the guild member object for the target user
-        const targetMember = await interaction.guild.members.fetch(user.id).catch(error => {
-            console.error('Failed to fetch member:', error);
-            return null;
-        });
-
+        const targetMember = await interaction.guild.members.fetch(user.id);
         if (!targetMember) {
             return interaction.reply({ content: 'Could not find the user in this guild.', ephemeral: true });
         }
@@ -68,15 +64,11 @@ module.exports = {
                 timestamp: new Date()
             });
 
-            const currentTime = new Date();
-            const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
             setTimeout(async () => {
                 try {
                     const freshMember = await interaction.guild.members.fetch(user.id);
                     if (freshMember.roles.cache.has(muteRole.id)) {
-                        await freshMember.roles.remove(muteRole, 'Mute duration expired').catch(error => {
-                            console.error('Failed to remove mute role:', error);
-                        });
+                        await freshMember.roles.remove(muteRole, 'Mute duration expired');
                         await user.send(`You have been unmuted in ${interaction.guild.name}.`).catch(console.error);
                         await interaction.followUp({ content: `${user.username} has been unmuted.`, ephemeral: false });
                     }
@@ -85,7 +77,7 @@ module.exports = {
                 }
             }, duration);
 
-            await interaction.followUp({ content: `\`[${formattedTime}]\` ${user.username} has been muted by <@${interaction.user.id}> for ${durationString}. Reason: \`${reason}\`.`, ephemeral: false });
+            await interaction.followUp({ content: `${user.username} has been muted for ${durationString}. Reason: ${reason}`, ephemeral: false });
         } catch (error) {
             console.error('Error executing mute command:', error);
             await interaction.followUp({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
