@@ -30,7 +30,11 @@ module.exports = {
         const reason = interaction.options.getString('reason') || 'No reason provided';
 
         // Fetch the guild member object for the target user
-        const targetMember = await interaction.guild.members.fetch(user.id);
+        const targetMember = await interaction.guild.members.fetch(user.id).catch(error => {
+            console.error('Failed to fetch member:', error);
+            return null;
+        });
+
         if (!targetMember) {
             return interaction.reply({ content: 'Could not find the user in this guild.', ephemeral: true });
         }
@@ -70,7 +74,9 @@ module.exports = {
                 try {
                     const freshMember = await interaction.guild.members.fetch(user.id);
                     if (freshMember.roles.cache.has(muteRole.id)) {
-                        await freshMember.roles.remove(muteRole, 'Mute duration expired');
+                        await freshMember.roles.remove(muteRole, 'Mute duration expired').catch(error => {
+                            console.error('Failed to remove mute role:', error);
+                        });
                         await user.send(`You have been unmuted in ${interaction.guild.name}.`).catch(console.error);
                         await interaction.followUp({ content: `${user.username} has been unmuted.`, ephemeral: false });
                     }
