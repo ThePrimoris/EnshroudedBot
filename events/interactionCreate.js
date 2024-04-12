@@ -20,7 +20,7 @@ module.exports = {
         } else if (interaction.isButton()) {
             const customIdParts = interaction.customId.split('_');
 
-            if (customIdParts[0] === 'view_warnings') {
+            if (customIdParts[0] === 'viewWarnings') {
                 const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({
@@ -49,7 +49,7 @@ module.exports = {
                     console.error(`Error fetching warnings for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch warnings. Please try again later.', ephemeral: true });
                 }
-            } else if (customIdParts[0] === 'view_notes') {
+            } else if (customIdParts[0] === 'viewNotes') {
                 const userId = customIdParts[2];
                 try {
                     const notes = await UserNote.findAll({
@@ -78,7 +78,7 @@ module.exports = {
                     console.error(`Error fetching notes for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch notes. Please try again later.', ephemeral: true });
                 }
-            } else if (customIdParts[0] === 'view_moderation') {
+            } else if (customIdParts[0] === 'viewModeration') {
                 const userId = customIdParts[2];
                 try {
                     const warnings = await UserWarning.findAll({ where: { userId: userId } });

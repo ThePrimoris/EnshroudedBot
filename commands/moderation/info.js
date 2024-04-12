@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
-// Ensure your model imports are correct
-const { UserWarning, UserNote, UserMute, UserBan } = require('../../database'); // Adjust the path as necessary
+const { UserWarning, UserNote, UserMute, UserBan } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,7 +25,6 @@ module.exports = {
             return interaction.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
         }
 
-        // Fetch counts for warnings and notes
         let numberOfWarnings, numberOfNotes, numberOfMutes, numberOfBans;
         try {
             numberOfWarnings = await UserWarning.count({ where: { userId: user.id } });
@@ -58,28 +56,22 @@ module.exports = {
             { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: true }
         )
         .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
-    
-    // If the moderation summary makes the embed too wide, consider breaking it into multiple fields or adjusting the content slightly.
-    
 
-        // Buttons for individual actions
         const warningsButton = new ButtonBuilder()
-            .setCustomId(`view_warnings_${user.id}`)
+            .setCustomId(`viewWarnings_${user.id}`)
             .setLabel('View Warnings')
             .setStyle(ButtonStyle.Secondary);
 
         const notesButton = new ButtonBuilder()
-            .setCustomId(`view_notes_${user.id}`)
+            .setCustomId(`viewNotes_${user.id}`)
             .setLabel('View Notes')
             .setStyle(ButtonStyle.Secondary);
 
-        // Button for viewing all moderation actions
         const viewAllButton = new ButtonBuilder()
-            .setCustomId(`view_moderation_${user.id}`)
+            .setCustomId(`viewModeration_${user.id}`)
             .setLabel('View All Moderation Actions')
             .setStyle(ButtonStyle.Primary);
 
-        // Action row setup
         const actionRow = new ActionRowBuilder()
             .addComponents(warningsButton, notesButton, viewAllButton);
 
