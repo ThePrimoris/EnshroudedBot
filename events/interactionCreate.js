@@ -4,7 +4,6 @@ const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
-        if (!interaction.isCommand() && !interaction.isButton() && !interaction.isStringSelectMenu()) return;
 
         if (interaction.isCommand()) {
             const command = client.commands.get(interaction.commandName);
