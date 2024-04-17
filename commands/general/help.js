@@ -3,7 +3,8 @@ const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, Permissi
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Displays information about commands.'),
+        .setDescription('Displays information about commands.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages),
     category: 'general',
     async execute(interaction) {
         const memberPermissions = interaction.member.permissions;
