@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('slowmode')
         .setDescription('Set slowmode in a channel.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addChannelOption(option =>
             option.setName('channel')
                 .setDescription('The channel where you want to set slowmode.')

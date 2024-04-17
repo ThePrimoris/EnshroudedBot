@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('mban')
         .setDescription('Ban multiple users from the server.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.BanMembers)
         .addStringOption(option =>
             option.setName('userids')
                 .setDescription('The user IDs to be banned, separated by spaces.')

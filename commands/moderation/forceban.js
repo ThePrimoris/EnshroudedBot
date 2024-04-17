@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('forceban')
         .setDescription('Ban a user not in the server by their ID.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.BanMembers)
         .addStringOption(option => 
             option.setName('userid')
                 .setDescription('The ID of the user to ban.')

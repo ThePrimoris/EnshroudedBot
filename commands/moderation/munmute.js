@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('munmute')
         .setDescription('Unmute multiple previously muted users.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addStringOption(option =>
             option.setName('users')
                 .setDescription('The users to be unmuted, mentioned as @user1 @user2 etc.')

@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('mmute')
         .setDescription('Mutes multiple users for a specified duration')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addStringOption(option =>
             option.setName('users')
                 .setDescription('The users to mute, mentioned as @user1 @user2 etc.')

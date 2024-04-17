@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
         .setDescription('Provides information about a user.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addUserOption(option =>
             option.setName('user')
                 .setDescription('The user you want to get information about')

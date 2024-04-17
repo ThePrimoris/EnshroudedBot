@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('purge')
         .setDescription('Deletes a specified number of recent messages. Optionally specify a user and/or channel.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addIntegerOption(option =>
             option.setName('amount')
                 .setDescription('Number of messages to delete')

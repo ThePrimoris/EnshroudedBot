@@ -5,6 +5,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('note')
         .setDescription('Records a note for a user.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addUserOption(option => 
             option.setName('user')
                 .setDescription('The user to record the note for.')
