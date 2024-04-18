@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -26,7 +26,6 @@ for (const folder of commandFolders) {
     }
 }
 
-// Load event files
 const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
@@ -37,6 +36,8 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args, client));
     }
 }
+
+client.user.setActivity('👀 Enshrouded', { type: ActivityType.Watching });
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
