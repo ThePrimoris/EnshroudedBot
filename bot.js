@@ -39,7 +39,7 @@ for (const file of eventFiles) {
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
-    client.user.setActivity('👀 Enshrouded', { type: ActivityType.Watching });
+    client.user.setActivity('The Enshrouded Discord Server', { type: ActivityType.Watching });
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
