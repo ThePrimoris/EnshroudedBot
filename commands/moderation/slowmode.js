@@ -4,7 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('slowmode')
         .setDescription('Set slowmode in a channel.')
-        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageChannels)
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
         .addChannelOption(option =>
             option.setName('channel')
                 .setDescription('The channel where you want to set slowmode.')
@@ -22,7 +22,7 @@ module.exports = {
                     { name: '2 minutes', value: '120' }
                 )),
     async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageChannels)) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
         }
 
