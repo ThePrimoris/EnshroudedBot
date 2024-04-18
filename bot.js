@@ -37,10 +37,9 @@ for (const file of eventFiles) {
     }
 }
 
-client.user.setActivity('👀 Enshrouded', { type: ActivityType.Watching });
-
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
+    client.user.setActivity('👀 Enshrouded', { type: ActivityType.Watching });
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
