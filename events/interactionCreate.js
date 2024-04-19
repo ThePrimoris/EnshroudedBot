@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan, UserLevel } = require('../database/index'); 
+=======
+const {  EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { UserWarning, UserNote, UserMute, UserBan, CustomCommand } = require('../database/index'); 
+>>>>>>> Stashed changes
 
 module.exports = {
     name: 'interactionCreate',
@@ -138,6 +143,7 @@ module.exports = {
                 const className = interaction.customId.split('class_role_')[1].replaceAll('_', ' ');
                 const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === className.toLowerCase());
             
+<<<<<<< Updated upstream
                 if (!role) {
                     await interaction.reply({ content: `The role for class "${className}" does not exist in this server.`, ephemeral: true });
                     return;
@@ -159,6 +165,24 @@ module.exports = {
                 }
             }
 
+=======
+        } else if (interaction.isModalSubmit()) {
+            if (interaction.customId === 'createCustomCommand') {
+                const name = interaction.fields.getTextInputValue('commandName');
+                const title = interaction.fields.getTextInputValue('title');
+                const description = interaction.fields.getTextInputValue('description');
+
+                try {
+                    // Assuming CustomCommand is your Sequelize model for the custom commands
+                    // Save the new custom command to the database
+                    await CustomCommand.create({ name, title, description });
+                    await interaction.reply({ content: `Custom command \`${name}\` has been created successfully!`, ephemeral: true });
+                } catch (error) {
+                    console.error('Error saving custom command:', error);
+                    await interaction.reply({ content: 'There was an error creating the custom command. It might already exist or there was a server error.', ephemeral: true });
+                }
+            }
+>>>>>>> Stashed changes
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate(); // Ensure immediate acknowledgement of the interaction

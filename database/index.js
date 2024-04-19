@@ -16,6 +16,7 @@ const UserNote = require('./models/UserNote')(sequelize, DataTypes);
 const UserLevel = require('./models/UserLevel')(sequelize, DataTypes);
 const UserMute = require('./models/UserMute')(sequelize, DataTypes);
 const UserBan = require('./models/UserBan')(sequelize, DataTypes);
+const CustomCommand = require('./models/CustomCommand')(sequelize, DataTypes);
 
 // Persistent cooldown set for addXP function
 const cooldown = new Set();
@@ -64,5 +65,9 @@ module.exports = {
   UserLevel,
   UserMute,
   UserBan,
+<<<<<<< Updated upstream
   addXP,
+=======
+  CustomCommand,
+>>>>>>> Stashed changes
 };
