@@ -37,9 +37,20 @@ for (const file of eventFiles) {
     }
 }
 
+const activities = [
+    { name: 'Enshrouded', type: ActivityType.Playing },
+    { name: 'the Discord server 👀', type: ActivityType.Watching }
+];
+
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
-    client.user.setActivity('Enshrouded', { type: ActivityType.Playing });
+    let i = 0;
+    client.user.setActivity(activities[i].name, { type: activities[i].type });
+
+setInterval(() => {
+    i = (i + 1) % activities.length; // Increase i and loop back to 0 when it exceeds the length of the activities array
+    client.user.setActivity(activities[i].name, { type: activities[i].type });
+}, 10 * 60 * 1000); // 10 minutes in milliseconds
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
