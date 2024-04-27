@@ -48,9 +48,9 @@ client.once('ready', () => {
     client.user.setActivity(activities[i].name, { type: activities[i].type });
 
 setInterval(() => {
-    i = (i + 1) % activities.length; // Increase i and loop back to 0 when it exceeds the length of the activities array
+    i = (i + 1) % activities.length;
     client.user.setActivity(activities[i].name, { type: activities[i].type });
-}, 10 * 60 * 1000); // 10 minutes in milliseconds
+}, 10 * 60 * 1000);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);

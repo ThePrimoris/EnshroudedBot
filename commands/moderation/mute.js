@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
-const { UserMute } = require('../../database'); // Make sure this path matches your actual file structure
+const { UserMute } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,7 +21,6 @@ module.exports = {
     requiredPermissions: ['ManageMessages'],
     category: 'moderation',
     async execute(interaction) {
-        // Check for ManageMessages permission
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
