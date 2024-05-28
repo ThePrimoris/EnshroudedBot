@@ -1,14 +1,15 @@
-const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField, ChannelType } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('say')
+    .setName('message')
     .setDescription('Send a message to a specified channel')
     .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
     .addChannelOption(option =>
       option.setName('channel')
         .setDescription('The channel to send the message to')
-        .setRequired(true))
+        .setRequired(true)
+        .addChannelTypes(ChannelType.GuildText)) // Ensure only text channels are selectable
     .addStringOption(option =>
       option.setName('message')
         .setDescription('The message to send')
@@ -22,10 +23,6 @@ module.exports = {
 
     const channel = interaction.options.getChannel('channel');
     const message = interaction.options.getString('message');
-
-    if (!channel.isText()) {
-      return interaction.reply({ content: 'Please select a text channel.', ephemeral: true });
-    }
 
     try {
       await channel.send(message);
