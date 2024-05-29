@@ -26,7 +26,7 @@ module.exports = {
 
     try {
       await channel.send(message);
-      await interaction.reply({ content: `Message sent to ${channel}`, ephemeral: true });
+      await interaction.reply({ content: `Message sent to ${channel}`, ephemeral: false });
     } catch (error) {
       console.error('Error executing say command:', error);
       await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
