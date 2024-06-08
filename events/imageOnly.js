@@ -1,3 +1,5 @@
+const { Events } = require('discord.js');
+
 const specifiedChannelId = '1046840542006345841';
 
 module.exports = {
