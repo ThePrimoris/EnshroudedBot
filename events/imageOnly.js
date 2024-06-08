@@ -7,10 +7,13 @@ module.exports = {
     async execute(message) {
         // Check if the message is in the specified channel and is not from a bot
         if (message.channel.id === specifiedChannelId && !message.author.bot) {
-            // Check if the message has an image attachment
+            // Check if the author is a moderator (has MANAGE_MESSAGES permission)
+            const isModerator = message.member.permissions.has('MANAGE_MESSAGES');
+
+            // Check if the message has an image attachment or if the author is a moderator
             const hasImageAttachment = message.attachments.some(attachment => attachment.contentType.startsWith('image/'));
 
-            if (!hasImageAttachment) {
+            if (!hasImageAttachment && !isModerator) {
                 // Delete the message
                 await message.delete();
 
