@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, PermissionsBitField } = require('discord.js');
 
 const specifiedChannelId = '1046840542006345841';
 
@@ -8,7 +8,7 @@ module.exports = {
         // Check if the message is in the specified channel and is not from a bot
         if (message.channel.id === specifiedChannelId && !message.author.bot) {
             // Check if the author is a moderator (has MANAGE_MESSAGES permission)
-            const isModerator = message.member.permissions.has('MANAGE_MESSAGES');
+            const isModerator = message.member.permissions.has(PermissionsBitField.Flags.ManageMessages);
 
             // Check if the message has an image attachment or if the author is a moderator
             const hasImageAttachment = message.attachments.some(attachment => attachment.contentType.startsWith('image/'));
