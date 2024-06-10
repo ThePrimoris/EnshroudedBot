@@ -1,6 +1,7 @@
 const { Events, PermissionsBitField } = require('discord.js');
 
 const specifiedChannelId = '1046840542006345841';
+const creativeCornerChannelId = '1235270718577578085'; // #creative-corner channel ID
 
 module.exports = {
     name: Events.MessageCreate,
@@ -11,7 +12,7 @@ module.exports = {
             const isModerator = message.member.permissions.has(PermissionsBitField.Flags.ManageMessages);
 
             // Check if the message has an image attachment or if the author is a moderator
-            const hasImageAttachment = message.attachments.some(attachment => attachment.contentType.startsWith('image/'));
+            const hasImageAttachment = message.attachments.some(attachment => attachment.contentType && attachment.contentType.startsWith('image/'));
 
             if (!hasImageAttachment && !isModerator) {
                 // Delete the message
@@ -19,7 +20,7 @@ module.exports = {
 
                 // Send a response to the user
                 await message.channel.send({
-                    content: `${message.author}, your message was removed as this channel is image only. Please use #creative-corner for conversation.`,
+                    content: `${message.author}, your message was removed as this channel is image only. Please use <#${creativeCornerChannelId}> for conversation.`,
                     allowedMentions: { users: [message.author.id] }
                 });
             }
