@@ -19,10 +19,15 @@ module.exports = {
                 await message.delete();
 
                 // Send a response to the user
-                await message.channel.send({
+                const responseMessage = await message.channel.send({
                     content: `${message.author}, your message was removed as this channel is image only. Please use <#${creativeCornerChannelId}> for conversation.`,
                     allowedMentions: { users: [message.author.id] }
                 });
+
+                // Delete the bot's response after a few seconds (e.g., 10 seconds)
+                setTimeout(() => {
+                    responseMessage.delete().catch(console.error);
+                }, 60000); // 60 seconds
             }
         }
     },
