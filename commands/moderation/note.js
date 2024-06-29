@@ -34,7 +34,7 @@ module.exports = {
                 issuerName: issuerName,
             });
 
-            await interaction.reply({ content: `Note recorded for ${user.username}.`, ephemeral: false });
+            await interaction.reply({ content: `Note recorded for ${user.username}: "${noteContent}".`, ephemeral: false });
         } catch (error) {
             console.error('Failed to record note:', error);
             await interaction.reply({ content: 'Failed to record note. Please try again later.', ephemeral: true });
