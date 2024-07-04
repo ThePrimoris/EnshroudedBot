@@ -23,12 +23,13 @@ module.exports = {
 
     const channel = interaction.options.getChannel('channel');
     const message = interaction.options.getString('message');
+    const user = interaction.user;
 
     try {
       await channel.send(message);
-      await interaction.reply({ content: `Message sent to ${channel}`, ephemeral: false });
+      await interaction.reply({ content: `${user.tag} sent "${message}" to ${channel}`, ephemeral: false });
     } catch (error) {
-      console.error('Error executing say command:', error);
+      console.error('Error executing message command:', error);
       await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
     }
   },
