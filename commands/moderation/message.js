@@ -27,7 +27,7 @@ module.exports = {
 
     try {
       await channel.send(message);
-      await interaction.reply({ content: `${user.tag} sent "${message}" to ${channel}`, ephemeral: false });
+      await interaction.reply({ content: `@${user.tag} sent \`${message}\` to ${channel}`, ephemeral: false });
     } catch (error) {
       console.error('Error executing message command:', error);
       await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
