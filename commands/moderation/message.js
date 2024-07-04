@@ -28,11 +28,17 @@ module.exports = {
 
     try {
       await targetChannel.send(message);
-      if (interaction.channelId === replyChannelId) {
-        await interaction.reply({ content: `@${user.tag} sent \`${message}\` to ${targetChannel}`, ephemeral: false });
+
+      // Fetch the specific channel where the reply should be sent
+      const replyChannel = await interaction.client.channels.fetch(replyChannelId);
+      if (replyChannel) {
+        await replyChannel.send(`@${user.tag} sent \`${message}\` to ${targetChannel}`);
       } else {
-        await interaction.reply({ content: 'Message sent successfully.', ephemeral: true });
+        console.error('Reply channel not found.');
       }
+
+      // Acknowledge the interaction
+      await interaction.reply({ content: 'Message sent successfully.', ephemeral: true });
     } catch (error) {
       console.error('Error executing message command:', error);
       await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
