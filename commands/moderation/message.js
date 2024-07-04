@@ -21,13 +21,18 @@ module.exports = {
       return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
     }
 
-    const channel = interaction.options.getChannel('channel');
+    const targetChannel = interaction.options.getChannel('channel');
     const message = interaction.options.getString('message');
     const user = interaction.user;
+    const replyChannelId = '1047449388089356328';
 
     try {
-      await channel.send(message);
-      await interaction.reply({ content: `@${user.tag} sent \`${message}\` to ${channel}`, ephemeral: false });
+      await targetChannel.send(message);
+      if (interaction.channelId === replyChannelId) {
+        await interaction.reply({ content: `@${user.tag} sent \`${message}\` to ${targetChannel}`, ephemeral: false });
+      } else {
+        await interaction.reply({ content: 'Message sent successfully.', ephemeral: true });
+      }
     } catch (error) {
       console.error('Error executing message command:', error);
       await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
