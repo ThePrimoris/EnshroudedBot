@@ -32,7 +32,7 @@ module.exports = {
       // Fetch the specific channel where the reply should be sent
       const replyChannel = await interaction.client.channels.fetch(replyChannelId);
       if (replyChannel) {
-        await replyChannel.send(`@${user.tag} sent \`${message}\` to ${targetChannel}`);
+        await replyChannel.send(`<@${user.id}> sent \`${message}\` to ${targetChannel}`);
       } else {
         console.error('Reply channel not found.');
       }
