@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
-const { UserWarning, UserNote, UserMute, UserBan } = require('../../database');
+const { UserWarning, UserNote, UserMute, UserBan } = require('../../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()

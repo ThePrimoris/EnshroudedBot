@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
-const { UserBan } = require('../../database');
+const { UserBan } = require('../../../database');
 
 function parseDuration(time) {
     const regex = /^(\d+)([dhm])$/;
