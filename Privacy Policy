@@ -1,23 +1,45 @@
-# Privacy Policy
+Privacy Policy for The Flame
 
-The use of this application ("Bot") in a server requires the collection of some specific user data ("Data"). The Data collected includes, but is not limited to Discord user ID values. Use of the Bot is considered an agreement to the terms of this Policy. 
+Effective Date: 5 July 2024
 
-## Access to Data
+1. Introduction
 
-Access to Data is only permitted to Bot's developers, and only in the scope required for the development, testing, and implementation of features for Bot. Data is not sold, provided to, or shared with any third party, except where required by law or a Terms of Service agreement. You can view the data upon request from `@.primoris` on Discord.
+The Flame ("the Bot") is committed to protecting your privacy. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your information.
 
-## Storage of Data
+2. Information We Collect
 
-Data is stored in a MongoDB database. The database is secured to prevent external access, however no guarantee is provided and the Bot owners assume no liability for the unintentional or malicious breach of Data. In the event of an unauthorised Data access, users will be notified through the Discord client application.
+    2.1 User Data: The Bot collects and stores your Discord username and user ID when you interact with it. This information is used to provide and improve the Bot’s services.
+    2.2 Server Data: The Bot collects and stores server-specific data such as server IDs, channel IDs, and roles to ensure proper functioning and to provide specific features.
 
-## User Rights
+3. How We Use Your Information
 
-At any time, you have the right to request to view the Data pertaining to your Discord account. You may submit a request through the `@.primoris`. You have the right to request the removal of relevant Data.
+    3.1 Providing Services: We use the collected data to operate and maintain the Bot, including executing commands and managing user interactions.
+    3.2 Improving Services: We may use the data to understand how the Bot is used and to make improvements.
 
-## Underage Users
+4. Data Storage and Security
 
-The use of the Bot is not permitted for minors under the age of 13, or under the age of legal consent for their country. This is in compliance with the [Discord Terms of Service](https://discord.com/terms). No information will be knowingly stored from an underage user. If it is found out that a user is underage we will take all necessary action to delete the stored data.
+    4.1 Data Storage: Your data is stored securely on our servers. We implement appropriate technical and organizational measures to protect your data against unauthorized access, alteration, disclosure, or destruction.
+    4.2 Data Retention: We retain your data for as long as necessary to provide you with the Bot’s services and for legitimate and essential business purposes, such as maintaining the performance of the Bot, making data-driven business decisions about new features and offerings, complying with our legal obligations, and resolving disputes.
 
-## Questions
+5. Opting Out
 
-If you have any questions or are concerned about what data might be being stored from your account contact `@.primoris`. For more information check the [Discord Terms Of Service](https://discord.com/terms).
+    5.1 Opt-Out Process: If you wish to opt out of having your Discord username and user ID stored by the Bot, you can do so by contacting us at @.Primoris. Upon receiving your request, we will remove your data from our records within [time frame, e.g., 30 days].
+    5.2 Impact of Opting Out: Please note that opting out may limit your ability to use certain features of the Bot, as some functionalities depend on the data we collect.
+
+6. Sharing Your Information
+
+    6.1 Third Parties: We do not share your data with third parties, except as required by law or to protect our rights.
+    6.2 Legal Obligations: We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).
+
+7. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the effective date at the top. You are advised to review this Privacy Policy periodically for any changes.
+
+8. Your Rights
+
+    8.1 Access and Correction: You have the right to access and correct your personal data. You can do this by contacting us at @.Primoris.
+    8.2 Deletion: You have the right to request the deletion of your data. If you wish to exercise this right, please contact us at @.Primoris.
+
+9. Contact Us
+
+If you have any questions about this Privacy Policy or our data practices, please contact us at @.Primoris.
