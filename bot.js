@@ -6,10 +6,10 @@ const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord
 
 const client = new Client({
     intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
+        //GatewayIntentBits.Guilds,
+        //GatewayIntentBits.GuildMembers,
+        //GatewayIntentBits.GuildMessages,
+        //GatewayIntentBits.MessageContent,
     ]
 });
 
