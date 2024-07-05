@@ -15,14 +15,19 @@ const client = new Client({
 
 client.commands = new Collection();
 client.events = new Collection();
-const commandFolders = ['general', 'moderation'];
+
+const commandFolders = ['prefix-commands', 'slash-commands']; // Updated folders
 
 for (const folder of commandFolders) {
-    const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
+    const subfolders = ['general', 'moderation']; // Subfolders inside each command folder
 
-    for (const file of commandFiles) {
-        const command = require(`./commands/${folder}/${file}`);
-        client.commands.set(command.data.name, command);
+    for (const subfolder of subfolders) {
+        const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder, subfolder)).filter(file => file.endsWith('.js'));
+
+        for (const file of commandFiles) {
+            const command = require(`./commands/${folder}/${subfolder}/${file}`);
+            client.commands.set(command.data.name, command);
+        }
     }
 }
 
@@ -47,10 +52,10 @@ client.once('ready', () => {
     let i = 0;
     client.user.setActivity(activities[i].name, { type: activities[i].type });
 
-setInterval(() => {
-    i = (i + 1) % activities.length;
-    client.user.setActivity(activities[i].name, { type: activities[i].type });
-}, 10 * 60 * 1000);
+    setInterval(() => {
+        i = (i + 1) % activities.length;
+        client.user.setActivity(activities[i].name, { type: activities[i].type });
+    }, 10 * 60 * 1000);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
