@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
-const { UserNote } = require('../../../database'); // Ensure the path points to your updated UserNote model
+const { UserNote } = require('../../database'); // Ensure the path points to your updated UserNote model
 
 module.exports = {
     data: new SlashCommandBuilder()
