@@ -1,4 +1,4 @@
-// commandHandler.js
+/* commandHandler.js
 
 const { Permissions } = require('discord.js');
 const { prefix } = require('./config.json'); // Adjust this to your config file or directly use your prefix
@@ -33,4 +33,4 @@ module.exports = (client) => {
             message.reply({ content: 'There was an error executing that command.' });
         }
     });
-};
+}; */
