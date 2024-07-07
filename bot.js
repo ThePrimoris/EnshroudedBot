@@ -3,12 +3,13 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
+const commandHandler = require('./handlers/command-handler');
 
 const client = new Client({
     intents: [
-        //GatewayIntentBits.Guilds,
-        //GatewayIntentBits.GuildMembers,
-        //GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
         //GatewayIntentBits.MessageContent,
     ]
 });
