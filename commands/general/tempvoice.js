@@ -44,7 +44,7 @@ module.exports = {
             userLimit: userLimit,
         });
 
-        const replyMessage = await interaction.reply(`Voice channel created: ${voiceChannel.name} in ${category.name}`);
+        const replyMessage = await interaction.reply(`Voice channel created: ${voiceChannel} in ${category.name}`);
 
         // Set a timeout to delete the reply message after 30 seconds
         setTimeout(() => {
