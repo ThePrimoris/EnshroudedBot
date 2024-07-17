@@ -39,7 +39,7 @@ module.exports = {
         // Create the voice channel
         try {
             const voiceChannel = await guild.channels.create(`${user.username}'s Channel`, {
-                type: 2,
+                type: 'GUILD_VOICE', // Use string constant for voice channel type
                 parent: CATEGORY_ID,
                 userLimit: userLimit,
             });
