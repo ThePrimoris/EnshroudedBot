@@ -27,6 +27,9 @@ module.exports = {
             }
         }
 
+        // Fetch the category
+        const category = guild.channels.cache.get(CATEGORY_ID);
+
         // Check if the user already has a channel
         const existingChannel = guild.channels.cache.find(channel => channel.name === `${user.username}'s Channel` && channel.parentId === CATEGORY_ID);
         if (existingChannel) {
@@ -42,24 +45,24 @@ module.exports = {
                 userLimit: userLimit,
             });
 
-            await interaction.reply(`Voice channel created: ${voiceChannel} in category ${CATEGORY_ID}`);
+            await interaction.reply(`Voice channel created: ${voiceChannel} in ${category.name}`);
 
             // Set the cooldown
             cooldowns.set(user.id, Date.now());
 
-            // Function to delete the channel if it is empty for more than 2 minutes
+            // Function to delete the channel if it is empty for more than 30 seconds
             const checkIfEmpty = async () => {
                 if (voiceChannel.members.size === 0) {
                     await voiceChannel.delete();
                     console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
                     cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
                 } else {
-                    setTimeout(checkIfEmpty, 120000); // Check again in 2 minutes
+                    setTimeout(checkIfEmpty, 30000); // Check again in 30 seconds
                 }
             };
 
             // Start the check
-            setTimeout(checkIfEmpty, 120000); // Start the initial check in 2 minutes
+            setTimeout(checkIfEmpty, 30000); // Start the initial check in 30 seconds
 
         } catch (error) {
             console.error('Error creating voice channel:', error);
