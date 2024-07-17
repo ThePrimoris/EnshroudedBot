@@ -23,7 +23,7 @@ module.exports = {
             const expirationTime = cooldowns.get(user.id) + 300000; // 5 minutes in milliseconds
             if (Date.now() < expirationTime) {
                 const timeLeft = (expirationTime - Date.now()) / 1000;
-                return interaction.reply(`Please wait ${timeLeft.toFixed(1)} more seconds before reusing the \`/create\` command.`);
+                return interaction.reply(`Please wait ${timeLeft.toFixed(1)} more seconds before reusing the \`/temporary-voice-channel\` command.`);
             }
         }
 
@@ -40,12 +40,17 @@ module.exports = {
         try {
             const voiceChannel = await guild.channels.create({
                 name: `${user.username}'s Channel`,
-                type: 2, // 2 is the type for voice channel
+                type: 'GUILD_VOICE', // 'GUILD_VOICE' is the type for voice channel in Discord.js v13
                 parent: CATEGORY_ID,
                 userLimit: userLimit,
             });
 
-            await interaction.reply(`Voice channel created: ${voiceChannel} in ${category.name}`);
+            const replyMessage = await interaction.reply(`Voice channel created: ${voiceChannel} in ${category.name}`);
+
+            // Set a timeout to delete the reply message after 30 seconds
+            setTimeout(() => {
+                replyMessage.delete().catch(console.error);
+            }, 30000);
 
             // Set the cooldown
             cooldowns.set(user.id, Date.now());
