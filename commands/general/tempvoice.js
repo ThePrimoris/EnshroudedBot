@@ -5,7 +5,7 @@ const cooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('Temp Voice Channel')
+        .setName('temporary-voice-channel')
         .setDescription('Create a temporary voice channel.')
         .addIntegerOption(option =>
             option.setName('userlimit')
