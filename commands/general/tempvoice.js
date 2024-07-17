@@ -36,7 +36,7 @@ module.exports = {
         }
 
         // Check if the main category has reached the channel limit
-        const mainCategoryChannels = guild.channels.cache.filter(channel => channel.parentId === MAIN_CATEGORY_ID && channel.type === 'GUILD_VOICE');
+        const mainCategoryChannels = guild.channels.cache.filter(channel => channel.parentId === MAIN_CATEGORY_ID && channel.type === 2);
         if (mainCategoryChannels.size >= MAX_CHANNELS_PER_CATEGORY) {
             // Use backup category
             category = guild.channels.cache.get(BACKUP_CATEGORY_ID);
@@ -53,9 +53,8 @@ module.exports = {
 
         // Create the voice channel
         try {
-            const voiceChannel = await guild.channels.create({
-                name: `${user.username}'s Channel`,
-                type: 'GUILD_VOICE', // 'GUILD_VOICE' is the type for voice channels
+            const voiceChannel = await guild.channels.create(`${user.username}'s Channel`, {
+                type: 2, // '2' is the type for voice channels
                 parent: category.id,
                 userLimit: userLimit,
             });
