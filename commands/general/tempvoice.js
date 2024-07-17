@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 
-const CATEGORY_ID = '1261551554566029313'; // Specified main category ID
+const MAIN_CATEGORY_ID = '1261551554566029313'; // Main category ID
 const BACKUP_CATEGORY_ID = '1263079947291988058'; // Backup category ID
+const MAX_CHANNELS_PER_CATEGORY = 50; // Maximum channels per category
 const cooldowns = new Map();
 
 module.exports = {
@@ -28,30 +29,19 @@ module.exports = {
             }
         }
 
-        // Determine the category to use
-        let category = guild.channels.cache.get(CATEGORY_ID);
+        // Determine which category to use
+        let category = guild.channels.cache.get(MAIN_CATEGORY_ID);
         if (!category) {
-            console.error(`Main category (${CATEGORY_ID}) not found.`);
-            return interaction.reply({ content: 'Main category not found. Please contact a server administrator.', ephemeral: true });
+            return interaction.reply({ content: 'Main category for voice channels not found.', ephemeral: true });
         }
 
-        // Check if the main category is full (50 channels limit)
-        if (category.type !== 'GUILD_CATEGORY') {
-            console.error(`Channel ${CATEGORY_ID} is not a category.`);
-            return interaction.reply({ content: 'Main category is not valid. Please contact a server administrator.', ephemeral: true });
-        }
-
-        if (category.children.size >= 50) {
-            // Use the backup category
+        // Check if the main category has reached the channel limit
+        const mainCategoryChannels = guild.channels.cache.filter(channel => channel.parentId === MAIN_CATEGORY_ID && channel.type === 'GUILD_VOICE');
+        if (mainCategoryChannels.size >= MAX_CHANNELS_PER_CATEGORY) {
+            // Use backup category
             category = guild.channels.cache.get(BACKUP_CATEGORY_ID);
             if (!category) {
-                console.error(`Backup category (${BACKUP_CATEGORY_ID}) not found.`);
-                return interaction.reply({ content: 'Backup category not found. Please contact a server administrator.', ephemeral: true });
-            }
-
-            if (category.type !== 'GUILD_CATEGORY') {
-                console.error(`Channel ${BACKUP_CATEGORY_ID} is not a category.`);
-                return interaction.reply({ content: 'Backup category is not valid. Please contact a server administrator.', ephemeral: true });
+                return interaction.reply({ content: 'Backup category for voice channels not found.', ephemeral: true });
             }
         }
 
@@ -63,9 +53,8 @@ module.exports = {
 
         // Create the voice channel
         try {
-            const voiceChannel = await guild.channels.create({
-                name: `${user.username}'s Channel`,
-                type: 2, // 2 is the type for voice channel
+            const voiceChannel = await guild.channels.create(`${user.username}'s Channel`, {
+                type: 2, // 2 is the type for voice channels
                 parent: category.id,
                 userLimit: userLimit,
             });
@@ -96,7 +85,7 @@ module.exports = {
 
         } catch (error) {
             console.error('Error creating voice channel:', error);
-            return interaction.reply({ content: 'There was an error trying to create the voice channel.', ephemeral: true });
+            return interaction.reply({ content: 'There was an error trying to create the voice channel. Please ensure the bot has the required permissions.', ephemeral: true });
         }
     },
 };
