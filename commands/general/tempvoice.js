@@ -36,7 +36,7 @@ module.exports = {
         }
 
         // Check if the main category has reached the channel limit
-        const mainCategoryChannels = guild.channels.cache.filter(channel => channel.parentId === MAIN_CATEGORY_ID && channel.type === 'GUILD_VOICE');
+        const mainCategoryChannels = guild.channels.cache.filter(channel => channel.parentId === MAIN_CATEGORY_ID && channel.type === '2');
         if (mainCategoryChannels.size >= MAX_CHANNELS_PER_CATEGORY) {
             // Use backup category
             category = guild.channels.cache.get(BACKUP_CATEGORY_ID);
