@@ -5,7 +5,7 @@ const cooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('create')
+        .setName('Temp Voice Channel')
         .setDescription('Create a temporary voice channel.')
         .addIntegerOption(option =>
             option.setName('userlimit')
@@ -34,30 +34,36 @@ module.exports = {
         }
 
         // Create the voice channel
-        const voiceChannel = await guild.channels.create({
-            name: `${user.username}'s Channel`,
-            type: 2, // 2 is the type for voice channel
-            parent: CATEGORY_ID,
-            userLimit: userLimit,
-        });
+        try {
+            const voiceChannel = await guild.channels.create({
+                name: `${user.username}'s Channel`,
+                type: 2, // 2 is the type for voice channel
+                parent: CATEGORY_ID,
+                userLimit: userLimit,
+            });
 
-        await interaction.reply(`Voice channel created: ${voiceChannel}`);
+            await interaction.reply(`Voice channel created: ${voiceChannel} in category ${CATEGORY_ID}`);
 
-        // Set the cooldown
-        cooldowns.set(user.id, Date.now());
+            // Set the cooldown
+            cooldowns.set(user.id, Date.now());
 
-        // Function to delete the channel if it is empty for more than 2 minutes
-        const checkIfEmpty = async () => {
-            if (voiceChannel.members.size === 0) {
-                await voiceChannel.delete();
-                console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-            } else {
-                setTimeout(checkIfEmpty, 120000); // Check again in 2 minutes
-            }
-        };
+            // Function to delete the channel if it is empty for more than 2 minutes
+            const checkIfEmpty = async () => {
+                if (voiceChannel.members.size === 0) {
+                    await voiceChannel.delete();
+                    console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                    cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
+                } else {
+                    setTimeout(checkIfEmpty, 120000); // Check again in 2 minutes
+                }
+            };
 
-        // Start the check
-        setTimeout(checkIfEmpty, 120000); // Start the initial check in 2 minutes
+            // Start the check
+            setTimeout(checkIfEmpty, 120000); // Start the initial check in 2 minutes
+
+        } catch (error) {
+            console.error('Error creating voice channel:', error);
+            return interaction.reply('There was an error trying to create the voice channel. Please ensure the bot has the required permissions.');
+        }
     },
 };
