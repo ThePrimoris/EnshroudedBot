@@ -5,7 +5,7 @@ const cooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('temporary-voice-channel')
+        .setName('Create-Voice-Channel')
         .setDescription('Create a temporary voice channel.')
         .addIntegerOption(option =>
             option.setName('userlimit')
@@ -38,14 +38,13 @@ module.exports = {
 
         // Create the voice channel
         try {
-            const voiceChannel = await guild.channels.create({
-                name: `${user.username}'s Channel`,
-                type: 'GUILD_VOICE', // 'GUILD_VOICE' is the type for voice channel in Discord.js v13
+            const voiceChannel = await guild.channels.create(`${user.username}'s Channel`, {
+                type: 'GUILD_VOICE', // This should be 'GUILD_VOICE'
                 parent: CATEGORY_ID,
                 userLimit: userLimit,
             });
 
-            const replyMessage = await interaction.reply(`Voice channel created: ${voiceChannel} in ${category.name}`);
+            const replyMessage = await interaction.reply(`Voice channel created: ${voiceChannel.name} in ${category.name}`);
 
             // Set a timeout to delete the reply message after 30 seconds
             setTimeout(() => {
