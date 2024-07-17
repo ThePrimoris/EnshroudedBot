@@ -20,7 +20,7 @@ module.exports = {
 
         // Check if the user is on cooldown
         if (cooldowns.has(user.id)) {
-            const expirationTime = cooldowns.get(user.id) + 300000; // 5 minutes in milliseconds
+            const expirationTime = cooldowns.get(user.id) + 300000; // 5 minutes
             if (Date.now() < expirationTime) {
                 const timeLeft = (expirationTime - Date.now()) / 1000;
                 return interaction.reply(`Please wait ${timeLeft.toFixed(1)} more seconds before reusing the \`/create-lobby\` command.`);
@@ -39,7 +39,7 @@ module.exports = {
         // Create the voice channel
         const voiceChannel = await guild.channels.create({
             name: `${user.username}'s Channel`,
-            type: 2, // 2 is the type for voice channel
+            type: 2,
             parent: CATEGORY_ID,
             userLimit: userLimit,
         });
