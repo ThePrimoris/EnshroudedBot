@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,7 +23,7 @@ module.exports = {
 Any structures or items created by the player within the flame radius remain for 30 minutes, or if the player logs out/server is reset. Everything in the previous radius is reset.
         `;
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('How do Flame Altars & Flame Levels work?')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
