@@ -4,14 +4,8 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('altars')
-        .setDescription('Provides information about Flame Altars and Levels.')
-        .addStringOption(option => 
-            option.setName('title')
-                .setDescription('How do Flame Altars & Flame Levels work?')
-                .setRequired(true)),
+        .setDescription('Provides information about Flame Altars and Levels.'),
     async execute(interaction) {
-        const title = interaction.options.getString('title');
-
         const embedDescription = `
 - **Altar levels increase maximum size the altar covers, require varying flame levels and cost Shroud Cores.**
 - **Flame levels are shared between all altars, they increase altar capacity, shroud levels and award attribute bonuses and shroud timer increase.**
@@ -30,7 +24,7 @@ Any structures or items created by the player within the flame radius remain for
         `;
 
         const embed = new MessageEmbed()
-            .setTitle(title)
+            .setTitle('How do Flame Altars & Flame Levels work?')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
             .setFooter(embedFooter);
