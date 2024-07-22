@@ -27,7 +27,7 @@ Any structures or items created by the player within the flame radius remain for
             .setTitle('How do Flame Altars & Flame Levels work?')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
-            .setFooter(embedFooter);
+            .setFooter({ text: embedFooter.trim() });
 
         await interaction.reply({ embeds: [embed] });
     },
