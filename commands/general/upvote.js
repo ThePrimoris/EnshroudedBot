@@ -9,12 +9,12 @@ module.exports = {
         const embedDescription = `
 **What is Feature Upvote?**
 - It is a site where players can make suggestions for the game and upvote other suggestions for a chance to get them implemented.
+- **Please search for your suggestion before submitting to avoid duplicates.**
 
 **Suggestions may be open/closed at any time to review backlogs.**
-- Please search for your suggestion before submitting to avoid duplicates.
 - Upvote suggestions you like to increase their chances of being implemented.
 
-Enshrouded Feature Upvote: [Click Here](https://enshrouded.featureupvote.com/)
+**Enshrouded Feature Upvote: [Click Here](https://enshrouded.featureupvote.com/)**
         `.trim();
 
         const embedFooter = `
