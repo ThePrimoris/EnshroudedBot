@@ -15,17 +15,17 @@ module.exports = {
 - Upvote suggestions you like to increase their chances of being implemented.
 
 Enshrouded Feature Upvote: [Click Here](https://enshrouded.featureupvote.com/)
-        `;
+        `.trim();
 
         const embedFooter = `
 Keep suggestions to one per ticket, we will delete any tickets containing general feedback, multiple suggestions or duplicates (as that defeats the purpose of the site.)
-        `;
+        `.trim();
 
         const embed = new EmbedBuilder()
             .setTitle('Official Enshrouded Feature Suggestions')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
-            .setFooter({ text: embedFooter.trim() });
+            .setFooter({ text: embedFooter });
 
         await interaction.reply({ embeds: [embed] });
     },
