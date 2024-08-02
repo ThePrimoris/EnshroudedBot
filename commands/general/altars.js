@@ -27,7 +27,7 @@ Any structures or items created by the player within the flame radius remain for
             .setTitle('How do Flame Altars & Flame Levels work?')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
-            .setThumbnail('https://enshrouded.wiki.gg/wiki/File:Flame_Altar.png')
+            .setThumbnail('https://enshrouded.wiki.gg/images/9/96/Flame_Altar.png')
             .setFooter({ text: embedFooter.trim() });
 
         await interaction.reply({ embeds: [embed] });
