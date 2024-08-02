@@ -25,6 +25,7 @@ Keep suggestions to one per ticket, we will delete any tickets containing genera
             .setTitle('Official Enshrouded Feature Suggestions')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
+            .setThumbnail('https://icons.veryicon.com/png/o/miscellaneous/kara/upvote-1.png')
             .setFooter({ text: embedFooter });
 
         await interaction.reply({ embeds: [embed] });
