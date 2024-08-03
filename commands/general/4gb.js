@@ -16,7 +16,6 @@ Please grab the 4GBVRAM GPU gane role in **#Channels & Roles** to be notified of
             .setTitle('Enshrouded Minimum Requirements')
             .setDescription(embedDescription)
             .setColor('#3f9dd5')
-            .setFooter({ text: embedFooter.trim() });
 
         await interaction.reply({ embeds: [embed] });
     },
