@@ -9,7 +9,7 @@ module.exports = {
         const embedDescription = `
 We have no official word on the game's minimum requirements at Early Access launch, but the developers are working hard to optimize the game for lower-end systems.
 
-Please grab the 4GBVRAM GPU gane role in **#Channels & Roles** to be notified of any updates on this topic.
+Please grab the 4GBVRAM GPU gane role in <id:customize> to be notified of any updates on this topic.
         `;
 
         const embed = new EmbedBuilder()
