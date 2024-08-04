@@ -37,22 +37,11 @@ module.exports = {
             return interaction.reply({ content: 'Failed to fetch moderation data. Please try again later.', ephemeral: true });
         }
 
-        // Retrieve and format roles with colors
-        const roleFields = member.roles.cache
+        // Format roles with their colors
+        const roleNames = member.roles.cache
             .filter(role => role.id !== interaction.guild.id) // Exclude @everyone role
-            .map(role => ({
-                name: role.name,
-                value: '\u200B', // Use an empty value to show only the color
-                inline: true
-            }))
-            .reduce((fields, role) => {
-                // Add new fields with role color
-                if (fields.length % 25 === 0) {
-                    fields.push({ name: '\u200B', value: '\u200B', inline: true }); // Add a placeholder field if more than 25 roles
-                }
-                fields.push(role);
-                return fields;
-            }, []);
+            .map(role => `<@&${role.id}>`)
+            .join(' ');
 
         // Create the embed
         const embed = new EmbedBuilder()
@@ -72,19 +61,10 @@ module.exports = {
                 { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
                 { name: '📅 Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
                 { name: '🗓️ Account Created', value: user.createdAt.toDateString(), inline: true },
-                { name: '🔖 Roles', value: member.roles.cache.size > 1 ? 'See below for roles' : 'None', inline: false },
+                { name: '🔖 Roles', value: roleNames || 'None', inline: false },
                 { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: false }
             )
             .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
-
-        // Add role fields to the embed
-        roleFields.forEach(field => {
-            embed.addFields({
-                ...field,
-                inline: true,
-                color: member.roles.cache.find(r => r.name === field.name)?.color ?? 0x3498db // Set the color for the role
-            });
-        });
 
         // Create buttons
         const warningsButton = new ButtonBuilder()
