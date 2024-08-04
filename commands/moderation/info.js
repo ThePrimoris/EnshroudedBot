@@ -37,26 +37,33 @@ module.exports = {
             return interaction.reply({ content: 'Failed to fetch moderation data. Please try again later.', ephemeral: true });
         }
 
+        // Retrieve and format roles
+        const roles = member.roles.cache
+            .filter(role => role.id !== interaction.guild.id) // Exclude @everyone role
+            .map(role => role.name)
+            .join(', ') || 'None';
+
         const embed = new EmbedBuilder()
-        .setTitle(`${user.username}'s Information`)
-        .setDescription(`Details about ${user.username}`)
-        .setColor(0x3498db)
-        .setThumbnail(user.displayAvatarURL())
-        .addFields(
-            { name: '👤 Name', value: user.username, inline: true },
-            { name: '🆔 ID', value: user.id, inline: true },
-            { name: '🤖 Bot Account', value: user.bot ? 'Yes' : 'No', inline: true },
-            { name: '🎭 Animated Avatar', value: user.avatar && user.avatar.startsWith('a_') ? 'Yes' : 'No', inline: true },
-            { name: '🔗 Avatar URL', value: `[Click Here](${user.displayAvatarURL()})`, inline: true },
-            { name: '🔖 Profile Link', value: `<@${user.id}>`, inline: true }
-        )
-        .addFields(
-            { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
-            { name: '📅 Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
-            { name: '🗓️ Account Created', value: user.createdAt.toDateString(), inline: true },
-            { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: true }
-        )
-        .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+            .setTitle(`${user.username}'s Information`)
+            .setDescription(`Details about ${user.username}`)
+            .setColor(0x3498db)
+            .setThumbnail(user.displayAvatarURL())
+            .addFields(
+                { name: '👤 Name', value: user.username, inline: true },
+                { name: '🆔 ID', value: user.id, inline: true },
+                { name: '🤖 Bot Account', value: user.bot ? 'Yes' : 'No', inline: true },
+                { name: '🎭 Animated Avatar', value: user.avatar && user.avatar.startsWith('a_') ? 'Yes' : 'No', inline: true },
+                { name: '🔗 Avatar URL', value: `[Click Here](${user.displayAvatarURL()})`, inline: true },
+                { name: '🔖 Profile Link', value: `<@${user.id}>`, inline: true }
+            )
+            .addFields(
+                { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
+                { name: '📅 Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
+                { name: '🗓️ Account Created', value: user.createdAt.toDateString(), inline: true },
+                { name: '🔖 Roles', value: roles, inline: false },
+                { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: false }
+            )
+            .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
 
         const warningsButton = new ButtonBuilder()
             .setCustomId(`view_warnings:${user.id}`)
