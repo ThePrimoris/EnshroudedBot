@@ -29,6 +29,8 @@ module.exports = {
                     { name: '2 hours', value: '7200' },
                     { name: '6 hours', value: '21600' }
                 )),
+    requiredPermissions: ['ManageMessages'],
+    category: 'moderation',
     async execute(interaction) {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return await interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
