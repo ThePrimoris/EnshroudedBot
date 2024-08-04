@@ -10,14 +10,14 @@ module.exports = {
 
         // Building the select menu options from commands, including a permissions check
         const commandOptions = Array.from(interaction.client.commands.values()).filter(cmd => {
-            // Get required permissions from the command
-            const requiredPermissions = cmd.data.defaultMemberPermissions || 0;
-            
-            // Convert requiredPermissions into a PermissionsBitField object
-            const requiredPermissionsBitField = new PermissionsBitField(requiredPermissions);
-
-            // Check if the user has the required permissions
-            return memberPermissions.has(requiredPermissionsBitField);
+            // If the command has a requiredPermissions array, check if the user has all those permissions
+            if (cmd.requiredPermissions) {
+                return cmd.requiredPermissions.every(perm => 
+                    memberPermissions.has(PermissionsBitField.Flags[perm])
+                );
+            }
+            // Include the command if it does not specify required permissions
+            return true;
         }).map(cmd => ({
             label: cmd.data.name,
             description: cmd.data.description.slice(0, 50), // Limit description length
