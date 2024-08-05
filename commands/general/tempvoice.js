@@ -56,22 +56,28 @@ module.exports = {
 
         // Function to delete the channel when all users disconnect
         const monitorChannel = async () => {
+            const checkIfEmpty = () => {
+                if (voiceChannel.members.size === 0) {
+                    voiceChannel.delete()
+                        .then(() => {
+                            console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                            cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
+                            guild.client.removeListener('voiceStateUpdate', listener); // Stop listening to voice state updates
+                        })
+                        .catch(console.error);
+                }
+            };
+
             const listener = (oldState, newState) => {
                 // Check if the old state was in this voice channel and the new state is either disconnected or in a different channel
                 if (oldState.channelId === voiceChannel.id && newState.channelId !== voiceChannel.id) {
-                    // Check if the channel is empty after someone leaves
-                    if (voiceChannel.members.size === 0) {
-                        voiceChannel.delete()
-                            .then(() => {
-                                console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                                cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-                                guild.client.removeListener('voiceStateUpdate', listener); // Stop listening to voice state updates
-                            })
-                            .catch(console.error);
-                    }
+                    checkIfEmpty();
                 }
             };
-            
+
+            // Initial check if the channel is empty after the grace period
+            checkIfEmpty();
+
             // Listen for voice state updates (join/leave events)
             guild.client.on('voiceStateUpdate', listener);
         };
