@@ -54,18 +54,20 @@ module.exports = {
         // Set the cooldown
         cooldowns.set(user.id, Date.now());
 
-        // Function to delete the channel if it is empty for more than 30 seconds
+        // Function to check and delete the channel if empty after the grace period
         const checkIfEmpty = async () => {
+            // If the channel is empty after 30 seconds
             if (voiceChannel.members.size === 0) {
                 await voiceChannel.delete();
                 console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
                 cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
             } else {
-                setTimeout(checkIfEmpty, 30000); // Check again in 30 seconds
+                // Check again every 30 seconds if the channel becomes empty
+                voiceChannel.on('update', checkIfEmpty);
             }
         };
 
-        // Start the check
-        setTimeout(checkIfEmpty, 30000); // Start the initial check in 30 seconds
+        // Start the check after the 30-second grace period
+        setTimeout(checkIfEmpty, 30000);
     },
 };
