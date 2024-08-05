@@ -54,28 +54,29 @@ module.exports = {
         // Set the cooldown
         cooldowns.set(user.id, Date.now());
 
-        // Function to delete the channel if it is empty
-        const checkIfEmpty = async () => {
-            if (voiceChannel.members.size === 0) {
-                await voiceChannel.delete();
-                console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-            }
+        // Function to delete the channel when all users disconnect
+        const monitorChannel = async () => {
+            const listener = (oldState, newState) => {
+                // Check if the old state was in this voice channel and the new state is either disconnected or in a different channel
+                if (oldState.channelId === voiceChannel.id && newState.channelId !== voiceChannel.id) {
+                    // Check if the channel is empty after someone leaves
+                    if (voiceChannel.members.size === 0) {
+                        voiceChannel.delete()
+                            .then(() => {
+                                console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                                cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
+                                guild.client.removeListener('voiceStateUpdate', listener); // Stop listening to voice state updates
+                            })
+                            .catch(console.error);
+                    }
+                }
+            };
+            
+            // Listen for voice state updates (join/leave events)
+            guild.client.on('voiceStateUpdate', listener);
         };
 
-        // Start the initial check after 30 seconds
-        setTimeout(async () => {
-            if (voiceChannel.members.size === 0) {
-                await checkIfEmpty();
-            } else {
-                // Set up an event listener to monitor when users leave the channel
-                const intervalId = setInterval(async () => {
-                    if (voiceChannel.members.size === 0) {
-                        await checkIfEmpty();
-                        clearInterval(intervalId); // Stop checking once the channel is deleted
-                    }
-                }, 10000); // Check every 10 seconds
-            }
-        }, 30000); // 30-second grace period
+        // Start monitoring after the grace period
+        setTimeout(monitorChannel, 30000); // 30-second grace period
     },
 };
