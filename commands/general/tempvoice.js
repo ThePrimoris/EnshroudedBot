@@ -39,7 +39,7 @@ module.exports = {
         // Create the voice channel
         const voiceChannel = await guild.channels.create({
             name: `${user.username}'s Channel`,
-            type: 2,
+            type: 2, // 2 corresponds to voice channel type
             parent: CATEGORY_ID,
             userLimit: userLimit,
         });
@@ -54,20 +54,28 @@ module.exports = {
         // Set the cooldown
         cooldowns.set(user.id, Date.now());
 
-        // Function to check and delete the channel if empty after the grace period
+        // Function to delete the channel if it is empty
         const checkIfEmpty = async () => {
-            // If the channel is empty after 30 seconds
             if (voiceChannel.members.size === 0) {
                 await voiceChannel.delete();
                 console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
                 cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-            } else {
-                // Check again every 30 seconds if the channel becomes empty
-                voiceChannel.on('update', checkIfEmpty);
             }
         };
 
-        // Start the check after the 30-second grace period
-        setTimeout(checkIfEmpty, 30000);
+        // Start the initial check after 30 seconds
+        setTimeout(async () => {
+            if (voiceChannel.members.size === 0) {
+                await checkIfEmpty();
+            } else {
+                // Set up an event listener to monitor when users leave the channel
+                const intervalId = setInterval(async () => {
+                    if (voiceChannel.members.size === 0) {
+                        await checkIfEmpty();
+                        clearInterval(intervalId); // Stop checking once the channel is deleted
+                    }
+                }, 10000); // Check every 10 seconds
+            }
+        }, 30000); // 30-second grace period
     },
 };
