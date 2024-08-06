@@ -50,6 +50,9 @@ module.exports = {
         cooldowns.set(user.id, Date.now());
 
         // Store channel in active channels map
+        if (!interaction.client.activeChannels) {
+            interaction.client.activeChannels = new Map();
+        }
         interaction.client.activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
     },
 };
