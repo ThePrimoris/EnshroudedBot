@@ -17,8 +17,9 @@ module.exports = {
         const user = interaction.user;
         const guild = interaction.guild;
 
-        const cooldowns = client.cooldowns;
-        const activeChannels = client.activeChannels;
+        // Ensure cooldowns and activeChannels are accessed from client
+        const cooldowns = client.cooldowns || new Map();
+        const activeChannels = client.activeChannels || new Map();
 
         // Check if the user is on cooldown
         if (cooldowns.has(user.id)) {
@@ -50,9 +51,11 @@ module.exports = {
 
         // Set the cooldown
         cooldowns.set(user.id, Date.now());
+        client.cooldowns = cooldowns; // Update the client with the new cooldowns
 
         // Store channel in active channels map
         activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
+        client.activeChannels = activeChannels; // Update the client with the new active channels
 
         // Monitor the channel via the voiceStateUpdate event
         const checkChannel = () => {
@@ -63,6 +66,8 @@ module.exports = {
                         console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
                         cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
                         activeChannels.delete(voiceChannel.id); // Remove from active channels map
+                        client.cooldowns = cooldowns; // Update the client with the modified cooldowns
+                        client.activeChannels = activeChannels; // Update the client with the modified active channels
                     })
                     .catch(console.error);
             }
