@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 
 const CATEGORY_ID = '1261551554566029313'; // Specified category ID
 const cooldowns = new Map();
+const activeChannels = new Map(); // Store active channels and their metadata
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -44,45 +45,53 @@ module.exports = {
             userLimit: userLimit,
         });
 
-        const replyMessage = await interaction.reply({ content: `Voice channel created: ${voiceChannel} in ${category.name}`, ephemeral: true });
-
-        // Set a timeout to delete the reply message after 30 seconds
-        setTimeout(() => {
-            replyMessage.delete().catch(console.error);
-        }, 30000);
+        await interaction.reply({ content: `Voice channel created: ${voiceChannel} in ${category.name}`, ephemeral: true });
 
         // Set the cooldown
         cooldowns.set(user.id, Date.now());
 
-        // Function to delete the channel when all users disconnect
-        const monitorChannel = async () => {
-            const checkIfEmpty = () => {
+        // Store channel in active channels map
+        activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
+
+        // Monitor the channel via the voiceStateUpdate event
+        const checkChannel = () => {
+            if (voiceChannel.members.size === 0) {
+                // Channel is empty; delete it
+                voiceChannel.delete()
+                    .then(() => {
+                        console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                        cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
+                        activeChannels.delete(voiceChannel.id); // Remove from active channels map
+                    })
+                    .catch(console.error);
+            }
+        };
+
+        // Run the initial check after 30 seconds
+        setTimeout(checkChannel, 30000);
+    },
+};
+
+// Listen for voice state updates globally
+client.on('voiceStateUpdate', (oldState, newState) => {
+    // Get the channel ID from the old state (where the user is leaving)
+    const oldChannelId = oldState.channelId;
+
+    // If a user leaves a channel, and it's in the active channels map, check if it's empty
+    if (oldChannelId && activeChannels.has(oldChannelId)) {
+        const voiceChannel = oldState.guild.channels.cache.get(oldChannelId);
+        if (voiceChannel) {
+            setTimeout(() => {
                 if (voiceChannel.members.size === 0) {
                     voiceChannel.delete()
                         .then(() => {
                             console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                            cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-                            guild.client.removeListener('voiceStateUpdate', listener); // Stop listening to voice state updates
+                            cooldowns.delete(activeChannels.get(oldChannelId).ownerId); // Remove cooldown
+                            activeChannels.delete(oldChannelId); // Remove from active channels map
                         })
                         .catch(console.error);
                 }
-            };
-
-            const listener = (oldState, newState) => {
-                // Check if the old state was in this voice channel and the new state is either disconnected or in a different channel
-                if (oldState.channelId === voiceChannel.id && newState.channelId !== voiceChannel.id) {
-                    checkIfEmpty();
-                }
-            };
-
-            // Initial check if the channel is empty after the grace period
-            checkIfEmpty();
-
-            // Listen for voice state updates (join/leave events)
-            guild.client.on('voiceStateUpdate', listener);
-        };
-
-        // Start monitoring after the grace period
-        setTimeout(monitorChannel, 30000); // 30-second grace period
-    },
-};
+            }, 30000); // 30-second grace period after last user leaves
+        }
+    }
+});
