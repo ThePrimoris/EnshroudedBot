@@ -9,6 +9,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildVoiceStates // Add this intent for voice state updates
     ]
 });
 
@@ -46,6 +47,31 @@ client.once('ready', () => {
         i = (i + 1) % activities.length;
         client.user.setActivity(activities[i].name, { type: activities[i].type });
     }, 10 * 60 * 1000);
+});
+
+// Centralized voiceStateUpdate listener for monitoring voice channels
+const activeChannels = new Map(); // Store active channels and their metadata
+const cooldowns = new Map();
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+    const oldChannelId = oldState.channelId;
+
+    if (oldChannelId && activeChannels.has(oldChannelId)) {
+        const voiceChannel = oldState.guild.channels.cache.get(oldChannelId);
+        if (voiceChannel) {
+            setTimeout(() => {
+                if (voiceChannel.members.size === 0) {
+                    voiceChannel.delete()
+                        .then(() => {
+                            console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                            cooldowns.delete(activeChannels.get(oldChannelId).ownerId); // Remove cooldown
+                            activeChannels.delete(oldChannelId); // Remove from active channels map
+                        })
+                        .catch(console.error);
+                }
+            }, 30000); // 30-second grace period after last user leaves
+        }
+    }
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);

@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 
 const CATEGORY_ID = '1261551554566029313'; // Specified category ID
 const cooldowns = new Map();
-const activeChannels = new Map(); // Store active channels and their metadata
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -51,47 +50,6 @@ module.exports = {
         cooldowns.set(user.id, Date.now());
 
         // Store channel in active channels map
-        activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
-
-        // Monitor the channel via the voiceStateUpdate event
-        const checkChannel = () => {
-            if (voiceChannel.members.size === 0) {
-                // Channel is empty; delete it
-                voiceChannel.delete()
-                    .then(() => {
-                        console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                        cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
-                        activeChannels.delete(voiceChannel.id); // Remove from active channels map
-                    })
-                    .catch(console.error);
-            }
-        };
-
-        // Run the initial check after 30 seconds
-        setTimeout(checkChannel, 30000);
+        interaction.client.activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
     },
 };
-
-// Listen for voice state updates globally
-client.on('voiceStateUpdate', (oldState, newState) => {
-    // Get the channel ID from the old state (where the user is leaving)
-    const oldChannelId = oldState.channelId;
-
-    // If a user leaves a channel, and it's in the active channels map, check if it's empty
-    if (oldChannelId && activeChannels.has(oldChannelId)) {
-        const voiceChannel = oldState.guild.channels.cache.get(oldChannelId);
-        if (voiceChannel) {
-            setTimeout(() => {
-                if (voiceChannel.members.size === 0) {
-                    voiceChannel.delete()
-                        .then(() => {
-                            console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
-                            cooldowns.delete(activeChannels.get(oldChannelId).ownerId); // Remove cooldown
-                            activeChannels.delete(oldChannelId); // Remove from active channels map
-                        })
-                        .catch(console.error);
-                }
-            }, 30000); // 30-second grace period after last user leaves
-        }
-    }
-});
