@@ -16,6 +16,7 @@ const client = new Client({
 client.commands = new Collection();
 client.events = new Collection();
 client.activeChannels = new Map(); // Initialize activeChannels map globally
+client.cooldowns = new Map(); // Initialize cooldowns map globally
 
 const commandFolders = ['general', 'moderation'];
 for (const folder of commandFolders) {
@@ -54,13 +55,11 @@ client.once('ready', () => {
 
 // Listen for voice state updates globally
 client.on('voiceStateUpdate', (oldState, newState) => {
-    // If a user leaves a channel, and it's in the active channels map, check if it's empty
     const oldChannelId = oldState.channelId;
 
     if (oldChannelId && client.activeChannels.has(oldChannelId)) {
         const voiceChannel = oldState.guild.channels.cache.get(oldChannelId);
         if (voiceChannel) {
-            // Check after 30 seconds if the channel is empty
             setTimeout(() => {
                 if (voiceChannel.members.size === 0) {
                     voiceChannel.delete()
@@ -68,7 +67,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                             console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
                             const channelData = client.activeChannels.get(oldChannelId);
                             if (channelData) {
-                                cooldowns.delete(channelData.ownerId); // Remove cooldown
+                                client.cooldowns.delete(channelData.ownerId); // Remove cooldown
                             }
                             client.activeChannels.delete(oldChannelId); // Remove from active channels map
                         })

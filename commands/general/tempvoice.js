@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 const CATEGORY_ID = '1261551554566029313'; // Specified category ID
-const cooldowns = new Map();
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,10 +12,13 @@ module.exports = {
             .setRequired(true)
             .setMinValue(2)
             .setMaxValue(16)),
-    async execute(interaction) {
+    async execute(interaction, client) {
         const userLimit = interaction.options.getInteger('userlimit');
         const user = interaction.user;
         const guild = interaction.guild;
+
+        const cooldowns = client.cooldowns;
+        const activeChannels = client.activeChannels;
 
         // Check if the user is on cooldown
         if (cooldowns.has(user.id)) {
@@ -50,9 +52,23 @@ module.exports = {
         cooldowns.set(user.id, Date.now());
 
         // Store channel in active channels map
-        if (!interaction.client.activeChannels) {
-            interaction.client.activeChannels = new Map();
-        }
-        interaction.client.activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
+        activeChannels.set(voiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
+
+        // Monitor the channel via the voiceStateUpdate event
+        const checkChannel = () => {
+            if (voiceChannel.members.size === 0) {
+                // Channel is empty; delete it
+                voiceChannel.delete()
+                    .then(() => {
+                        console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                        cooldowns.delete(user.id); // Remove cooldown when the channel is deleted
+                        activeChannels.delete(voiceChannel.id); // Remove from active channels map
+                    })
+                    .catch(console.error);
+            }
+        };
+
+        // Run the initial check after 30 seconds
+        setTimeout(checkChannel, 30000);
     },
 };
