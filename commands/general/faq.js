@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 
-// Define your embeds here
 const embeds = {
     '4gb': new EmbedBuilder()
         .setTitle('Enshrouded Minimum Requirements')
