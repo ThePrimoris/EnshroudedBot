@@ -89,7 +89,27 @@ Also being that so much is changing, there is always a chance that an update may
 We will do our best to avoid this, and it's not something we're planning intentionally we cannot guarantee this will "never happen" either since there are a lot of unknown variables in the future.
         `)
         .setColor('#3f9dd5')
-        .setFooter({ text: 'REMINDER THIS IS AN EARLY ACCESS GAME.' })
+        .setFooter({ text: 'REMINDER THIS IS AN EARLY ACCESS GAME.' }),
+
+    'logs': new EmbedBuilder()
+        .setTitle('Finding & Sending your Logs')
+        .setDescription(`
+**Finding your logs:**
+For better and faster troubleshooting, please share game logs along with your message.
+
+**Open File Explorer**
+- Navigate to your Steam folder, by default it should be in *C:\Program Files (x86)\Steam*.
+- Find the following file:
+[...] \Steam\steamapps\common\Enshrouded\enshrouded.log"
+
+⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
+
+**Copy and Paste the log file into Discord**
+- Head over to
+`)
+.setColor('#3f9dd5')
+.setFooter({ text: '<a:Enshrouded:1271146838107361424> Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.' })
+
 };
 
 // Export the command module
@@ -106,7 +126,8 @@ module.exports = {
                     { name: 'Flame Altars & Levels', value: 'altars' },
                     { name: 'MiniDump Troubleshooting', value: 'minidump' },
                     { name: 'Feature Upvote', value: 'upvote' },
-                    { name: 'Wipes', value: 'wipes' }
+                    { name: 'Wipes', value: 'wipes' },
+                    { name: 'Logs', value: 'logs' }
                 )),
     async execute(interaction) {
         const selectedEmbed = interaction.options.getString('embed');
