@@ -77,7 +77,15 @@ For better and faster troubleshooting, please share game logs along with your me
 - Head over to <#${channelId}> and paste the log file into the channel.
 `)
 .setColor('#3f9dd5')
-.setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` })
+.setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` }),
+
+'size': new EmbedBuilder()
+        .setTitle('Enshrouded Map Size FAQ')
+        .setDescription(`
+Enshrouded's demo map was about 1km², Early Access is currently about 24km², and the full release map is planned to be around 64km².
+        `)
+        .setColor('#3f9dd5')
+        .setFooter({ text: 'Keep in mind that this is an early acces game and this information is subject to change.' }),
 };
 
 // Export the command module
@@ -94,7 +102,8 @@ module.exports = {
                     { name: 'Flame Altars & Levels', value: 'altars' },
                     { name: 'Feature Upvote', value: 'upvote' },
                     { name: 'Wipes', value: 'wipes' },
-                    { name: 'Logs', value: 'logs' }
+                    { name: 'Logs', value: 'logs' },
+                    { name: 'Size', value: 'size' }
                 )),
     async execute(interaction) {
         const selectedEmbed = interaction.options.getString('embed');
