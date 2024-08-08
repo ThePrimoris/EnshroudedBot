@@ -2,15 +2,18 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder } = require('discord.js');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildVoiceStates // Ensure this intent is included for voiceStateUpdate events
-    ]
+        GatewayIntentBits.GuildVoiceStates, // Ensure this intent is included for voiceStateUpdate events
+        GatewayIntentBits.DirectMessages, // Added for DM handling
+        GatewayIntentBits.MessageContent // Added for content access in messages
+    ],
+    partials: ['CHANNEL'] // Allows the bot to access DMs
 });
 
 client.commands = new Collection();
@@ -74,6 +77,32 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                         .catch(console.error);
                 }
             }, 30000); // 30-second grace period after last user leaves
+        }
+    }
+});
+
+// Listen for DMs and log them to a specified channel
+client.on('messageCreate', async (message) => {
+    if (message.guild === null && !message.author.bot) {
+        const logChannelId = '1226803373328695306'; // Replace with your channel ID
+        try {
+            const logChannel = await client.channels.fetch(logChannelId);
+
+            // Create an embed to format the log message
+            const dmEmbed = new EmbedBuilder()
+                .setColor('#0099ff')
+                .setTitle('The Flame DM Log')
+                .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+                .setDescription(message.content)
+                .setTimestamp()
+                .setFooter({ text: 'DM Log' });
+
+            if (logChannel.isTextBased()) {
+                logChannel.send({ embeds: [dmEmbed] });
+            }
+
+        } catch (error) {
+            console.error('Error fetching the log channel: ', error);
         }
     }
 });
