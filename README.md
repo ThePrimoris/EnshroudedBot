@@ -19,11 +19,7 @@
   •
   <a href="#exclamation-features">Features</a>
   •
-  <a href="#desktop_computer-my-other-projects">Installation</a>
-  •
-  <a href="#book-license">License</a>
-  •
-  <a href="#scroll-credits">Credits</a>
+  <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/master/docs/COMMANDS.md">Commands</a>
 </p>
 
 ## :question: About
