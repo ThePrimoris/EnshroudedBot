@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 
-const customEmoji = '<:Enshrouded:1271146838107361424>';
+const channelId = '1060216335684087878'; // Troubleshooting channel ID
 
 const embeds = {
     '4gb': new EmbedBuilder()
@@ -107,10 +107,10 @@ For better and faster troubleshooting, please share game logs along with your me
 ⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
 
 **Copy and Paste the log file into Discord**
-- Head over to
+- Head over to <#${channelId} and paste the log file into the channel.
 `)
 .setColor('#3f9dd5')
-.setFooter({ text: `${customEmoji} Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` })
+.setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` })
 };
 
 // Export the command module
