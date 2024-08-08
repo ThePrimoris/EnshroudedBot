@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 const CATEGORY_ID = '1261551554566029313'; // Specified category ID
+const ALLOWED_GUILD_ID = '1261550824568393789'; //Official Discord LFG
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,9 +14,15 @@ module.exports = {
             .setMinValue(2)
             .setMaxValue(16)),
     async execute(interaction, client) {
+        const guild = interaction.guild;
+
+        // Check if the command is being used in the allowed server
+        if (guild.id !== ALLOWED_GUILD_ID) {
+            return interaction.reply({ content: 'This command is not available in this server.', ephemeral: true });
+        }
+
         const userLimit = interaction.options.getInteger('userlimit');
         const user = interaction.user;
-        const guild = interaction.guild;
 
         // Ensure cooldowns and activeChannels are accessed from client
         const cooldowns = client.cooldowns || new Map();
