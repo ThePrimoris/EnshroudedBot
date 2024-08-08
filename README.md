@@ -15,9 +15,9 @@
 </div>
 
 <p align="center">
-  <a href="#question-about">About</a>
+  <a href="https://github.com/ThePrimoris/EnshroudedBot#question-about">About</a>
   •
-  <a href="#exclamation-features">Features</a>
+  <a href="https://github.com/ThePrimoris/EnshroudedBot#exclamation-features">Features</a>
   •
   <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/main/COMMANDS.md">Commands</a>
 </p>
