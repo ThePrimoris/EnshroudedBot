@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
 
+const customEmoji = '<:Enshrouded:1271146838107361424>';
+
 const embeds = {
     '4gb': new EmbedBuilder()
         .setTitle('Enshrouded Minimum Requirements')
@@ -108,7 +110,7 @@ For better and faster troubleshooting, please share game logs along with your me
 - Head over to
 `)
 .setColor('#3f9dd5')
-.setFooter({ text: '<a:Enshrouded:1271146838107361424> Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.' })
+.setFooter({ text: '${customEmoji} Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.' })
 
 };
 
