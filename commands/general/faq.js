@@ -31,39 +31,6 @@ Please grab the 4GBVRAM GPU gane role in <id:customize> to be notified of any up
         .setThumbnail('https://enshrouded.wiki.gg/images/9/96/Flame_Altar.png')
         .setFooter({ text: 'Any structures or items created by the player within the flame radius remain for 30 minutes, or if the player logs out/server is reset. Everything in the previous radius is reset.' }),
 
-    'minidump': [
-        new EmbedBuilder()
-            .setTitle('MiniDump Troubleshooting Steps') 
-            .setDescription(`
-        The following steps have been developed by members of the Enshrouded Community to help guide you when resolving the "MiniDump" error message. Please read and follow each step closely.
-
-        **Step 1: Verify game files via Steam**
-        - How to verify your game files on Steam: [Click Here](https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB)
-        - Check to see if this resolved the issue.
-
-        **Step 2: Use Liandry's Tool**
-        - Check the README on the site on how to use it. [Enshrouded Tool Fix](https://github.com/LiaNdrY/Enshrouded-Tool-Fix)
-        - Check to see if this resolved the issue.
-
-        **Step 3: Rename enshrouded_local.json**
-        - Rename the file located here: > "...\Steam\steamapps\common\Enshrouded\enshrouded_local.json" (will reset ingame settings)
-        - Check to see if this resolved the issue.
-
-        **Step 4: Clean reinstall GPU driver (with DDU)**
-        - [Clean install with DDU](https://www.youtube.com/watch?v=v7KfnZ2wSog)
-        `)
-            .setColor('#3f9dd5'),
-
-        new EmbedBuilder()
-            .setTitle('Minidump Common Issues and Fixes') 
-            .setDescription(`
-        Not all MiniDump issues are the same cause, this error be caused by multiple things...There is not "one-size fits all" solution. That being said, we have fond some common fixes, and troubleshooting steps (like above).
-
-        > Player's report removing any excessive honey and plants has minimized the chance of crashing. May need to repeat when reloading.
-        `)
-            .setColor('#3f9dd5')
-    ],
-
     'upvote': new EmbedBuilder()
         .setTitle('Official Enshrouded Feature Suggestions')
         .setDescription(`
@@ -125,7 +92,6 @@ module.exports = {
                 .addChoices(
                     { name: '4GB VRAM', value: '4gb' },
                     { name: 'Flame Altars & Levels', value: 'altars' },
-                    { name: 'MiniDump Troubleshooting', value: 'minidump' },
                     { name: 'Feature Upvote', value: 'upvote' },
                     { name: 'Wipes', value: 'wipes' },
                     { name: 'Logs', value: 'logs' }
