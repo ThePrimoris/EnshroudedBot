@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img  src="https://enshrouded.wiki.gg/images/8/8d/The_Flame.png" alt=The Flame>
+  <img  src="https://enshrouded.wiki.gg/images/8/8d/The_Flame.png" width="200px" height="200px" alt=The Flame>
   The Flame
   <br>
 </h1>
