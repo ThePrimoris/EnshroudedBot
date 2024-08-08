@@ -15,6 +15,9 @@ module.exports = {
             const hasImageAttachment = message.attachments.some(attachment => attachment.contentType && attachment.contentType.startsWith('image/'));
 
             if (!hasImageAttachment && !isModerator) {
+                // Log the message deletion to the console
+                console.log(`Deleted message from ${message.author.tag} (ID: ${message.id}) in ${message.channel.name}.`);
+
                 // Delete the message
                 await message.delete();
 
@@ -27,7 +30,7 @@ module.exports = {
                 // Delete the bot's response after a few seconds (e.g., 10 seconds)
                 setTimeout(() => {
                     responseMessage.delete().catch(console.error);
-                }, 60000); // 60 seconds
+                }, 10000); // 10 seconds
             }
         }
     },
