@@ -81,8 +81,6 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-const { EmbedBuilder } = require('discord.js'); // Make sure to import EmbedBuilder
-
 client.on('messageCreate', async (message) => {
     if (message.guild === null && !message.author.bot) {
         console.log(`Received DM from ${message.author.tag}: ${message.content}`);
