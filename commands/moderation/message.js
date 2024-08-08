@@ -5,17 +5,17 @@ module.exports = {
     .setName('message')
     .setDescription('Send a message to a specified channel or DM a user')
     .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
-    .addStringOption(option =>
-      option.setName('message')
-        .setDescription('The message to send')
-        .setRequired(true))  // Required option first
     .addChannelOption(option =>
       option.setName('channel')
         .setDescription('The channel to send the message to')
-        .addChannelTypes(ChannelType.GuildText))  // Optional option
+        .addChannelTypes(ChannelType.GuildText)) // Optional option
     .addUserOption(option =>
       option.setName('user')
-        .setDescription('The user to DM (leave empty to send to a channel)')), // Optional option
+        .setDescription('The user to DM (leave empty to send to a channel)')) // Optional option
+    .addStringOption(option =>
+      option.setName('message')
+        .setDescription('The message to send')
+        .setRequired(true)), // Required option
   requiredPermissions: ['ManageMessages'],
   category: 'utility',
   async execute(interaction) {
@@ -27,21 +27,30 @@ module.exports = {
     const targetUser = interaction.options.getUser('user');
     const message = interaction.options.getString('message');
     const user = interaction.user;
-    const replyChannelId = '1047449388089356328';
+    const replyChannelId = '1047449388089356328'; // ID of the channel where logs are sent
 
     try {
       if (targetUser) {
         // DM the specified user
         await targetUser.send(message);
         await interaction.reply({ content: `DM sent to ${targetUser.tag} successfully.`, ephemeral: true });
+        
+        // Log DM in the specified channel
+        const replyChannel = await interaction.client.channels.fetch(replyChannelId);
+        if (replyChannel) {
+          await replyChannel.send(`<@${user.id}> sent a DM to ${targetUser.tag}: \`${message}\``);
+        } else {
+          console.error('Reply channel not found.');
+        }
+
       } else if (targetChannel) {
         // Send message to the specified channel
         await targetChannel.send(message);
 
-        // Fetch the specific channel where the reply should be sent
+        // Log message to the specified channel
         const replyChannel = await interaction.client.channels.fetch(replyChannelId);
         if (replyChannel) {
-          await replyChannel.send(`<@${user.id}> sent \`${message}\` to ${targetChannel}`);
+          await replyChannel.send(`<@${user.id}> sent a message to ${targetChannel}: \`${message}\``);
         } else {
           console.error('Reply channel not found.');
         }
