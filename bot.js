@@ -2,18 +2,18 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Partials } = require('discord.js');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildVoiceStates, // Ensure this intent is included for voiceStateUpdate events
-        GatewayIntentBits.DirectMessages, // Added for DM handling
-        GatewayIntentBits.MessageContent // Added for content access in messages
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.MessageContent
     ],
-    partials: ['Partials.Message', 'Partials.Channel'] // Allows the bot to access DMs
+    partials: [Partials.Channel, Partials.Message] // Allows the bot to access DMs
 });
 
 client.commands = new Collection();
