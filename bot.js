@@ -81,28 +81,32 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-// Listen for DMs and log them to a specified channel
 client.on('messageCreate', async (message) => {
+    // Check if the message is a DM
     if (message.guild === null && !message.author.bot) {
+        console.log(`Received DM from ${message.author.tag}: ${message.content}`);
+
         const logChannelId = '1226803373328695306'; // Replace with your channel ID
         try {
             const logChannel = await client.channels.fetch(logChannelId);
+            console.log('Log channel fetched successfully.');
 
             // Create an embed to format the log message
             const dmEmbed = new EmbedBuilder()
                 .setColor('#0099ff')
-                .setTitle('The Flame DM Log')
+                .setTitle('New DM Received')
                 .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
                 .setDescription(message.content)
                 .setTimestamp()
                 .setFooter({ text: 'DM Log' });
 
             if (logChannel.isTextBased()) {
-                logChannel.send({ embeds: [dmEmbed] });
+                await logChannel.send({ embeds: [dmEmbed] });
+                console.log('DM logged successfully.');
             }
 
         } catch (error) {
-            console.error('Error fetching the log channel: ', error);
+            console.error('Error fetching the log channel or sending the message: ', error);
         }
     }
 });
