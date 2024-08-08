@@ -19,7 +19,7 @@
   •
   <a href="#exclamation-features">Features</a>
   •
-  <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/master/docs/COMMANDS.md">Commands</a>
+  <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/main/COMMANDS.md">Commands</a>
 </p>
 
 # The Flame Bot Commands

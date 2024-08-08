@@ -19,14 +19,13 @@
   •
   <a href="#exclamation-features">Features</a>
   •
-  <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/master/docs/COMMANDS.md">Commands</a>
+  <a href="https://github.com/ThePrimoris/EnshroudedBot/blob/main/COMMANDS.md">Commands</a>
 </p>
 
 ## :question: About
 
 **The Flame** is a custom Discord bot designed specifically for the Official Enshrouded Discord. It offers a range of general and moderation commands to enhance your server's functionality. All commands are implemented as slash commands for a seamless user experience.
 
-Invite The Flame to your server and enjoy its powerful features!
 
 ## :exclamation: Features
 
