@@ -15,7 +15,7 @@ module.exports = {
     .addStringOption(option =>
       option.setName('message')
         .setDescription('The message to send')
-        .setRequired(true)),
+        .setRequired(true)), // This should be placed last
   requiredPermissions: ['ManageMessages'],
   category: 'utility',
   async execute(interaction) {
