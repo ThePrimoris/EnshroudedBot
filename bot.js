@@ -13,7 +13,7 @@ const client = new Client({
         GatewayIntentBits.DirectMessages, // Added for DM handling
         GatewayIntentBits.MessageContent // Added for content access in messages
     ],
-    partials: ['CHANNEL'] // Allows the bot to access DMs
+    partials: ['CHANNEL', 'MESSAGE'] // Allows the bot to access DMs
 });
 
 client.commands = new Collection();
