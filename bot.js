@@ -81,34 +81,34 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
+const { EmbedBuilder } = require('discord.js'); // Make sure to import EmbedBuilder
+
 client.on('messageCreate', async (message) => {
-    // Check if the message is a DM
     if (message.guild === null && !message.author.bot) {
         console.log(`Received DM from ${message.author.tag}: ${message.content}`);
 
         const logChannelId = '1226803373328695306'; // Replace with your channel ID
         try {
             const logChannel = await client.channels.fetch(logChannelId);
-            console.log('Log channel fetched successfully.');
 
             // Create an embed to format the log message
             const dmEmbed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle('New DM Received')
+                .setColor('#3498db') // Changed color to a more vibrant blue
+                .setTitle('📩 New Direct Message')
                 .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
-                .setDescription(message.content)
+                .setDescription(`**Message:**\n${message.content}`) // Added a label for the message content
+                .addFields({ name: 'User ID', value: message.author.id, inline: true }) // Added user ID field
                 .setTimestamp()
                 .setFooter({ text: 'DM Log' });
 
-            if (logChannel.isTextBased()) {
-                await logChannel.send({ embeds: [dmEmbed] });
-                console.log('DM logged successfully.');
-            }
+            await logChannel.send({ embeds: [dmEmbed] });
 
         } catch (error) {
             console.error('Error fetching the log channel or sending the message: ', error);
         }
     }
 });
+
+
 
 client.login(process.env.DISCORD_BOT_TOKEN);
