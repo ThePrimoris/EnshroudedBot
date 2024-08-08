@@ -13,7 +13,7 @@ const client = new Client({
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.MessageContent
     ],
-    partials: [Partials.Channel, Partials.Message] // Allows the bot to access DMs
+    partials: [Partials.Channel, Partials.Message]
 });
 
 client.commands = new Collection();
@@ -85,19 +85,17 @@ client.on('messageCreate', async (message) => {
     if (message.guild === null && !message.author.bot) {
         console.log(`Received DM from ${message.author.tag}: ${message.content}`);
 
-        const logChannelId = '1226803373328695306'; // Replace with your channel ID
+        const logChannelId = '1047449388089356328'; // Log Channel ID
         try {
             const logChannel = await client.channels.fetch(logChannelId);
 
             // Create an embed to format the log message
             const dmEmbed = new EmbedBuilder()
-                .setColor('#3498db') // Changed color to a more vibrant blue
+                .setColor('#3498db')
                 .setTitle('📩 New Direct Message')
                 .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
-                .setDescription(`**Message:**\n${message.content}`) // Added a label for the message content
-                .addFields({ name: 'User ID', value: message.author.id, inline: true }) // Added user ID field
+                .setDescription(`**Message:**\n${message.content}`)
                 .setTimestamp()
-                .setFooter({ text: 'DM Log' });
 
             await logChannel.send({ embeds: [dmEmbed] });
 
