@@ -5,17 +5,17 @@ module.exports = {
     .setName('message')
     .setDescription('Send a message to a specified channel or DM a user')
     .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
-    .addChannelOption(option =>
-      option.setName('channel')
-        .setDescription('The channel to send the message to')
-        .addChannelTypes(ChannelType.GuildText)) // Ensure only text channels are selectable
-    .addUserOption(option =>
-      option.setName('user')
-        .setDescription('The user to DM (leave empty to send to a channel)'))
     .addStringOption(option =>
       option.setName('message')
         .setDescription('The message to send')
-        .setRequired(true)), // This should be placed last
+        .setRequired(true))  // Required option first
+    .addChannelOption(option =>
+      option.setName('channel')
+        .setDescription('The channel to send the message to')
+        .addChannelTypes(ChannelType.GuildText))  // Optional option
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('The user to DM (leave empty to send to a channel)')), // Optional option
   requiredPermissions: ['ManageMessages'],
   category: 'utility',
   async execute(interaction) {
@@ -27,7 +27,7 @@ module.exports = {
     const targetUser = interaction.options.getUser('user');
     const message = interaction.options.getString('message');
     const user = interaction.user;
-    const replyChannelId = '1226803373328695306';
+    const replyChannelId = '1047449388089356328';
 
     try {
       if (targetUser) {
