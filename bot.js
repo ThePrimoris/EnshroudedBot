@@ -2,15 +2,17 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { Client, GatewayIntentBits, Collection, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, ActivityType, Events } = require('discord.js');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildVoiceStates // Ensure this intent is included for voiceStateUpdate events
-    ]
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.DirectMessages // Add DirectMessages intent
+    ],
+    partials: ['CHANNEL'] // Enable partials for DM channels
 });
 
 client.commands = new Collection();
@@ -74,6 +76,24 @@ client.on('voiceStateUpdate', (oldState, newState) => {
                         .catch(console.error);
                 }
             }, 30000); // 30-second grace period after last user leaves
+        }
+    }
+});
+
+// Listen for DMs and forward them to a specified channel
+const DM_CHANNEL_ID = '1226803373328695306'; // Replace with your channel ID
+
+client.on(Events.MessageCreate, async (message) => {
+    if (message.channel.type === 'DM' && !message.author.bot) {
+        try {
+            const dmChannel = await client.channels.fetch(DM_CHANNEL_ID);
+            if (dmChannel) {
+                dmChannel.send(`**${message.author.tag}**: ${message.content}`);
+            } else {
+                console.error('DM channel not found');
+            }
+        } catch (error) {
+            console.error('Error forwarding DM:', error);
         }
     }
 });
