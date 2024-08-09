@@ -131,5 +131,12 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+// Handle SIGTERM signal
+process.on('SIGTERM', () => {
+    console.log('Logging out of ${client.user.tag}.. Shutting down.');
+    client.destroy(); // Perform any necessary cleanup
+    process.exit(0);
+});
+
 // Login to Discord
 client.login(process.env.DISCORD_BOT_TOKEN);
