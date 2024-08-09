@@ -7,10 +7,10 @@ const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Parti
 const LOG_CHANNEL_ID = '1047449388089356328'; // Log Channel ID
 const RATE_LIMIT_COOLDOWN = 1 * 60 * 1000; // 1 minute cooldown for DMs
 const COMMAND_FOLDERS = ['general', 'moderation'];
-const ACTIVITIES = [
+/* const ACTIVITIES = [
     { name: 'Enshrouded', type: ActivityType.Playing },
     { name: 'the Discord server 👀', type: ActivityType.Watching }
-];
+]; */
 
 // Client initialization
 const client = new Client({
@@ -52,7 +52,7 @@ for (const file of eventFiles) {
 }
 
 // Set bot activity
-client.once('ready', () => {
+/* client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
     let i = 0;
     client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
@@ -61,6 +61,24 @@ client.once('ready', () => {
         i = (i + 1) % ACTIVITIES.length;
         client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
     }, 10 * 60 * 1000); // Change activity every 10 minutes
+}); */
+client.once('ready', () => {
+    client.user.setPresence({
+        activities: [{
+            name: 'Enshrouded',
+            type: ActivityType.Playing,
+            details: 'Exploring the Unknown',
+            state: 'In a deep dungeon',
+            timestamps: { start: Date.now() },
+            assets: {
+                large_image: 'enlarge_image_key',
+                large_text: 'Exploring the Wilderness',
+                small_image: 'small_image_key',
+                small_text: 'Level 20 Warrior'
+            }
+        }],
+        status: 'online' // Set the bot status (online, idle, etc.)
+    });
 });
 
 // Handle voice state updates
