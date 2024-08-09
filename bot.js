@@ -1,9 +1,18 @@
 require('dotenv').config();
-
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Partials } = require('discord.js');
 
+// Constants
+const LOG_CHANNEL_ID = '1047449388089356328'; // Log Channel ID
+const RATE_LIMIT_COOLDOWN = 1 * 60 * 1000; // 1 minute cooldown for DMs
+const COMMAND_FOLDERS = ['general', 'moderation'];
+const ACTIVITIES = [
+    { name: 'Enshrouded', type: ActivityType.Playing },
+    { name: 'the Discord server 👀', type: ActivityType.Watching }
+];
+
+// Client initialization
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -18,11 +27,12 @@ const client = new Client({
 
 client.commands = new Collection();
 client.events = new Collection();
-client.activeChannels = new Map(); // Initialize activeChannels map globally
-client.cooldowns = new Map(); // Initialize cooldowns map globally
+client.activeChannels = new Map();
+client.cooldowns = new Map();
+const rateLimit = new Map(); // Stores last message time for each user
 
-const commandFolders = ['general', 'moderation'];
-for (const folder of commandFolders) {
+// Load commands
+for (const folder of COMMAND_FOLDERS) {
     const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
@@ -30,6 +40,7 @@ for (const folder of commandFolders) {
     }
 }
 
+// Load events
 const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     const event = require(`./events/${file}`);
@@ -40,23 +51,19 @@ for (const file of eventFiles) {
     }
 }
 
-const activities = [
-    { name: 'Enshrouded', type: ActivityType.Playing },
-    { name: 'the Discord server 👀', type: ActivityType.Watching }
-];
-
+// Set bot activity
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
     let i = 0;
-    client.user.setActivity(activities[i].name, { type: activities[i].type });
+    client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
 
     setInterval(() => {
-        i = (i + 1) % activities.length;
-        client.user.setActivity(activities[i].name, { type: activities[i].type });
-    }, 10 * 60 * 1000);
+        i = (i + 1) % ACTIVITIES.length;
+        client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
+    }, 10 * 60 * 1000); // Change activity every 10 minutes
 });
 
-// Listen for voice state updates globally
+// Handle voice state updates
 client.on('voiceStateUpdate', (oldState, newState) => {
     const oldChannelId = oldState.channelId;
 
@@ -81,21 +88,40 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
+// Handle direct messages (DMs) with rate limiting
 client.on('messageCreate', async (message) => {
-    if (message.guild === null && !message.author.bot) {
+    if (message.guild === null && !message.author.bot) { // Check if it's a DM and not from a bot
+        const userId = message.author.id;
+        const now = Date.now();
+
+        if (rateLimit.has(userId)) {
+            const lastMessageTime = rateLimit.get(userId);
+
+            if (now - lastMessageTime < RATE_LIMIT_COOLDOWN) {
+                // Notify the user that they are being rate-limited
+                try {
+                    await message.author.send('You are sending messages too quickly. Please wait a bit before sending another message.');
+                } catch (error) {
+                    console.error('Error sending rate limit notification: ', error);
+                }
+                return;
+            }
+        }
+
+        // Update last message time
+        rateLimit.set(userId, now);
+
         console.log(`Received DM from ${message.author.tag}: ${message.content}`);
 
-        const logChannelId = '1047449388089356328'; // Log Channel ID
         try {
-            const logChannel = await client.channels.fetch(logChannelId);
+            const logChannel = await client.channels.fetch(LOG_CHANNEL_ID);
 
-            // Create an embed to format the log message
             const dmEmbed = new EmbedBuilder()
                 .setColor('#3498db')
                 .setTitle('📩 New Direct Message')
                 .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
                 .setDescription(`**Message:**\n${message.content}`)
-                .setTimestamp()
+                .setTimestamp();
 
             await logChannel.send({ embeds: [dmEmbed] });
 
@@ -105,4 +131,5 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+// Login to Discord
 client.login(process.env.DISCORD_BOT_TOKEN);
