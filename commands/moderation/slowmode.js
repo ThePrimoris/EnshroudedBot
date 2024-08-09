@@ -37,22 +37,42 @@ module.exports = {
         }
 
         const channel = interaction.options.getChannel('channel');
-        const duration = parseInt(interaction.options.getString('duration'), 10);
+        const durationValue = interaction.options.getString('duration');
 
         if (![ChannelType.GuildText, ChannelType.PublicThread, ChannelType.PrivateThread, ChannelType.GuildForum].includes(channel.type)) {
             return await interaction.reply({ content: 'Please select a valid channel type (text channel, thread, or forum).', ephemeral: true });
         }
 
+        // Map duration values to human-readable strings
+        const durationMap = {
+            '0': 'None',
+            '5': '5 seconds',
+            '10': '10 seconds',
+            '30': '30 seconds',
+            '60': '1 minute',
+            '120': '2 minutes',
+            '300': '5 minutes',
+            '600': '10 minutes',
+            '900': '15 minutes',
+            '1800': '30 minutes',
+            '3600': '1 hour',
+            '7200': '2 hours',
+            '21600': '6 hours'
+        };
+
+        const durationText = durationMap[durationValue];
+
         try {
             if (channel.type === ChannelType.GuildForum) {
                 return await interaction.reply({ content: 'Slowmode setting is not supported directly on forums at this moment.', ephemeral: true });
             } else {
-                await channel.setRateLimitPerUser(duration);
+                await channel.setRateLimitPerUser(parseInt(durationValue, 10));
 
-                if (duration === 0) {
-                    await interaction.reply({ content: `Slowmode has been removed in ${channel.name}.`, ephemeral: false });
+                const channelMention = `<#${channel.id}>`;
+                if (durationValue === '0') {
+                    await interaction.reply({ content: `Slowmode has been removed in ${channelMention}.`, ephemeral: false });
                 } else {
-                    await interaction.reply({ content: `Slowmode set to ${duration} seconds in ${channel.name}.`, ephemeral: false });
+                    await interaction.reply({ content: `Slowmode set to ${durationText} in ${channelMention}.`, ephemeral: false });
                 }
             }
         } catch (error) {
