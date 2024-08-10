@@ -53,7 +53,7 @@ for (const file of eventFiles) {
 
 // Set bot activity
 client.once('ready', () => {
-    console.log(`${client.user} has been lit!`);
+    console.log(`${client.user.tag} has been lit!`);
     let i = 0;
     client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
 
