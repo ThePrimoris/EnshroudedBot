@@ -53,7 +53,7 @@ for (const file of eventFiles) {
 
 // Set bot activity
 client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}! Bot is online and ready!`);
+    console.log(`${client.user} has been lit!`);
     let i = 0;
     client.user.setActivity(ACTIVITIES[i].name, { type: ACTIVITIES[i].type });
 
@@ -133,7 +133,7 @@ client.on('messageCreate', async (message) => {
 
 // Handle SIGTERM signal
 process.on('SIGTERM', () => {
-    console.log('Logging out of ${client.user.tag}.. Shutting down.');
+    console.log(`Logging out of ${client.user.tag}.. Shutting down.`);
     client.destroy(); // Perform any necessary cleanup
     process.exit(0);
 });
