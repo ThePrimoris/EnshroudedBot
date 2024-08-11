@@ -5,8 +5,6 @@ const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Parti
 
 // Constants
 const LOG_CHANNEL_ID = '1047449388089356328'; // Log Channel ID
-const VOICE_CATEGORY_ID = '1261551554566029313' // Category ID
-const VOICE_CHANNEL_ID = '1272022422358593587'; // Voice Channel ID
 const RATE_LIMIT_COOLDOWN = 1 * 60 * 1000; // 1 minute cooldown for DMs
 const COMMAND_FOLDERS = ['general', 'moderation'];
 const ACTIVITIES = [
@@ -66,40 +64,27 @@ client.once('ready', () => {
 });
 
 // Handle voice state updates
-client.on('voiceStateUpdate', async (oldState, newState) => {
-    const newUserChannelId = newState.channelId;
+client.on('voiceStateUpdate', (oldState, newState) => {
+    const oldChannelId = oldState.channelId;
 
-    // Check if user joined the specified channel
-    if (newUserChannelId === VOICE_CHANNEL_ID && newState.member) {
-        const guild = newState.guild;
-        const user = newState.member.user;
-        const category = guild.channels.cache.get(VOICE_CATEGORY_ID); // Assuming you want the same category as /create-lobby
-
-        // Create the new voice channel
-        const newVoiceChannel = await guild.channels.create({
-            name: `${user.username}'s Channel`,
-            type: 2,
-            parent: VOICE_CATEGORY_ID,
-            userLimit: 16, // You can set a default user limit here
-        });
-
-        // Move the user to the new voice channel
-        newState.setChannel(newVoiceChannel).catch(console.error);
-
-        // Store channel in active channels map
-        client.activeChannels.set(newVoiceChannel.id, { ownerId: user.id, creationTime: Date.now() });
-
-        // Monitor the channel via the existing voiceStateUpdate event
-        setTimeout(() => {
-            if (newVoiceChannel.members.size === 0) {
-                newVoiceChannel.delete()
-                    .then(() => {
-                        console.log(`Deleted empty voice channel: ${newVoiceChannel.name}`);
-                        client.activeChannels.delete(newVoiceChannel.id);
-                    })
-                    .catch(console.error);
-            }
-        }, 30000);
+    if (oldChannelId && client.activeChannels.has(oldChannelId)) {
+        const voiceChannel = oldState.guild.channels.cache.get(oldChannelId);
+        if (voiceChannel) {
+            setTimeout(() => {
+                if (voiceChannel.members.size === 0) {
+                    voiceChannel.delete()
+                        .then(() => {
+                            console.log(`Deleted empty voice channel: ${voiceChannel.name}`);
+                            const channelData = client.activeChannels.get(oldChannelId);
+                            if (channelData) {
+                                client.cooldowns.delete(channelData.ownerId); // Remove cooldown
+                            }
+                            client.activeChannels.delete(oldChannelId); // Remove from active channels map
+                        })
+                        .catch(console.error);
+                }
+            }, 30000); // 30-second grace period after last user leaves
+        }
     }
 });
 
