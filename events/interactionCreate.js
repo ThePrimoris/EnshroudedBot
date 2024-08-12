@@ -153,8 +153,9 @@ module.exports = {
             }
         } else if (interaction.isModalSubmit()) {
             const customIdParts = interaction.customId.split(':');
-            const actionType = customIdParts[0].split('_')[0]; // 'warn_user' or 'ban_user'
+            const actionType = customIdParts[0]; // This correctly identifies 'warn_user' or 'ban_user' as the entire first part of customId before the first colon
             const userId = customIdParts[1];
+        
             console.log(`Modal submit detected for action type: ${actionType} and user ID: ${userId}`);
         
             try {
@@ -173,7 +174,7 @@ module.exports = {
                     await user.send(`You have been warned for: ${reason}`)
                         .then(() => console.log(`Warning DM sent to user ${user.username}`))
                         .catch(error => console.error(`Could not send DM to user ${userId}`, error));
-                        
+        
                     await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
                     console.log(`Interaction replied successfully for warning.`);
                 } else if (actionType === 'ban_user') {
@@ -183,7 +184,7 @@ module.exports = {
         
                     await interaction.guild.members.ban(userId, { reason });
                     console.log(`User ${userId} banned successfully.`);
-                    
+        
                     await UserBan.create({ userId, reason, issuerId, issuerName });
                     console.log(`Ban recorded in database for user ID: ${userId}`);
         
