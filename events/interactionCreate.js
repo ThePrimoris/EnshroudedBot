@@ -155,13 +155,15 @@ module.exports = {
             const customIdParts = interaction.customId.split(':');
             const actionType = customIdParts[0].split('_')[0]; // 'warn_user' or 'ban_user'
             const userId = customIdParts[1];
+            const user = await client.users.fetch(userId); // Fetch the user object
             const reason = interaction.fields.getTextInputValue('reason');
             const issuerId = interaction.user.id;
             const issuerName = interaction.user.username;
-
+        
             if (actionType === 'warn_user') {
                 try {
                     await UserWarning.create({ userId, reason, issuerId, issuerName });
+                    await user.send(`You have been warned for: ${reason}`).catch(error => console.error(`Could not send DM to user ${userId}`, error)); // Send DM
                     await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
                 } catch (error) {
                     console.error(`Error issuing warning to user ID: ${userId}`, error);
@@ -169,6 +171,7 @@ module.exports = {
                 }
             } else if (actionType === 'ban_user') {
                 try {
+                    await user.send(`You are being banned for: ${reason}`).catch(error => console.error(`Could not send DM to user ${userId}`, error)); // Send DM before banning
                     await interaction.guild.members.ban(userId, { reason });
                     await UserBan.create({ userId, reason, issuerId, issuerName });
                     await interaction.reply({ content: `User <@${userId}> has been banned for: ${reason}`, ephemeral: true });
