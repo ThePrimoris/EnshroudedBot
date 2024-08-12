@@ -155,30 +155,44 @@ module.exports = {
             const customIdParts = interaction.customId.split(':');
             const actionType = customIdParts[0].split('_')[0]; // 'warn_user' or 'ban_user'
             const userId = customIdParts[1];
-            const user = await client.users.fetch(userId); // Fetch the user object
-            const reason = interaction.fields.getTextInputValue('reason');
-            const issuerId = interaction.user.id;
-            const issuerName = interaction.user.username;
+            console.log(`Modal submit detected for action type: ${actionType} and user ID: ${userId}`);
         
-            if (actionType === 'warn_user') {
-                try {
+            try {
+                const user = await client.users.fetch(userId);
+                console.log(`User fetched successfully: ${user.username}`);
+        
+                const reason = interaction.fields.getTextInputValue('reason');
+                const issuerId = interaction.user.id;
+                const issuerName = interaction.user.username;
+                console.log(`Data from modal: Reason: ${reason}, Issuer ID: ${issuerId}, Issuer Name: ${issuerName}`);
+        
+                if (actionType === 'warn_user') {
                     await UserWarning.create({ userId, reason, issuerId, issuerName });
-                    await user.send(`You have been warned for: ${reason}`).catch(error => console.error(`Could not send DM to user ${userId}`, error)); // Send DM
+                    console.log(`Warning created in database for user ID: ${userId}`);
+        
+                    await user.send(`You have been warned for: ${reason}`)
+                        .then(() => console.log(`Warning DM sent to user ${user.username}`))
+                        .catch(error => console.error(`Could not send DM to user ${userId}`, error));
+                        
                     await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
-                } catch (error) {
-                    console.error(`Error issuing warning to user ID: ${userId}`, error);
-                    await interaction.reply({ content: 'Failed to issue warning. Please try again later.', ephemeral: true });
-                }
-            } else if (actionType === 'ban_user') {
-                try {
-                    await user.send(`You are being banned for: ${reason}`).catch(error => console.error(`Could not send DM to user ${userId}`, error)); // Send DM before banning
+                    console.log(`Interaction replied successfully for warning.`);
+                } else if (actionType === 'ban_user') {
+                    await user.send(`You are being banned for: ${reason}`)
+                        .then(() => console.log(`Ban notification DM sent to user ${user.username}`))
+                        .catch(error => console.error(`Could not send DM to user ${userId}`, error));
+        
                     await interaction.guild.members.ban(userId, { reason });
+                    console.log(`User ${userId} banned successfully.`);
+                    
                     await UserBan.create({ userId, reason, issuerId, issuerName });
+                    console.log(`Ban recorded in database for user ID: ${userId}`);
+        
                     await interaction.reply({ content: `User <@${userId}> has been banned for: ${reason}`, ephemeral: true });
-                } catch (error) {
-                    console.error(`Error banning user ID: ${userId}`, error);
-                    await interaction.reply({ content: 'Failed to ban user. Please try again later.', ephemeral: true });
+                    console.log(`Interaction replied successfully for ban.`);
                 }
+            } catch (error) {
+                console.error(`Error processing ${actionType} action for user ID: ${userId}`, error);
+                await interaction.reply({ content: `Failed to ${actionType === 'warn_user' ? 'issue warning' : 'ban user'}. Please try again later.`, ephemeral: true });
             }
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
