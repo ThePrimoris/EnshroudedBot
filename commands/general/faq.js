@@ -67,9 +67,8 @@ We will do our best to avoid this, and it's not something we're planning intenti
 For better and faster troubleshooting, please share game logs along with your message.
 
 **Open File Explorer**
-- Navigate to your Steam folder, by default it should be in *C:\Program Files (x86)\Steam*.
-- Find the following file:
-[...] \Steam\steamapps\common\Enshrouded\enshrouded.log"
+- Navigate to your Steam folder, by default it should be in *C:\\Program Files (x86)\\Steam*.
+- Find the following file: [...]\Steam\\steamapps\\common\\Enshrouded\\enshrouded.log
 
 ⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
 
