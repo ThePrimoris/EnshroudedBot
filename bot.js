@@ -1,5 +1,4 @@
-const envFile = `.env.${process.argv[2] || 'dev'}`;
-require('dotenv').config({ path: envFile });
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Partials } = require('discord.js');
