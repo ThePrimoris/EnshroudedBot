@@ -20,6 +20,18 @@ module.exports = {
             const userId = customIdParts[1];
             const actionType = customIdParts[0]; // 'warn_user', 'ban_user', 'view_warnings', etc.
 
+            if (actionType === 'warn_user' || actionType === 'view_warnings' || actionType === 'view_notes' || actionType === 'view_moderation') {
+                // Check if the user has the ManageMessages permission
+                if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+                    return interaction.reply({ content: 'You do not have permission to issue warnings.', ephemeral: true });
+                }
+            } else if (actionType === 'ban_user') {
+                // Check if the user has the BanMembers permission
+                if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+                    return interaction.reply({ content: 'You do not have permission to ban users.', ephemeral: true });
+                }
+            }
+
             switch (actionType) {
                 case 'warn_user':
                 case 'ban_user':
