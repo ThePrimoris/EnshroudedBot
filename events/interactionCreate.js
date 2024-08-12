@@ -1,4 +1,4 @@
-const {  EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { EmbedBuilder, PermissionsBitField } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../database/index'); 
 
 module.exports = {
@@ -135,7 +135,34 @@ module.exports = {
                     console.error(`Error fetching moderation actions for user ID: ${userId}`, error);
                     await interaction.reply({ content: 'Failed to fetch moderation actions. Please try again later.' }); // Not ephemeral
                 }
-            } 
+            } else if (customIdParts[0] === 'warn_user') {
+                const userId = customIdParts[1];
+                const reason = 'Warned via button'; // You can change this or make it dynamic
+                const issuerId = interaction.user.id;
+                const issuerName = interaction.user.username;
+
+                try {
+                    await UserWarning.create({ userId, reason, issuerId, issuerName });
+                    await interaction.reply({ content: `User <@${userId}> has been warned.`, ephemeral: true });
+                } catch (error) {
+                    console.error(`Error issuing warning to user ID: ${userId}`, error);
+                    await interaction.reply({ content: 'Failed to issue warning. Please try again later.', ephemeral: true });
+                }
+            } else if (customIdParts[0] === 'ban_user') {
+                const userId = customIdParts[1];
+                const reason = 'Banned via button'; // You can change this or make it dynamic
+                const issuerId = interaction.user.id;
+                const issuerName = interaction.user.username;
+
+                try {
+                    await interaction.guild.members.ban(userId, { reason });
+                    await UserBan.create({ userId, reason, issuerId, issuerName });
+                    await interaction.reply({ content: `User <@${userId}> has been banned.`, ephemeral: true });
+                } catch (error) {
+                    console.error(`Error banning user ID: ${userId}`, error);
+                    await interaction.reply({ content: 'Failed to ban user. Please try again later.', ephemeral: true });
+                }
+            }
             
         } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {

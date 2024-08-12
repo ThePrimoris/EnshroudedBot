@@ -82,8 +82,18 @@ module.exports = {
             .setLabel('View All Moderation Actions')
             .setStyle(ButtonStyle.Primary);
 
+        const warnButton = new ButtonBuilder()
+            .setCustomId(`warn_user:${user.id}`)
+            .setLabel('Warn')
+            .setStyle(ButtonStyle.Danger);
+
+        const banButton = new ButtonBuilder()
+            .setCustomId(`ban_user:${user.id}`)
+            .setLabel('Ban')
+            .setStyle(ButtonStyle.Danger);
+
         const actionRow = new ActionRowBuilder()
-            .addComponents(warningsButton, notesButton, viewAllButton);
+            .addComponents(warningsButton, notesButton, viewAllButton, warnButton, banButton);
 
         await interaction.reply({ embeds: [embed], components: [actionRow] });
     },
