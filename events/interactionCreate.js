@@ -175,7 +175,7 @@ module.exports = {
                         .then(() => console.log(`Warning DM sent to user ${user.username}`))
                         .catch(error => console.error(`Could not send DM to user ${userId}`, error));
                     
-                    await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
+                    await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: false });
                     console.log(`Interaction replied successfully for warning.`);
                 } else if (actionType === 'ban_user_modal') {
                     await user.send(`You are being banned for: ${reason}`)
@@ -188,15 +188,14 @@ module.exports = {
                     await UserBan.create({ userId, reason, issuerId, issuerName });
                     console.log(`Ban recorded in database for user ID: ${userId}`);
                     
-                    await interaction.reply({ content: `User <@${userId}> has been banned for: ${reason}`, ephemeral: true });
+                    await interaction.reply({ content: `User <@${userId}> has been banned for: ${reason}`, ephemeral: false });
                     console.log(`Interaction replied successfully for ban.`);
                 }
             } catch (error) {
                 console.error(`Error processing ${actionType} action for user ID: ${userId}`, error);
                 await interaction.reply({ content: `Failed to ${actionType === 'warn_user_modal' ? 'issue warning' : 'ban user'}. Please try again later.`, ephemeral: true });
             }
-        }
-         else if (interaction.isStringSelectMenu()) {
+        } else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate();
 
