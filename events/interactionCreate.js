@@ -18,20 +18,33 @@ module.exports = {
         } else if (interaction.isButton()) {
             const customIdParts = interaction.customId.split(':');
             const userId = customIdParts[1];
-            const actionType = customIdParts[0]; // 'warn_user', 'ban_user', 'view_warnings', etc.
+            const actionType = customIdParts[0];
 
-            if (actionType === 'warn_user' || actionType === 'view_warnings' || actionType === 'view_notes' || actionType === 'view_moderation') {
-                // Check if the user has the ManageMessages permission
-                if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-                    return interaction.reply({ content: 'You do not have permission to issue warnings.', ephemeral: true });
-                }
-            } else if (actionType === 'ban_user') {
-                // Check if the user has the BanMembers permission
-                if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-                    return interaction.reply({ content: 'You do not have permission to ban users.', ephemeral: true });
-                }
-            }
-
+            switch (actionType) {
+                case 'view_warnings':
+                case 'view_notes':
+                case 'view_moderation':
+                    if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+                        return interaction.reply({ content: 'You do not have permission to view moderation actions.', ephemeral: true });
+                    }
+                    break;
+            
+                case 'warn_user':
+                    if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+                        return interaction.reply({ content: 'You do not have permission to issue warnings.', ephemeral: true });
+                    }
+                    break;
+            
+                case 'ban_user':
+                    if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+                        return interaction.reply({ content: 'You do not have permission to ban users.', ephemeral: true });
+                    }
+                    break;
+            
+                default:
+                    return interaction.reply({ content: 'Unknown action type.', ephemeral: true });
+            }                     
+            
             switch (actionType) {
                 case 'warn_user':
                 case 'ban_user':
