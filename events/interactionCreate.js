@@ -153,7 +153,7 @@ module.exports = {
             }
         } else if (interaction.isModalSubmit()) {
             const customIdParts = interaction.customId.split(':');
-            const actionType = customIdParts[0]; // 'warn_user' or 'ban_user'
+            const actionType = customIdParts[0]; // This will now correctly be 'warn_user_modal' or 'ban_user_modal'
             const userId = customIdParts[1];
             
             console.log(`Modal submit detected for action type: ${actionType} and user ID: ${userId}`);
@@ -167,7 +167,7 @@ module.exports = {
                 const issuerName = interaction.user.username;
                 console.log(`Data from modal: Reason: ${reason}, Issuer ID: ${issuerId}, Issuer Name: ${issuerName}`);
                 
-                if (actionType === 'warn_user') {
+                if (actionType === 'warn_user_modal') {
                     await UserWarning.create({ userId, reason, issuerId, issuerName });
                     console.log(`Warning created in database for user ID: ${userId}`);
                     
@@ -177,7 +177,7 @@ module.exports = {
                     
                     await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
                     console.log(`Interaction replied successfully for warning.`);
-                } else if (actionType === 'ban_user') {
+                } else if (actionType === 'ban_user_modal') {
                     await user.send(`You are being banned for: ${reason}`)
                         .then(() => console.log(`Ban notification DM sent to user ${user.username}`))
                         .catch(error => console.error(`Could not send DM to user ${userId}`, error));
@@ -193,9 +193,10 @@ module.exports = {
                 }
             } catch (error) {
                 console.error(`Error processing ${actionType} action for user ID: ${userId}`, error);
-                await interaction.reply({ content: `Failed to ${actionType === 'warn_user' ? 'issue warning' : 'ban user'}. Please try again later.`, ephemeral: true });
+                await interaction.reply({ content: `Failed to ${actionType === 'warn_user_modal' ? 'issue warning' : 'ban user'}. Please try again later.`, ephemeral: true });
             }
-        } else if (interaction.isStringSelectMenu()) {
+        }
+         else if (interaction.isStringSelectMenu()) {
             if (interaction.customId === 'selectCommand') {
                 await interaction.deferUpdate();
 
