@@ -1,4 +1,5 @@
-require('dotenv').config();
+const envFile = `.env.${process.argv[2] || 'dev'}`;
+require('dotenv').config({ path: envFile });
 const Sequelize = require('sequelize');
 const fs = require('fs');
 const path = require('path');
