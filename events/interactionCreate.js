@@ -153,41 +153,41 @@ module.exports = {
             }
         } else if (interaction.isModalSubmit()) {
             const customIdParts = interaction.customId.split(':');
-            const actionType = customIdParts[0]; // This correctly identifies 'warn_user' or 'ban_user' as the entire first part of customId before the first colon
+            const actionType = customIdParts[0]; // 'warn_user' or 'ban_user'
             const userId = customIdParts[1];
-        
+            
             console.log(`Modal submit detected for action type: ${actionType} and user ID: ${userId}`);
-        
+            
             try {
                 const user = await client.users.fetch(userId);
                 console.log(`User fetched successfully: ${user.username}`);
-        
+                
                 const reason = interaction.fields.getTextInputValue('reason');
                 const issuerId = interaction.user.id;
                 const issuerName = interaction.user.username;
                 console.log(`Data from modal: Reason: ${reason}, Issuer ID: ${issuerId}, Issuer Name: ${issuerName}`);
-        
+                
                 if (actionType === 'warn_user') {
                     await UserWarning.create({ userId, reason, issuerId, issuerName });
                     console.log(`Warning created in database for user ID: ${userId}`);
-        
+                    
                     await user.send(`You have been warned for: ${reason}`)
                         .then(() => console.log(`Warning DM sent to user ${user.username}`))
                         .catch(error => console.error(`Could not send DM to user ${userId}`, error));
-        
+                    
                     await interaction.reply({ content: `User <@${userId}> has been warned for: ${reason}`, ephemeral: true });
                     console.log(`Interaction replied successfully for warning.`);
                 } else if (actionType === 'ban_user') {
                     await user.send(`You are being banned for: ${reason}`)
                         .then(() => console.log(`Ban notification DM sent to user ${user.username}`))
                         .catch(error => console.error(`Could not send DM to user ${userId}`, error));
-        
+                    
                     await interaction.guild.members.ban(userId, { reason });
                     console.log(`User ${userId} banned successfully.`);
-        
+                    
                     await UserBan.create({ userId, reason, issuerId, issuerName });
                     console.log(`Ban recorded in database for user ID: ${userId}`);
-        
+                    
                     await interaction.reply({ content: `User <@${userId}> has been banned for: ${reason}`, ephemeral: true });
                     console.log(`Interaction replied successfully for ban.`);
                 }
