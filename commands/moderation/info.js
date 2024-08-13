@@ -89,7 +89,7 @@ module.exports = {
             .addFields(
                 { name: '🏷️ Nickname', value: member.nickname || 'None', inline: true },
                 { name: '📅 Joined Server', value: member.joinedAt ? member.joinedAt.toDateString() : 'N/A', inline: true },
-                { name: '🗓️ Account Created', value: user.createdAt.toDateString(), inline: true },
+                { name: '🗓️ Account Created', value: user.createdAt ? user.createdAt.toDateString() : 'N/A', inline: true },
                 { name: '🔖 Roles', value: roleNames, inline: false },
                 { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: false }
             )
@@ -128,6 +128,5 @@ module.exports = {
         } else {
             await context.channel.send({ embeds: [embed], components: [actionRow] });
         }
-    }
-    
+    }    
 };
