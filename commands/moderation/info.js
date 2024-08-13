@@ -12,18 +12,49 @@ module.exports = {
                 .setRequired(true)),
     requiredPermissions: ['ManageMessages'],
     category: 'moderation',
-    async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-            return interaction.reply({ content: "You don't have the required permission (Manage Messages) to use this command.", ephemeral: true });
-        }
+    async execute(interactionOrMessage, args) {
+        const isInteraction = interactionOrMessage.isCommand !== undefined;
 
-        const user = interaction.options.getUser('user');
+        // If it's an interaction (slash command)
+        if (isInteraction) {
+            const interaction = interactionOrMessage;
+
+            if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+                return interaction.reply({ content: "You don't have the required permission (Manage Messages) to use this command.", ephemeral: true });
+            }
+
+            const user = interaction.options.getUser('user');
+            await this.handleInfo(interaction, user);
+
+        // If it's a message (prefix command)
+        } else {
+            const message = interactionOrMessage;
+
+            if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+                return message.reply("You don't have the required permission (Manage Messages) to use this command.");
+            }
+
+            const user = message.mentions.users.first() || message.guild.members.cache.get(args[0]);
+
+            if (!user) {
+                return message.reply('Please mention a valid user or provide their user ID.');
+            }
+
+            await this.handleInfo(message, user);
+        }
+    },
+
+    async handleInfo(context, user) {
         let member;
         try {
-            member = await interaction.guild.members.fetch(user.id);
+            member = await context.guild.members.fetch(user.id);
         } catch (error) {
             console.error('Failed to fetch member:', error);
-            return interaction.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
+            if (context.isCommand) {
+                return context.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
+            } else {
+                return context.reply('Failed to fetch user from the guild. They may not be a member.');
+            }
         }
 
         let numberOfWarnings, numberOfNotes, numberOfMutes, numberOfBans;
@@ -34,16 +65,14 @@ module.exports = {
             numberOfBans = await UserBan.count({ where: { userId: user.id } });
         } catch (error) {
             console.error('Error fetching moderation data:', error);
-            return interaction.reply({ content: 'Failed to fetch moderation data. Please try again later.', ephemeral: true });
+            return context.reply('Failed to fetch moderation data. Please try again later.');
         }
 
-        // Format roles with their colors
         const roleNames = member.roles.cache
-            .filter(role => role.id !== interaction.guild.id) // Exclude @everyone role
+            .filter(role => role.id !== context.guild.id)
             .map(role => `<@&${role.id}>`)
             .join(' ');
 
-        // Create the embed
         const embed = new EmbedBuilder()
             .setTitle(`${user.username}'s Information`)
             .setDescription(`Details about ${user.username}`)
@@ -64,9 +93,8 @@ module.exports = {
                 { name: '🔖 Roles', value: roleNames || 'None', inline: false },
                 { name: '📜 Moderation Summary', value: `⚠️ ${numberOfWarnings} Warnings\n📝 ${numberOfNotes} Notes\n🔇 ${numberOfMutes} Mutes\n🚫 ${numberOfBans} Bans`, inline: false }
             )
-            .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() });
+            .setFooter({ text: `Requested by ${context.member.user.username}`, iconURL: context.member.user.displayAvatarURL() });
 
-        // Create buttons
         const warningsButton = new ButtonBuilder()
             .setCustomId(`view_warnings:${user.id}`)
             .setLabel('View Warnings')
@@ -95,6 +123,10 @@ module.exports = {
         const actionRow = new ActionRowBuilder()
             .addComponents(warningsButton, notesButton, viewAllButton, warnButton, banButton);
 
-        await interaction.reply({ embeds: [embed], components: [actionRow] });
-    },
+        if (context.isCommand) {
+            await context.reply({ embeds: [embed], components: [actionRow] });
+        } else {
+            await context.channel.send({ embeds: [embed], components: [actionRow] });
+        }
+    }
 };
