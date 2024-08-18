@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionsBitField, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField, ChannelType, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,18 +32,15 @@ module.exports = {
     const replyChannelId = '1047449388089356328'; // ID of the channel where logs are sent
 
     try {
+      let targetDescription = '';
+
       // If a channel is specified
       if (targetChannel) {
         // Send message to the specified channel
         await targetChannel.send(message);
 
-        // Log message to the specified channel
-        const replyChannel = await interaction.client.channels.fetch(replyChannelId);
-        if (replyChannel) {
-          await replyChannel.send(`<@${user.id}> sent a message to ${targetChannel}: \`${message}\``);
-        } else {
-          console.error('Reply channel not found.');
-        }
+        // Prepare the description for the embed
+        targetDescription = `Message sent to ${targetChannel}:\n**Message:**\n${message}`;
 
         await interaction.reply({ content: 'Message sent successfully to the channel.', ephemeral: true });
       }
@@ -53,14 +50,24 @@ module.exports = {
         // DM the specified user
         await targetUser.send(message);
         await interaction.reply({ content: `DM sent to ${targetUser.tag} successfully.`, ephemeral: true });
-        
-        // Log DM in the specified channel
-        const replyChannel = await interaction.client.channels.fetch(replyChannelId);
-        if (replyChannel) {
-          await replyChannel.send(`<@${user.id}> sent a DM to ${targetUser.tag}: \`${message}\``);
-        } else {
-          console.error('Reply channel not found.');
-        }
+
+        // Prepare the description for the embed
+        targetDescription = `DM sent to ${targetUser.tag}:\n**Message:**\n${message}`;
+      }
+
+      // Log the message to the specified channel
+      const replyChannel = await interaction.client.channels.fetch(replyChannelId);
+      if (replyChannel && targetDescription) {
+        const logEmbed = new EmbedBuilder()
+          .setColor('#3498db')
+          .setTitle('📨 Message')
+          .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
+          .setDescription(targetDescription)
+          .setTimestamp();
+
+        await replyChannel.send({ embeds: [logEmbed] });
+      } else {
+        console.error('Reply channel not found or no message to log.');
       }
 
       // If neither a channel nor a user is specified
