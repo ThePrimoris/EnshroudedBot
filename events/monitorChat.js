@@ -1,5 +1,5 @@
 const { Events, PermissionsBitField } = require('discord.js');
-const config = require('../../config.js');
+const config = require('../config.js');
 
 const screenshotsChannelId = config.channels.screenshotsChannelId;
 const creativeCornerChannelId = config.channels.creativeCornerChannelId;
