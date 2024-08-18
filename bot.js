@@ -2,10 +2,11 @@ const envFile = `.env.${process.argv[2] || 'dev'}`;
 require('dotenv').config({ path: envFile });
 const fs = require('fs');
 const path = require('path');
+const config = require('./config.js');
 const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Partials } = require('discord.js');
 
 // Constants
-const LOG_CHANNEL_ID = '1047449388089356328'; // Log Channel ID
+const logChannelId = config.channels.logChannelId;
 const RATE_LIMIT_COOLDOWN = 1 * 60 * 1000; // 1 minute cooldown for DMs
 const COMMAND_FOLDERS = ['general', 'moderation'];
 const ACTIVITIES = [
@@ -115,7 +116,7 @@ client.on('messageCreate', async (message) => {
         console.log(`Received DM from ${message.author.tag}: ${message.content}`);
 
         try {
-            const logChannel = await client.channels.fetch(LOG_CHANNEL_ID);
+            const logChannel = await client.channels.fetch(logChannelId);
 
             const dmEmbed = new EmbedBuilder()
                 .setColor('#3498db')

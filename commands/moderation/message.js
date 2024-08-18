@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, PermissionsBitField, ChannelType, EmbedBuilder } = require('discord.js');
+const config = require('..config.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,7 +30,7 @@ module.exports = {
     const targetUser = interaction.options.getUser('user');
     const message = interaction.options.getString('message');
     const user = interaction.user;
-    const replyChannelId = '1047449388089356328'; // ID of the channel where logs are sent
+    const logChannelId = config.channels.logChannelId;
 
     try {
       let targetDescription = '';
@@ -56,7 +57,7 @@ module.exports = {
       }
 
       // Log the message to the specified channel
-      const replyChannel = await interaction.client.channels.fetch(replyChannelId);
+      const replyChannel = await interaction.client.channels.fetch(logChannelId);
       if (replyChannel && targetDescription) {
         const logEmbed = new EmbedBuilder()
           .setColor('#3498db')

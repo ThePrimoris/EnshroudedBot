@@ -1,13 +1,14 @@
 const { Events, PermissionsBitField } = require('discord.js');
+const config = require('..config.js');
 
-const specifiedChannelId = '1046840542006345841';
-const creativeCornerChannelId = '1235270718577578085'; // #creative-corner channel ID
+const screenshotsChannelId = config.channels.screenshotsChannelId;
+const creativeCornerChannelId = config.channels.creativeCornerChannelId;
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         // Check if the message is in the specified channel and is not from a bot
-        if (message.channel.id === specifiedChannelId && !message.author.bot) {
+        if (message.channel.id === screenshotsChannelIdd && !message.author.bot) {
             // Check if the author is a moderator (has MANAGE_MESSAGES permission)
             const isModerator = message.member.permissions.has(PermissionsBitField.Flags.ManageMessages);
 

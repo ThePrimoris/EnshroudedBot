@@ -1,5 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
+const config = require('..config.js');
+
+const troubleshootingChannelId = config.channels.troubleshootingChannelId;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -45,7 +48,7 @@ module.exports = {
         ⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
 
         **Copy and Paste the log file into Discord**
-        - Head over to <#${interaction.channel.id}> and paste the log file into the channel.
+        - Head over to <#${troubleshootingChannelId}> and paste the log file into the channel.
         `.trim();
 
         // Define the embeds
