@@ -37,9 +37,16 @@ module.exports = {
         const vanityUrlCode = guild.vanityURLCode || 'None';
         const applicationCommandCount = guild.commands.cache.size;
         const highestRole = guild.roles.highest.name;
-        const inviteCount = await guild.invites.fetch().then(invites => invites.size);
         const standardEmojiCount = guild.emojis.cache.filter(emoji => !emoji.animated).size;
         const animatedEmojiCount = guild.emojis.cache.filter(emoji => emoji.animated).size;
+
+        // Attempt to fetch invites, with error handling
+        let inviteCount;
+        try {
+            inviteCount = await guild.invites.fetch().then(invites => invites.size);
+        } catch (error) {
+            inviteCount = 'No Permission to Fetch Invites';
+        }
 
         // Creating an embed for better presentation
         const serverInfoEmbed = new EmbedBuilder()
