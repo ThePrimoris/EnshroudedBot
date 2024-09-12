@@ -9,7 +9,7 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages),
 
     requiredPermissions: ['ManageMessages'],
-    category: 'moderation',
+    category: 'context',
 
     async execute(interaction) {
         // Ensure the command is from a context menu
@@ -18,6 +18,9 @@ module.exports = {
         }
 
         const user = interaction.targetUser; // Fetches the user being right-clicked
+
+        // Acknowledge the interaction immediately
+        await interaction.deferReply({ ephemeral: true });
 
         await this.handleInfo(interaction, user); // Call handleInfo function to get user details
     },
@@ -28,7 +31,7 @@ module.exports = {
             member = await context.guild.members.fetch(user.id);
         } catch (error) {
             console.error('Failed to fetch member:', error);
-            return context.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
+            return context.editReply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
         }
 
         let numberOfWarnings = 0, numberOfNotes = 0, numberOfMutes = 0, numberOfBans = 0;
@@ -39,7 +42,7 @@ module.exports = {
             numberOfBans = await UserBan.count({ where: { userId: user.id } }) || 0;
         } catch (error) {
             console.error('Error fetching moderation data:', error);
-            return context.reply('Failed to fetch moderation data. Please try again later.', { ephemeral: true });
+            return context.editReply({ content: 'Failed to fetch moderation data. Please try again later.', ephemeral: true });
         }
 
         const roleNames = member.roles.cache
@@ -97,6 +100,7 @@ module.exports = {
         const actionRow = new ActionRowBuilder()
             .addComponents(warningsButton, notesButton, viewAllButton, warnButton, banButton);
 
-        await context.reply({ embeds: [embed], components: [actionRow], ephemeral: true });
+        // Edit the original deferred reply with the embed and buttons
+        await context.editReply({ embeds: [embed], components: [actionRow] });
     }
 };

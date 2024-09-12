@@ -8,7 +8,7 @@ const { Client, GatewayIntentBits, Collection, ActivityType, EmbedBuilder, Parti
 // Constants
 const logChannelId = config.channels.logChannelId;
 const RATE_LIMIT_COOLDOWN = 1 * 60 * 1000; // 1 minute cooldown for DMs
-const COMMAND_FOLDERS = ['general', 'moderation'];
+const COMMAND_FOLDERS = ['general', 'moderation', 'context'];
 const ACTIVITIES = [
     { name: 'Enshrouded', type: ActivityType.Playing },
     { name: 'the Discord server 👀', type: ActivityType.Watching }
