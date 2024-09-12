@@ -3,25 +3,33 @@ const { UserMute } = require('../../database');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('mute')
-        .setDescription('Mutes a user for a specified duration')
-        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
+        .setName('timeout')
+        .setDescription('Timeouts a user for a specified duration')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ModerateMembers)
         .addUserOption(option =>
             option.setName('user')
-                .setDescription('The user to mute')
+                .setDescription('The user to timeout')
                 .setRequired(true))
         .addStringOption(option =>
             option.setName('duration')
-                .setDescription('The duration of the mute (#d for days, #h for hours, #m for minutes)')
-                .setRequired(true))
+                .setDescription('Select the duration for the timeout')
+                .setRequired(true)
+                .addChoices(
+                    { name: '60 seconds', value: '60s' },
+                    { name: '5 minutes', value: '5m' },
+                    { name: '10 minutes', value: '10m' },
+                    { name: '1 hour', value: '1h' },
+                    { name: '1 day', value: '1d' },
+                    { name: '1 week', value: '1w' }
+                ))
         .addStringOption(option =>
             option.setName('reason')
-                .setDescription('The reason for the mute')
+                .setDescription('The reason for the timeout')
                 .setRequired(false)),
-    requiredPermissions: ['ManageMessages'],
+    requiredPermissions: ['ModerateMembers'],
     category: 'moderation',
     async execute(interaction) {
-        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
             return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
         }
 
@@ -37,22 +45,18 @@ module.exports = {
 
         // Check if the target user has a higher role than the command issuer
         if (targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
-            return interaction.reply({ content: "You cannot mute a user with equal or higher permissions than yourself.", ephemeral: true });
+            return interaction.reply({ content: "You cannot timeout a user with equal or higher permissions than yourself.", ephemeral: true });
         }
 
         const duration = parseDuration(durationString);
         if (!duration) {
-            return interaction.reply({ content: "Invalid time format. Use #d for days, #h for hours, or #m for minutes.", ephemeral: true });
-        }
-
-        const muteRole = interaction.guild.roles.cache.find(role => role.name === 'Muted');
-        if (!muteRole) {
-            return interaction.reply({ content: "Mute role not found. Please create a 'Muted' role.", ephemeral: true });
+            return interaction.reply({ content: "Invalid time format.", ephemeral: true });
         }
 
         try {
-            await targetMember.roles.add(muteRole, reason);
-            await user.send(`You have been muted in ${interaction.guild.name} for ${durationString}. Reason: ${reason}`).catch(console.error);
+            // Apply timeout using Discord's timeout functionality
+            await targetMember.timeout(duration, reason);
+            await user.send(`You have been timed out in ${interaction.guild.name} for ${durationString}. Reason: ${reason}`).catch(console.error);
 
             // Log the mute action
             await UserMute.create({
@@ -63,40 +67,28 @@ module.exports = {
                 duration: durationString,
                 timestamp: new Date()
             });
-            const currentTime = new Date();
-            const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            setTimeout(async () => {
-                try {
-                    const freshMember = await interaction.guild.members.fetch(user.id);
-                    if (freshMember.roles.cache.has(muteRole.id)) {
-                        await freshMember.roles.remove(muteRole, 'Mute duration expired');
-                        await user.send(`You have been unmuted in ${interaction.guild.name}.`).catch(console.error);
-                        await interaction.followUp({ content: `${user.username} has been unmuted.`, ephemeral: false });
-                    }
-                } catch (error) {
-                    console.error('Failed to unmute:', error);
-                }
-            }, duration);
 
-            await interaction.reply({ content: `\`[${formattedTime}]\` ${user.tag} \`(${user.id})\` has been muted by <@${interaction.user.id}> for \`${durationString}\`. Reason: \`${reason}\`.`, ephemeral: false });
+            await interaction.reply({ content: `${user.tag} has been timed out by <@${interaction.user.id}> for \`${durationString}\`. Reason: \`${reason}\`.`, ephemeral: false });
         } catch (error) {
-            console.error('Error executing mute command:', error);
-            await interaction.reply({ content: 'Failed to mute the user. Please make sure I have the right permissions and try again.', ephemeral: true });
+            console.error('Error executing timeout command:', error);
+            await interaction.reply({ content: 'Failed to timeout the user. Please make sure I have the right permissions and try again.', ephemeral: true });
         }
     },
 };
 
 function parseDuration(time) {
-    const regex = /^(\d+)([dhm])$/;
+    const regex = /^(\d+)([smhdw])$/;
     const match = time.match(regex);
     if (!match) return null;
 
     const duration = parseInt(match[1], 10);
     const unit = match[2];
     switch (unit) {
-        case 'd': return duration * 86_400_000; // days in milliseconds
-        case 'h': return duration * 3_600_000;  // hours in milliseconds
-        case 'm': return duration * 60_000;     // minutes in milliseconds
+        case 's': return duration * 1000;        // seconds to milliseconds
+        case 'm': return duration * 60_000;      // minutes to milliseconds
+        case 'h': return duration * 3_600_000;   // hours to milliseconds
+        case 'd': return duration * 86_400_000;  // days to milliseconds
+        case 'w': return duration * 604_800_000; // weeks to milliseconds
         default: return null;
     }
 }
