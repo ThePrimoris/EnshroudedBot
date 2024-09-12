@@ -38,34 +38,29 @@ module.exports = {
 
         // Check if the message is in the self-promo channel
         if (message.channel.id === selfPromoChannelId && !message.author.bot) {
-            const requiredTimeInServer = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-            const minimumMessagesRequired = 100; // Set minimum messages for active members
-
-            // Check if the member has been in the server long enough
+            const requiredTimeInServer = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
+        
+            // Check how long the member has been in the server
             const memberJoinDuration = Date.now() - message.member.joinedTimestamp;
-
-            // Check if the user has posted a minimum number of messages in the server
-            const messageCount = await message.guild.members.fetch(message.author.id)
-                .then(member => member.user.lastMessageCount || 0); // This is just a placeholder, you may need a custom solution to track user message count
-
-            if (memberJoinDuration < requiredTimeInServer || messageCount < minimumMessagesRequired) {
+        
+            if (memberJoinDuration < requiredTimeInServer) {
                 // Log the message deletion to the console
-                console.log(`Deleted message from ${message.author.tag} (ID: ${message.id}) in ${message.channel.name} due to insufficient activity.`);
-
+                console.log(`Deleted message from ${message.author.tag} (ID: ${message.id}) in ${message.channel.name} due to insufficient time in server.`);
+        
                 // Delete the message
                 await message.delete();
-
+        
                 // Send a response to the user
                 const responseMessage = await message.channel.send({
-                    content: `${message.author}, the self-promo channel is for active members only. Please participate in the community before promoting your content.`,
+                    content: `${message.author}, you need to be a member of the server for at least 1 hour before posting in the self-promo channel.`,
                     allowedMentions: { users: [message.author.id] }
                 });
-
-                // Delete the bot's response after a few seconds (e.g., 10 seconds)
+        
+                // Delete the bot's response after 10 seconds
                 setTimeout(() => {
                     responseMessage.delete().catch(console.error);
                 }, 10000); // 10 seconds
             }
-        }
+        }        
     },
 };
