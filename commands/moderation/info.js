@@ -1,29 +1,19 @@
-const { SlashCommandBuilder, ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
 const { UserWarning, UserNote, UserMute, UserBan } = require('../../database');
 
 module.exports = {
-    // Define both the slash command and context menu command
-    data: [
-        new SlashCommandBuilder()
-            .setName('info')
-            .setDescription('Provides information about a user.')
-            .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
-            .addUserOption(option =>
-                option.setName('user')
-                    .setDescription('The user you want to get information about')
-                    .setRequired(true)),
-        new ContextMenuCommandBuilder()
-            .setName('Info')
-            .setType(ApplicationCommandType.User)
-            .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
-    ],
-
+    data: new SlashCommandBuilder()
+        .setName('info')
+        .setDescription('Provides information about a user.')
+        .setDefaultMemberPermissions(PermissionsBitField.Flags.ManageMessages)
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user you want to get information about')
+                .setRequired(true)),
     requiredPermissions: ['ManageMessages'],
     category: 'moderation',
-
     async execute(interactionOrMessage, args) {
         const isInteraction = interactionOrMessage.isCommand !== undefined;
-        let isEphemeral = false; // Default: not ephemeral
 
         // If it's an interaction (slash command)
         if (isInteraction) {
@@ -34,20 +24,9 @@ module.exports = {
             }
 
             const user = interaction.options.getUser('user');
-            await this.handleInfo(interaction, user, isEphemeral);
+            await this.handleInfo(interaction, user);
 
         // If it's a message (prefix command)
-        } else if (interactionOrMessage.isContextMenuCommand !== undefined) {
-            // Handle the context menu command
-            const interaction = interactionOrMessage;
-            isEphemeral = true; // Set to ephemeral for context menu
-
-            if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-                return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
-            }
-
-            const user = interaction.targetUser;
-            await this.handleInfo(interaction, user, isEphemeral);
         } else {
             const message = interactionOrMessage;
 
@@ -61,17 +40,21 @@ module.exports = {
                 return message.reply('Please mention a valid user or provide their user ID.');
             }
 
-            await this.handleInfo(message, user, isEphemeral);
+            await this.handleInfo(message, user);
         }
     },
 
-    async handleInfo(context, user, isEphemeral) {
+    async handleInfo(context, user) {
         let member;
         try {
             member = await context.guild.members.fetch(user.id);
         } catch (error) {
             console.error('Failed to fetch member:', error);
-            return context.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
+            if (context.isCommand) {
+                return context.reply({ content: 'Failed to fetch user from the guild. They may not be a member.', ephemeral: true });
+            } else {
+                return context.reply('Failed to fetch user from the guild. They may not be a member.');
+            }
         }
     
         let numberOfWarnings = 0, numberOfNotes = 0, numberOfMutes = 0, numberOfBans = 0;
@@ -82,9 +65,9 @@ module.exports = {
             numberOfBans = await UserBan.count({ where: { userId: user.id } }) || 0;
         } catch (error) {
             console.error('Error fetching moderation data:', error);
-            return context.reply('Failed to fetch moderation data. Please try again later.', { ephemeral: isEphemeral });
+            return context.reply('Failed to fetch moderation data. Please try again later.');
         }
-
+    
         const roleNames = member.roles.cache
             .filter(role => role.id !== context.guild.id)
             .map(role => `<@&${role.id}>`)
@@ -140,6 +123,10 @@ module.exports = {
         const actionRow = new ActionRowBuilder()
             .addComponents(warningsButton, notesButton, viewAllButton, warnButton, banButton);
     
-        await context.reply({ embeds: [embed], components: [actionRow], ephemeral: isEphemeral });
-    }
+        if (context.isCommand) {
+            await context.reply({ embeds: [embed], components: [actionRow] });
+        } else {
+            await context.channel.send({ embeds: [embed], components: [actionRow] });
+        }
+    }    
 };
