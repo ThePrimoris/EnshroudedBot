@@ -74,7 +74,7 @@ For better and faster troubleshooting, please share game logs along with your me
 ⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
 
 **Copy and Paste the log file into Discord**
-- Head over to <#1060216335684087878> and paste the log file into the channel.
+- Head over to <#${troubleshootingChannelId}> and paste the log file into the channel.
 `)
 .setColor('#3f9dd5')
 .setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` }),
@@ -97,7 +97,7 @@ If this does not work please change your Steam download region to something in a
 - Steam > Settings > Downloads > Download Region.
         `)
         .setColor('#3f9dd5')
-        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#1060216335684087878> for more assistance.' }),
+        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.' }),
 };
 
 // Export the command module
