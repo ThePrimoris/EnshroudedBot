@@ -95,9 +95,10 @@ If you're having issues with all servers being shown as full or are unable to jo
 
 If this does not work please change your Steam download region to something in another country.
 - Steam > Settings > Downloads > Download Region.
+
+This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.
         `)
         .setColor('#3f9dd5')
-        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.' }),
 };
 
 // Export the command module
