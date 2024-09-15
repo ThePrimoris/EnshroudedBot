@@ -69,12 +69,12 @@ For better and faster troubleshooting, please share game logs along with your me
 
 **Open File Explorer**
 - Navigate to your Steam folder, by default it should be in *C:\\Program Files (x86)\\Steam*.
-- Find the following file: [...]\Steam\\steamapps\\common\\Enshrouded\\enshrouded.log
+- Find the following file: [...]\\Steam\\steamapps\\common\\Enshrouded\\enshrouded.log
 
 ⚠️ If you do not have "show known file extensions" in Windows Explorer active, the relevant file will appear only as "enshrouded", with no extension and file type "Text Document".
 
 **Copy and Paste the log file into Discord**
-- Head over to <#${troubleshootingChannelId}> and paste the log file into the channel.
+- Head over to <#1060216335684087878> and paste the log file into the channel.
 `)
 .setColor('#3f9dd5')
 .setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` }),
@@ -92,11 +92,12 @@ Enshrouded's demo map was about 1km², Early Access is currently about 24km², a
 If you're having issues with all servers being shown as full or are unable to join servers please follow the instructions below.
 - Restart Steam and/or your PC.
 - Clear your Steam cache.
+
 If this does not work please change your Steam download region to something in another country.
 - Steam > Settings > Downloads > Download Region.
         `)
         .setColor('#3f9dd5')
-        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.' }),
+        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#1060216335684087878> for more assistance.' }),
 };
 
 // Export the command module
