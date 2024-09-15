@@ -86,6 +86,17 @@ Enshrouded's demo map was about 1km², Early Access is currently about 24km², a
         `)
         .setColor('#3f9dd5')
         .setFooter({ text: 'Keep in mind that this is an early acces game and this information is subject to change.' }),
+'server-issue': new EmbedBuilder()
+        .setTitle('Issues with Full/Unable to Join Server')
+        .setDescription(`
+If you're having issues with all servers being shown as full or are unable to join servers please follow the instructions below.
+- Restart Steam and/or your PC.
+- Clear your Steam cache.
+If this does not work please change your Steam download region to something in another country.
+- Steam > Settings > Downloads > Download Region.
+        `)
+        .setColor('#3f9dd5')
+        .setFooter({ text: 'This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.' }),
 };
 
 // Export the command module
@@ -103,7 +114,8 @@ module.exports = {
                     { name: 'Feature Upvote', value: 'upvote' },
                     { name: 'Wipes', value: 'wipes' },
                     { name: 'Logs', value: 'logs' },
-                    { name: 'Size', value: 'size' }
+                    { name: 'Size', value: 'size' },
+                    { name: 'Server Issues', value: 'server-issue' }
                 )),
     async execute(interaction) {
         const selectedEmbed = interaction.options.getString('embed');
