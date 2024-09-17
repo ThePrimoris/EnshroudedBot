@@ -4,6 +4,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('roadmap')
         .setDescription('Enshrouded Roadmap'),
+    category: 'general',
     async execute(interaction) {
         const embed = new EmbedBuilder()
             .setTitle('Enshrouded Roadmap')
