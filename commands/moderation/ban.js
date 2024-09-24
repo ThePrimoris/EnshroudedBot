@@ -26,15 +26,17 @@ module.exports = {
         const currentTime = new Date();
         const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-
         try {
+            // Defer the reply to avoid interaction timeout
+            await interaction.deferReply({ ephemeral: true });
+
             // Attempt to message the user before banning
             await user.send(`You have been banned from ${interaction.guild.name} for the following reason: ${reason}`).catch(error => console.error(`Could not send DM to ${user.tag}:`, error));
             
             // Ban the user
             await interaction.guild.members.ban(user.id, { reason });
 
-            // Log the ban action
+            // Log the ban action in the database
             await UserBan.create({
                 userId: user.id,
                 issuerId: interaction.user.id,
@@ -43,10 +45,11 @@ module.exports = {
                 date: new Date()
             });
 
-            await interaction.reply({ content: `\`[${formattedTime}]\` ${user.tag} \`(${user.id})\` has been banned from the server by <@${interaction.user.id}> for: \`${reason}\`.` });
+            // Edit the deferred reply with the final message
+            await interaction.editReply({ content: `\`[${formattedTime}]\` ${user.tag} \`(${user.id})\` has been banned from the server by <@${interaction.user.id}> for: \`${reason}\`.` });
         } catch (error) {
             console.error(error);
-            return interaction.reply({ content: "Failed to ban the user. They might have a higher role than me or I lack the permission to ban them.", ephemeral: true });
+            return interaction.editReply({ content: "Failed to ban the user. They might have a higher role than me or I lack the permission to ban them.", ephemeral: true });
         }
     },
 };
