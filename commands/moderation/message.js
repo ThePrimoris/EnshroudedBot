@@ -22,7 +22,6 @@ module.exports = {
   requiredPermissions: ['ManageMessages'],
   category: 'utility',
   async execute(interaction) {
-    // Check if the user has the necessary permissions
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
       return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
     }
@@ -41,38 +40,36 @@ module.exports = {
 
       // If a channel is specified
       if (targetChannel) {
-        // Send message to the specified channel
         await targetChannel.send(message);
-
-        // Prepare the description for the embed
         targetDescription = `Message sent to ${targetChannel}:\n**Message:**\n${message}`;
       }
 
       // If a user is specified (and a channel was not specified)
       if (targetUser) {
-        // DM the specified user
         await targetUser.send(message);
-
-        // Prepare the description for the embed
         targetDescription = `DM sent to ${targetUser.tag}:\n**Message:**\n${message}`;
       }
 
-      // Log the message to the specified log channel
-      const replyChannel = await interaction.client.channels.fetch(logChannelId);
-      if (replyChannel && targetDescription) {
-        const logEmbed = new EmbedBuilder()
-          .setColor('#3498db')
-          .setTitle('📨 Message')
-          .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-          .setDescription(targetDescription)
-          .setTimestamp();
+      // Ensure the log channel exists and targetDescription is not empty
+      if (logChannelId && targetDescription) {
+        const replyChannel = await interaction.client.channels.fetch(logChannelId);
+        if (replyChannel) {
+          const logEmbed = new EmbedBuilder()
+            .setColor('#3498db')
+            .setTitle('📨 Message')
+            .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
+            .setDescription(targetDescription)
+            .setTimestamp();
 
-        await replyChannel.send({ embeds: [logEmbed] });
+          await replyChannel.send({ embeds: [logEmbed] });
+        } else {
+          console.error(`Log channel with ID ${logChannelId} not found.`);
+        }
       } else {
-        console.error('Reply channel not found or no message to log.');
+        console.error('No valid logChannelId or no message to log.');
       }
 
-      // Send a single final reply after handling everything
+      // Final reply to the interaction
       if (!targetChannel && !targetUser) {
         await interaction.editReply({ content: 'You must specify either a channel or a user to message.' });
       } else {
@@ -81,8 +78,6 @@ module.exports = {
 
     } catch (error) {
       console.error('Error executing message command:', error);
-
-      // Edit the reply in case of an error
       await interaction.editReply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.' });
     }
   },
