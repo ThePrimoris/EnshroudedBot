@@ -22,6 +22,7 @@ module.exports = {
   requiredPermissions: ['ManageMessages'],
   category: 'utility',
   async execute(interaction) {
+    // Check if the user has the necessary permissions
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
       return interaction.reply({ content: "You don't have permission to use this command.", ephemeral: true });
     }
@@ -35,6 +36,9 @@ module.exports = {
     try {
       let targetDescription = '';
 
+      // Defer reply to give more time for async tasks
+      await interaction.deferReply({ ephemeral: true });
+
       // If a channel is specified
       if (targetChannel) {
         // Send message to the specified channel
@@ -42,21 +46,18 @@ module.exports = {
 
         // Prepare the description for the embed
         targetDescription = `Message sent to ${targetChannel}:\n**Message:**\n${message}`;
-
-        await interaction.reply({ content: 'Message sent successfully to the channel.', ephemeral: true });
       }
 
       // If a user is specified (and a channel was not specified)
       if (targetUser) {
         // DM the specified user
         await targetUser.send(message);
-        await interaction.reply({ content: `DM sent to ${targetUser.tag} successfully.`, ephemeral: true });
 
         // Prepare the description for the embed
         targetDescription = `DM sent to ${targetUser.tag}:\n**Message:**\n${message}`;
       }
 
-      // Log the message to the specified channel
+      // Log the message to the specified log channel
       const replyChannel = await interaction.client.channels.fetch(logChannelId);
       if (replyChannel && targetDescription) {
         const logEmbed = new EmbedBuilder()
@@ -71,14 +72,18 @@ module.exports = {
         console.error('Reply channel not found or no message to log.');
       }
 
-      // If neither a channel nor a user is specified
+      // Send a single final reply after handling everything
       if (!targetChannel && !targetUser) {
-        await interaction.reply({ content: 'You must specify either a channel or a user to message.', ephemeral: true });
+        await interaction.editReply({ content: 'You must specify either a channel or a user to message.' });
+      } else {
+        await interaction.editReply({ content: 'Message sent successfully.' });
       }
 
     } catch (error) {
       console.error('Error executing message command:', error);
-      await interaction.reply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.', ephemeral: true });
+
+      // Edit the reply in case of an error
+      await interaction.editReply({ content: 'Failed to send the message. Please make sure I have the right permissions and try again.' });
     }
   },
 };
