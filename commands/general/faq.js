@@ -108,9 +108,9 @@ We've received a good bit of information about what's in the next update and whe
 
 Ensure you have the proper roles from <id:customize> to get pinged when information is given and when the patch drops.
 
-You can always manually check #news #patch-notes and #socials-feed for teasers.
+You can always manually check <#${newsChannelId}> <#${patchChannelId}> and <#${socialsChannelId}> for teasers.
 
-Check the pins in #the-tavern and #enshrouded-chat to see if there's been any important things said.
+Check the pins in <#${tavernChannelId}> and <#${enshChatId}> to see if there's been any important things said.
         `)
         .setColor('#3f9dd5')
 };
