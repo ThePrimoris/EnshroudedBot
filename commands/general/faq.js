@@ -3,6 +3,12 @@ const { EmbedBuilder } = require('discord.js');
 const config = require('../../config.js');
 
 const troubleshootingChannelId = config.channels.troubleshootingChannelId;
+const newsChannelId = config.channels.newsChannelId;
+const patchChannelId = config.channels.patchChannelId;
+const socialsChannelId = config.channels.socialsChannelId;
+const tavernChannelId = config.channels.tavernChannelId;
+const enshChatId = config.channels.enshChatId;
+
 
 const embeds = {
     '4gb': new EmbedBuilder()
