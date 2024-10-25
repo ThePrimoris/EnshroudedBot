@@ -76,17 +76,18 @@ For better and faster troubleshooting, please share game logs along with your me
 **Copy and Paste the log file into Discord**
 - Head over to <#${troubleshootingChannelId}> and paste the log file into the channel.
 `)
-.setColor('#3f9dd5')
-.setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` }),
+        .setColor('#3f9dd5')
+        .setFooter({ text: `Troubleshooting in Discord is conducted by community volunteers/AutoModerationRuleKeywordPresetType. Treat them with respect, and appreciation PartialTextBasedChannel.` }),
 
-'size': new EmbedBuilder()
+    'size': new EmbedBuilder()
         .setTitle('Enshrouded Map Size FAQ')
         .setDescription(`
 Enshrouded's demo map was about 1km², Early Access is currently about 24km², and the full release map is planned to be around 64km².
         `)
         .setColor('#3f9dd5')
         .setFooter({ text: 'Keep in mind that this is an early acces game and this information is subject to change.' }),
-'server-issue': new EmbedBuilder()
+
+    'server-issue': new EmbedBuilder()
         .setTitle('Issues with Full/Unable to Join Server')
         .setDescription(`
 If you're having issues with all servers being shown as full or are unable to join servers please follow the instructions below.
@@ -98,10 +99,22 @@ If this does not work please change your Steam download region to something in a
 
 This is a Steam issue not an Enshrouded one, if you continue to have issues please head to <#${troubleshootingChannelId}> for more assistance.
         `)
+        .setColor('#3f9dd5'),
+
+    'update': new EmbedBuilder()
+        .setTitle('Curious about the next update?')
+        .setDescription(`
+We've received a good bit of information about what's in the next update and when it's coming.
+
+Ensure you have the proper roles from <id:customize> to get pinged when information is given and when the patch drops.
+
+You can always manually check #news #patch-notes and #socials-feed for teasers.
+
+Check the pins in #the-tavern and #enshrouded-chat to see if there's been any important things said.
+        `)
         .setColor('#3f9dd5')
 };
 
-// Export the command module
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('faq')
@@ -117,6 +130,7 @@ module.exports = {
                     { name: 'Wipes', value: 'wipes' },
                     { name: 'Logs', value: 'logs' },
                     { name: 'Size', value: 'size' },
+                    { name: 'Update', value: 'update' },
                     { name: 'Server Issues', value: 'server-issue' }
                 )),
     async execute(interaction) {
